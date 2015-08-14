@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cli>
+    <flag identifier="v" />
+    <flag identifier="q" />
+
+    <rule type="xor">
+        <rule type="not">
+            <rule type="option-set">
+                <option>v</option>
+            </rule>
+            <rule type="option-set">
+                <option>q</option>
+            </rule>
+        </rule>
+        <rule type="option-set">
+            <option>v</option>
+            <option>q</option>
+        </rule>
+    </rule>
+</cli>
