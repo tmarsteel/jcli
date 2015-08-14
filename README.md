@@ -83,7 +83,7 @@ slash (`/`); whether something is a flag or an option is derived from context.
 
 Arguments are interally handled the same way as options - but they have to be configured to be accessed.
 
-Further readinng:
+## Further reading
 
 * [Walkthrough](docs/walkthrough.md): an introduction to XML configuration
 * [detailed Documentation](docs/detailed.md) a full explanation of all XML directives
