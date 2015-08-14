@@ -23,7 +23,7 @@ this order: `<executable> [flags and options] arguments...`
 
 Options and arguments can have arbitrary values, falgs are represented as `boolean`, set or not set.
 
-### 1. Get a `CLIParser` instance
+#### 1. Get a `CLIParser` instance
 
 Most of the time you will want to load a XML configuration, this can be done like this:
 
@@ -43,7 +43,7 @@ To programmatially configure the parsers, just create an instance of `CLIParser`
 CLIParser parser = new CLIParser();
 ```
 
-### 2. Parse Input and access it
+#### 2. Parse Input and access it
 
 ```java
 class SampleProgram
