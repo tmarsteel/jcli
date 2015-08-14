@@ -2,21 +2,21 @@
 
 The root-element of the config xml MUST be an `<cli>`-Tag. It includes all definitions of flags, options and arguments and their possible values and validation information. A quick example:
 
-	```xml
-	<xml version="1.0">
-	<cli>
-	    <flag identifier="verbose">
-	        <alias>v</alias>
-	    </flag>
-	
-	    <argument identifier="input" index="0">
-	        <filter type="file">
-	            <permissions>READ</permissions>
-	            <existance>MUST_EXIST</existance>
-	        </filter>
-	    </argument>
-	</cli>
-	```
+```xml
+<xml version="1.0">
+<cli>
+    <flag identifier="verbose">
+        <alias>v</alias>
+    </flag>
+
+    <argument identifier="input" index="0">
+        <filter type="file">
+            <permissions>READ</permissions>
+            <existance>MUST_EXIST</existance>
+        </filter>
+    </argument>
+</cli>
+```
 
 These CLI-Calls are equal:  
 `<executable> -v foo.txt`  
@@ -31,11 +31,11 @@ Flags are configured using the `<flag>`-tag. The `identifier` attribute MUST be 
 Inside that tag you can specify as many aliases (for abbreviation or compatibility) as you wish. The identifier as well as all the aliases will be recognized.
 For example:
 
-	```xml
-	<flag identifier="verbose">
-	    <alias>v</alias>
-	</flag>
-	```
+```xml
+<flag identifier="verbose">
+    <alias>v</alias>
+</flag>
+```
 
 ## Options
 
@@ -50,12 +50,12 @@ You MAY specify one <filter>-tag that will hint to the parser how to validate in
 
 for example:
 
-	```xml
-	<option identifier="output">
-	    <alias>out</alias>
-	    <alias>o</alias>
-	</option>
-	```
+```xml
+<option identifier="output">
+    <alias>out</alias>
+    <alias>o</alias>
+</option>
+```
 
 ## Arguments
 
@@ -73,9 +73,9 @@ You MAY specify one `<filter>`-tag that will hint to the parser how to validate 
 
 Example:
 
-	```xml
-	<argument identifier="format" index="1" />
-	```
+```xml
+<argument identifier="format" index="1" />
+```
 
 `<executable> -v foo.txt someFormat`
 
@@ -102,12 +102,12 @@ BigDecimal-Filter |big-decimal             |no, radix = 10   |java.math.BigDecim
 
 Example:
 
-	```xml
-	<filter type="integer">
-	    <min>0</min>
-	    <radix>16</radix>
-	</filter>
-	```
+```xml
+<filter type="integer">
+    <min>0</min>
+    <radix>16</radix>
+</filter>
+```
 
 #### File Filter
 
@@ -147,14 +147,14 @@ To define the required extension use an `<extension>` tag.
 
 As an example a filter will serve that requires a readable xml file.
 
-	```xml
-	<filter type="file">
-	    <extension>xml</extension>
-	    <type>FILE</type>
-	    <existance>MUST_EXIST</existance>
-	    <permissions>READ</permissions>
-	</filter>
-	```
+```xml
+<filter type="file">
+    <extension>xml</extension>
+    <type>FILE</type>
+    <existance>MUST_EXIST</existance>
+    <permissions>READ</permissions>
+</filter>
+```
 
 #### Set Filter
 
@@ -162,14 +162,15 @@ The set filter allows only values from a given set; case-sensitivity is off by d
 
 Specify the different possibilities with <value> tags. The set filter will always return values from the configuration and never the actual values. For Example:
 
-	```xml
-	<filter type="set">
-	    <value>AES128</value>
-	    <value>AES192</value>
-	    <value>AES256</value>
-	    <value>SERPENT</value>
-	    <value>THREEFISH</value>
-	</filter>
+```xml
+<filter type="set">
+    <value>AES128</value>
+    <value>AES192</value>
+    <value>AES256</value>
+    <value>SERPENT</value>
+    <value>THREEFISH</value>
+</filter>
+```
 
 This filter is case insensitive. Given the input `ThReEFiSH` it will return `THREEFISH`.
 
@@ -178,11 +179,11 @@ This filter is case insensitive. Given the input `ThReEFiSH` it will return `THR
 
 The regex filter allows only values matching the given regex. It will return the entire input if matched or a group, if specified by the `returnGroup`-attribute. Specify the regex using a `<regex>` tag. For example:
 
-	```xml
-	<filter type="regex" returnGroup="1">
-	    <regex>(\d+)KG</regex>
-	</filter>
-	```
+```xml
+<filter type="regex" returnGroup="1">
+    <regex>(\d+)KG</regex>
+</filter>
+```
 
 Given the input "15KG" this filter will return the string "15".
 
@@ -193,11 +194,11 @@ You can specify rules that will be checked after all input has been parsed and t
 
 To refuse all flags and options that are not known by the parser, you will have to add the rules programmatically:
 
-	```java
-	CLIParser cliParser = /* load the parser however you like */;
-	cliParser.add(Rule.ONLY_KNWON_OPTIONS);
-	cliParser.add(Rule.ONLY_KNWON_FLAGS);
-	```
+```java
+CLIParser cliParser = /* load the parser however you like */;
+cliParser.add(Rule.ONLY_KNWON_OPTIONS);
+cliParser.add(Rule.ONLY_KNWON_FLAGS);
+```
 
 Almost any other combination can be configured via XML. There are six types of rules. Either the `type`-attribute or the `class` attribute can be set on a `<rule>`-tag. What values are valid for the `type` attribute is descibred below.
 
@@ -214,25 +215,25 @@ This rule requires that one or more options/flags are set. Specify these options
 
 Example:
 
-	```xml
-	<rule type="option-set">
-	    <option>input</option>
-	</rule>
-	```
+```xml
+<rule type="option-set">
+    <option>input</option>
+</rule>
+```
 
 #### Option rule: option-xor
 
 Basically, this rule could be realised with a xor-rule and nested option-set rules. However, the error message produced by an option-xor rule is much more user-friendly. This rule is intended if options and flags cannot be set at the same time. For example a verbose- and a quiet-flag at the same time do not make much sense:
 
-	```xml
-	<flag identifier="verbose" />
-	<flag identifier="quiet" />
+```xml
+<flag identifier="verbose" />
+<flag identifier="quiet" />
 
-	<rule type="option-xor">
-	    <option>verbose</option>
-	    <option>quiet</option>
-	</rule>
-	```
+<rule type="option-xor">
+    <option>verbose</option>
+    <option>quiet</option>
+</rule>
+```
 
 **Note:** you can also refer to arguments here.
 
@@ -240,34 +241,34 @@ Basically, this rule could be realised with a xor-rule and nested option-set rul
 
 These 4 rules connect other rules with the respective logical operator. For example: If a logfile should be written (log flag), then a logfile has to be specified (logfile option).
 
-	```xml
-	<flag identifier="log">
-	    <alias>l</alias>
-	</flag>
+```xml
+<flag identifier="log">
+    <alias>l</alias>
+</flag>
 
-	<option identifier="logfile">
-	    <alias>lf</alias>
-	    <filter type="file">
-	        <permissions>WRITE</permissions>
-	    </filter>
-	</option>
-	
-	<rule type="xor">
-	    <rule type="not">
-	        <rule type="option-set">
-	            <option>log</option>
-	        </rule>
-	        <rule type="option-set">
-	            <option>logfile</option>
-	        </rule>
-	    </rule>
-	    <rule type="option-set">
-	        <option>log</option>
-	        <option>logfile</option>
-	    </rule>
-		<error>When specifying the log flag, the logfile option becomes mandatory.</error>
-	</rule>
-	```
+<option identifier="logfile">
+    <alias>lf</alias>
+    <filter type="file">
+        <permissions>WRITE</permissions>
+    </filter>
+</option>
+
+<rule type="xor">
+    <rule type="not">
+        <rule type="option-set">
+            <option>log</option>
+        </rule>
+        <rule type="option-set">
+            <option>logfile</option>
+        </rule>
+    </rule>
+    <rule type="option-set">
+        <option>log</option>
+        <option>logfile</option>
+    </rule>
+	<error>When specifying the log flag, the logfile option becomes mandatory.</error>
+</rule>
+```
 
 ## Custom Filters
 
@@ -280,17 +281,17 @@ The `(org.w3c.dom.Node)` constructor will be preferred. The argument is the `<fi
 
 In the `<filter>` tag, put the **full** classname in the `type` classname:
 
-	```xml
-	<filter type="com.mypackage.cli.filter.CustomFilterXY" />
-	```
+```xml
+<filter type="com.mypackage.cli.filter.CustomFilterXY" />
+```
 
 Of course, your filter can implement its own XML settings via the `(org.w3c.dom.Node)` constructor:
 
-	```xml
-	<filter type="com.mypackage.cli.filter.CustomFilterXY" ignoreSth="true">
-		<option>value</option>
-	</filter>
-	```
+```xml
+<filter type="com.mypackage.cli.filter.CustomFilterXY" ignoreSth="true">
+	<option>value</option>
+</filter>
+```
 
 **Note when using custom filters:** make sure the specified class is in the classpath!
 
@@ -302,23 +303,23 @@ You can implement your own rules by specifying a `class`-attribute instead of a 
 
 Implement `com.tmarsteel.jcli.rule.Rule`. If the specified class implements this interface the `<rule>`-tag MUST NOT have any contents and the class MUST have an empty `()` constructor.
 
-	```xml
-	<rule class="com.myproject.SimpleRule" />
-	```
+```xml
+<rule class="com.myproject.SimpleRule" />
+```
 
 ### Combined Rule: combine multilple rules
 
 Implement `com.tmarsteel.jcli.rule.CombinedRule`. If the specified class implements this interface the `<rule>`-tag MAY have nested `<rule>` tags and the class has to have a `(com.tmarsteel.jcli.rule.Rule[])` constructor. Needless to say, the defined rules from the XML document will be passed to your class when constructing an instance.
 
-	```xml
-	<rule class="com.myproject.CombinedRule">
-	    <rule type="option-set">
-	        <option>input</option>
-	    </rule>
-	    <rule type="option-set">
-	        <option>output</option>
-	    </rule>
-	</rule>
-	```
+```xml
+<rule class="com.myproject.CombinedRule">
+    <rule type="option-set">
+        <option>input</option>
+    </rule>
+    <rule type="option-set">
+        <option>output</option>
+    </rule>
+</rule>
+```
 
 **Note:** in a later release, rules can implement further XML directives by implenting a `(org.w3c.dom.Node)` constructor.
