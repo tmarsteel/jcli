@@ -86,5 +86,5 @@ Arguments are interally handled the same way as options - but they have to be co
 ## Further reading
 
 * [Walkthrough](docs/walkthrough.md): an introduction to XML configuration
-* [detailed Documentation](docs/detailed.md) a full explanation of all XML directives and of how to create custom   filters
+* [detailed Documentation](docs/detailed.md) a full explanation of all XML directives and of how to create custom   filters and rules
 * [Programmatical Configuration](docs/programmatical.md) documentation of programmatical configuration
