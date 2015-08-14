@@ -5,7 +5,7 @@ A Java library for parsing and validating CLI arguments (and Strings formatted a
 
 Download jCLI-X.X.jar from the dist/ directory or add this dependency to your POM file:
 
-```
+```xml
 <dependency>
   <groupId>tmasteel</groupId>
   <artifactId>jcli</artifactId>
