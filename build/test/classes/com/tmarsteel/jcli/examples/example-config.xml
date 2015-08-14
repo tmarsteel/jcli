@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cli>
+    <flag identifier="verbose">
+        <alias>v</alias>
+    </flag>
+    
+    <option identifier="encoding" required="true">
+        <alias>e</alias>
+    </option>
+</cli>

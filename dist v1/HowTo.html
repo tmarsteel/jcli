@@ -1,0 +1,959 @@
+<html>
+    <head>
+        <title>WISPER CLI Library - Get Started</title>
+        <style type="text/css">
+        /* Javadoc style sheet */
+/*
+Overall document style
+*/
+body {
+    background-color:#ffffff;
+    color:#353833;
+    font-family:Arial, Helvetica, sans-serif;
+    font-size:76%;
+    margin:8px;
+}
+a:link, a:visited {
+    text-decoration:none;
+    color:#4c6b87;
+}
+a:hover, a:focus {
+    text-decoration:none;
+    color:#bb7a2a;
+}
+a:active {
+    text-decoration:none;
+    color:#4c6b87;
+}
+a[name] {
+    color:#353833;
+}
+a[name]:hover {
+    text-decoration:none;
+    color:#353833;
+}
+pre {
+    font-size:1.3em;
+}
+h1 {
+    font-size:1.8em;
+}
+h2 {
+    font-size:1.5em;
+}
+h3 {
+    font-size:1.4em;
+}
+h4 {
+    font-size:1.3em;
+}
+h5 {
+    font-size:1.2em;
+}
+h6 {
+    font-size:1.1em;
+}
+ul {
+    list-style-type:disc;
+}
+code, tt {
+    font-size:1.2em;
+}
+dt code {
+    font-size:1.2em;
+}
+table tr td dt code {
+    font-size:1.2em;
+    vertical-align:top;
+}
+sup {
+    font-size:.6em;
+}
+/*
+Document title and Copyright styles
+*/
+.clear {
+    clear:both;
+    height:0px;
+    overflow:hidden;
+}
+.aboutLanguage {
+    float:right;
+    padding:0px 21px;
+    font-size:.8em;
+    z-index:200;
+    margin-top:-7px;
+}
+.legalCopy {
+    margin-left:.5em;
+}
+.bar a, .bar a:link, .bar a:visited, .bar a:active {
+    color:#FFFFFF;
+    text-decoration:none;
+}
+.bar a:hover, .bar a:focus {
+    color:#bb7a2a;
+}
+.tab {
+    background-color:#0066FF;
+    background-image:url(resources/titlebar.gif);
+    background-position:left top;
+    background-repeat:no-repeat;
+    color:#ffffff;
+    padding:8px;
+    width:5em;
+    font-weight:bold;
+}
+/*
+Navigation bar styles
+*/
+.bar {
+    background-image:url(resources/background.gif);
+    background-repeat:repeat-x;
+    color:#FFFFFF;
+    padding:.8em .5em .4em .8em;
+    height:auto;/*height:1.8em;*/
+    font-size:1em;
+    margin:0;
+}
+.topNav {
+    background-image:url(resources/background.gif);
+    background-repeat:repeat-x;
+    color:#FFFFFF;
+    float:left;
+    padding:0;
+    width:100%;
+    clear:right;
+    height:2.8em;
+    padding-top:10px;
+    overflow:hidden;
+}
+.bottomNav {
+    margin-top:10px;
+    background-image:url(resources/background.gif);
+    background-repeat:repeat-x;
+    color:#FFFFFF;
+    float:left;
+    padding:0;
+    width:100%;
+    clear:right;
+    height:2.8em;
+    padding-top:10px;
+    overflow:hidden;
+}
+.subNav {
+    background-color:#dee3e9;
+    border-bottom:1px solid #9eadc0;
+    float:left;
+    width:100%;
+    overflow:hidden;
+}
+.subNav div {
+    clear:left;
+    float:left;
+    padding:0 0 5px 6px;
+}
+ul.navList, ul.subNavList {
+    float:left;
+    margin:0 25px 0 0;
+    padding:0;
+}
+ul.navList li{
+    list-style:none;
+    float:left;
+    padding:3px 6px;
+}
+ul.subNavList li{
+    list-style:none;
+    float:left;
+    font-size:90%;
+}
+.topNav a:link, .topNav a:active, .topNav a:visited, .bottomNav a:link, .bottomNav a:active, .bottomNav a:visited {
+    color:#FFFFFF;
+    text-decoration:none;
+}
+.topNav a:hover, .bottomNav a:hover {
+    text-decoration:none;
+    color:#bb7a2a;
+}
+.navBarCell1Rev {
+    background-image:url(resources/tab.gif);
+    background-color:#a88834;
+    color:#FFFFFF;
+    margin: auto 5px;
+    border:1px solid #c9aa44;
+}
+/*
+Page header and footer styles
+*/
+.header, .footer {
+    clear:both;
+    margin:0 20px;
+    padding:5px 0 0 0;
+}
+.indexHeader {
+    margin:10px;
+    position:relative;
+}
+.indexHeader h1 {
+    font-size:1.3em;
+}
+.title {
+    color:#2c4557;
+    margin:10px 0;
+}
+.subTitle {
+    margin:5px 0 0 0;
+}
+.header ul {
+    margin:0 0 25px 0;
+    padding:0;
+}
+.footer ul {
+    margin:20px 0 5px 0;
+}
+.header ul li, .footer ul li {
+    list-style:none;
+    font-size:1.2em;
+}
+/*
+Heading styles
+*/
+div.details ul.blockList ul.blockList ul.blockList li.blockList h4, div.details ul.blockList ul.blockList ul.blockListLast li.blockList h4 {
+    background-color:#dee3e9;
+    border-top:1px solid #9eadc0;
+    border-bottom:1px solid #9eadc0;
+    margin:0 0 6px -8px;
+    padding:2px 5px;
+}
+ul.blockList ul.blockList ul.blockList li.blockList h3 {
+    background-color:#dee3e9;
+    border-top:1px solid #9eadc0;
+    border-bottom:1px solid #9eadc0;
+    margin:0 0 6px -8px;
+    padding:2px 5px;
+}
+ul.blockList ul.blockList li.blockList h3 {
+    padding:0;
+    margin:15px 0;
+}
+ul.blockList li.blockList h2 {
+    padding:0px 0 20px 0;
+}
+/*
+Page layout container styles
+*/
+.contentContainer, .sourceContainer, .classUseContainer, .serializedFormContainer, .constantValuesContainer {
+    clear:both;
+    padding:10px 20px;
+    position:relative;
+}
+.indexContainer {
+    margin:10px;
+    position:relative;
+    font-size:1.0em;
+}
+.indexContainer h2 {
+    font-size:1.1em;
+    padding:0 0 3px 0;
+}
+.indexContainer ul {
+    margin:0;
+    padding:0;
+}
+.indexContainer ul li {
+    list-style:none;
+}
+.contentContainer .description dl dt, .contentContainer .details dl dt, .serializedFormContainer dl dt {
+    font-size:1.1em;
+    font-weight:bold;
+    margin:10px 0 0 0;
+    color:#4E4E4E;
+}
+.contentContainer .description dl dd, .contentContainer .details dl dd, .serializedFormContainer dl dd {
+    margin:10px 0 10px 20px;
+}
+.serializedFormContainer dl.nameValue dt {
+    margin-left:1px;
+    font-size:1.1em;
+    display:inline;
+    font-weight:bold;
+}
+.serializedFormContainer dl.nameValue dd {
+    margin:0 0 0 1px;
+    font-size:1.1em;
+    display:inline;
+}
+/*
+List styles
+*/
+ul.horizontal li {
+    display:inline;
+    font-size:0.9em;
+}
+ul.inheritance {
+    margin:0;
+    padding:0;
+}
+ul.inheritance li {
+    display:inline;
+    list-style:none;
+}
+ul.inheritance li ul.inheritance {
+    margin-left:15px;
+    padding-left:15px;
+    padding-top:1px;
+}
+ul.blockList, ul.blockListLast {
+    margin:10px 0 10px 0;
+    padding:0;
+}
+ul.blockList li.blockList, ul.blockListLast li.blockList {
+    list-style:none;
+    margin-bottom:25px;
+}
+ul.blockList ul.blockList li.blockList, ul.blockList ul.blockListLast li.blockList {
+    padding:0px 20px 5px 10px;
+    border:1px solid #9eadc0;
+    background-color:#f9f9f9;
+}
+ul.blockList ul.blockList ul.blockList li.blockList, ul.blockList ul.blockList ul.blockListLast li.blockList {
+    padding:0 0 5px 8px;
+    background-color:#ffffff;
+    border:1px solid #9eadc0;
+    border-top:none;
+}
+ul.blockList ul.blockList ul.blockList ul.blockList li.blockList {
+    margin-left:0;
+    padding-left:0;
+    padding-bottom:15px;
+    border:none;
+    border-bottom:1px solid #9eadc0;
+}
+ul.blockList ul.blockList ul.blockList ul.blockList li.blockListLast {
+    list-style:none;
+    border-bottom:none;
+    padding-bottom:0;
+}
+table tr td dl, table tr td dl dt, table tr td dl dd {
+    margin-top:0;
+    margin-bottom:1px;
+}
+/*
+Table styles
+*/
+.contentContainer table, .classUseContainer table, .constantValuesContainer table {
+    border-bottom:1px solid #9eadc0;
+    width:100%;
+}
+.contentContainer ul li table, .classUseContainer ul li table, .constantValuesContainer ul li table {
+    width:100%;
+}
+.contentContainer .description table, .contentContainer .details table {
+    border-bottom:none;
+}
+.contentContainer ul li table th.colOne, .contentContainer ul li table th.colFirst, .contentContainer ul li table th.colLast, .classUseContainer ul li table th, .constantValuesContainer ul li table th, .contentContainer ul li table td.colOne, .contentContainer ul li table td.colFirst, .contentContainer ul li table td.colLast, .classUseContainer ul li table td, .constantValuesContainer ul li table td{
+    vertical-align:top;
+    padding-right:20px;
+}
+.contentContainer ul li table th.colLast, .classUseContainer ul li table th.colLast,.constantValuesContainer ul li table th.colLast,
+.contentContainer ul li table td.colLast, .classUseContainer ul li table td.colLast,.constantValuesContainer ul li table td.colLast,
+.contentContainer ul li table th.colOne, .classUseContainer ul li table th.colOne,
+.contentContainer ul li table td.colOne, .classUseContainer ul li table td.colOne {
+    padding-right:3px;
+}
+.overviewSummary caption, .packageSummary caption, .contentContainer ul.blockList li.blockList caption, .summary caption, .classUseContainer caption, .constantValuesContainer caption {
+    position:relative;
+    text-align:left;
+    background-repeat:no-repeat;
+    color:#FFFFFF;
+    font-weight:bold;
+    clear:none;
+    overflow:hidden;
+    padding:0px;
+    margin:0px;
+}
+caption a:link, caption a:hover, caption a:active, caption a:visited {
+    color:#FFFFFF;
+}
+.overviewSummary caption span, .packageSummary caption span, .contentContainer ul.blockList li.blockList caption span, .summary caption span, .classUseContainer caption span, .constantValuesContainer caption span {
+    white-space:nowrap;
+    padding-top:8px;
+    padding-left:8px;
+    display:block;
+    float:left;
+    background-image:url(resources/titlebar.gif);
+    height:18px;
+}
+.overviewSummary .tabEnd, .packageSummary .tabEnd, .contentContainer ul.blockList li.blockList .tabEnd, .summary .tabEnd, .classUseContainer .tabEnd, .constantValuesContainer .tabEnd {
+    width:10px;
+    background-image:url(resources/titlebar_end.gif);
+    background-repeat:no-repeat;
+    background-position:top right;
+    position:relative;
+    float:left;
+}
+ul.blockList ul.blockList li.blockList table {
+    margin:0 0 12px 0px;
+    width:100%;
+}
+.tableSubHeadingColor {
+    background-color: #EEEEFF;
+}
+.altColor {
+    background-color:#eeeeef;
+}
+.rowColor {
+    background-color:#ffffff;
+}
+.overviewSummary td, .packageSummary td, .contentContainer ul.blockList li.blockList td, .summary td, .classUseContainer td, .constantValuesContainer td {
+    text-align:left;
+    padding:3px 3px 3px 7px;
+}
+th.colFirst, th.colLast, th.colOne, .constantValuesContainer th {
+    background:#dee3e9;
+    border-top:1px solid #9eadc0;
+    border-bottom:1px solid #9eadc0;
+    text-align:left;
+    padding:3px 3px 3px 7px;
+}
+td.colOne a:link, td.colOne a:active, td.colOne a:visited, td.colOne a:hover, td.colFirst a:link, td.colFirst a:active, td.colFirst a:visited, td.colFirst a:hover, td.colLast a:link, td.colLast a:active, td.colLast a:visited, td.colLast a:hover, .constantValuesContainer td a:link, .constantValuesContainer td a:active, .constantValuesContainer td a:visited, .constantValuesContainer td a:hover {
+    font-weight:bold;
+}
+td.colFirst, th.colFirst {
+    border-left:1px solid #9eadc0;
+    white-space:nowrap;
+}
+td.colLast, th.colLast {
+    border-right:1px solid #9eadc0;
+}
+td.colOne, th.colOne {
+    border-right:1px solid #9eadc0;
+    border-left:1px solid #9eadc0;
+}
+table.overviewSummary  {
+    padding:0px;
+    margin-left:0px;
+}
+table.overviewSummary td.colFirst, table.overviewSummary th.colFirst,
+table.overviewSummary td.colOne, table.overviewSummary th.colOne {
+    width:25%;
+    vertical-align:middle;
+}
+table.packageSummary td.colFirst, table.overviewSummary th.colFirst {
+    width:25%;
+    vertical-align:middle;
+}
+/*
+Content styles
+*/
+.description pre {
+    margin-top:0;
+}
+.deprecatedContent {
+    margin:0;
+    padding:10px 0;
+}
+.docSummary {
+    padding:0;
+}
+/*
+Formatting effect styles
+*/
+.sourceLineNo {
+    color:green;
+    padding:0 30px 0 0;
+}
+h1.hidden {
+    visibility:hidden;
+    overflow:hidden;
+    font-size:.9em;
+}
+.block {
+    display:block;
+    margin:3px 0 0 0;
+}
+.strong {
+    font-weight:bold;
+}
+
+        </style>
+    </head>
+    <body>
+    <h1>Table of contents</h1>
+    <ol>
+        <li><a href="#general">General</a></li>
+        <li><a href="#xmlconfig">Configuring the parser with XML</a>
+            <ol>
+                <li><a href="#xmlconfig.flags">Flags</a></li>
+                <li><a href="#xmlconfig.options">Options</a></li>
+                <li><a href="#xmlconfig.arguments">Arguments</a></li>
+                <li><a href="#xmlconfig.filter">Filters</a>
+                    <ol>
+                        <li><a href="#xmlconfig.filter.numeric">Number filters: integer, decimal, big-integer and big-decimal</a></li>
+                        <li><a href="#xmlconfig.filter.file">File Filter</a></li>
+                        <li><a href="#xmlconfig.filter.set">Set Filter</a></li>
+                        <li><a href="#xmlconfig.filter.regex">Regex Filter</a></li>
+                        <li><a href="#xmlconfig.filter.self">Own implementations</a></li>
+                    </ol>
+                </li>
+                <li><a href="#xmlconfig.rules">Rules</a>
+                    <ol>
+                        <li><a href="#xmlconfig.rules.optionset">Option rule: option-set</a></li>
+                        <li><a href="#xmlconfig.rules.optionxor">Option rule: option-xor</a></li>
+                        <li><a href="#xmlconfig.rules.logical">Logical rule: and, or, xor and not</a></li>
+                        <li><a href="#xmlconfig.rules.self">Own implementations</a>
+                            <ol>
+                                <li><a href="#xmlconfig.rules.self.simple">Simple Rule</a></li>
+                                <li><a href="#xmlconfig.rules.self.combined">Combined Rule</a></li>
+                            </ol>
+                        </li>
+                    </ol>
+                </li>
+            </ol>
+        </li>
+    </ol>
+    <h1>How to use the WISPER CLI Library</h1>
+<ul>
+<li>either write an XML configuration (as desccribed <a href="#xmlconfig">here</a>)</li>
+<li>or configure an instance of <a href="com/wisper/cli/CLIParser.html">com.wisper.cli.CLIParser</a> programmatically
+	using the classes contained within the library</li>
+</ul>
+
+<a name="general" />
+<h2>General</h2>
+<p>This library handles three types of inputs from the command line: Flags, Options and arguments. They are supposed to
+be arranged in this order:<br>
+<code>&lt;executable&gt; [flags and options] arguments...</code>
+<br>
+<table border="0" cellpadding="3" cellspacing="0" summary="Types of input">
+<tr>
+<th class="colFirst" scope="col">Name</th>
+<th class="colOne" scope="col">Possible Values</th>
+<th class="colLast" scope="col">Access via <a href="com/wisper/cli/CLIParser.ValidatedInput.html">CLIParser.ValidatedInput</a></th>
+</tr>
+<tr class="altColor">
+<td class="colFirst" scope="col">Flag</td>
+<td class="colOne" scope="col">Set or not set, <code>true</code> or <code>false</code></td>
+<td class="colLast" scope="col"><a href="com/wisper/cli/CLIParser.ValidatedInput.html#isFlagSet(java.lang.String)">isFlagSet(String)</a></td>
+</tr>
+<tr>
+<td class="colFirst" scope="col">Option</td>
+<td class="colOne" scope="col">Any string or any other class, if specified.</td>
+<td class="colLast" scope="col"><a href="com/wisper/cli/CLIParser.ValidatedInput.html#getOption(java.lang.String)">getOption(String)</a></td>
+</tr>
+<tr class="altColor">
+<td class="colFirst" scope="col">Argument</td>
+<td class="colOne" scope="col">Set or not set, <code>true</code> or <code>false</code></td>
+<td class="colLast" scope="col"><a href="com/wisper/cli/CLIParser.ValidatedInput.html#getOption(java.lang.String)">getOption(String)</a></td>
+</tr>
+</table>
+
+<p>Whether something is a flag, an option or an argument is determined by the prefix. This prefix depends
+(or at least should depend) on the environment your application is running in. See below for more information
+on this.</p>
+
+<h2>1. Determine/Define CLI Environemnt: Flag and Option markers, escape character</h2>
+<p>Unix flags are often prefixed with a single hyphen (e.g. <code>-verbose</code>) whereas options are prefixed
+with two hyphens (e.g. <code>--input-file foo.txt</code>). In DOS/NT however, both are prefixed with a slash
+(e.g. <code>cd /D D:\</code>).<br>
+If someting should contain spaces double-quotes are used to denote the start and end of that (e.g.
+<code>cd "C:\Program Files\"</code>). If a double-quote should be passed, it has to be escaped. Since
+the blackslash used in UNIX serves as directory-separater under DOS/NT, <code>^</code> is used.<br>
+<br>
+<b>These prefixes and the escape character can be defined individually.</b> The library's class
+<a href="com/wisper/cli/Environment.html">com.wisper.cli.Environment</a> distincts between WINDOWS and UNIX environemnts
+by default. It will choose the appropriate one for you unless you wish different.<br>
+<br>
+<pre style="background:rgba(238,238,238,0.92);color:#000"><span style="font-weight:700">Environment</span> env <span style="color:#00f">=</span> <span style="color:#00f">new</span> <span style="font-weight:700">Environment</span>(); <span style="color:#06f;font-style:italic">// defualt constructor</span>
+<span style="font-weight:700">Environment</span> env <span style="color:#00f">=</span> <span style="color:#00f">new</span> <span style="font-weight:700">Environment</span>(<span style="color:#093">"--"</span>, <span style="color:#093">"/"</span>, <span style="color:#093">'<span style="color:#6782d3">\\</span>'</span>); <span style="color:#06f;font-style:italic">// -- for flags, / for options and \ as escape character</span>
+</pre>
+
+<h2>2. Load configuration</h2>
+<p>Next, an instance of <a href="com/wisper/cli/CLIParser.html">com.wisper.cli.CLIParser</a> has to be created. If
+you want to configure the parser programmatically the constructors - depending on whether you want to change the
+environment - will fit:<br>
+<pre style="background:rgba(238,238,238,0.92);color:#000"><span style="font-weight:700">CLIParser</span> cliParser <span style="color:#00f">=</span> <span style="color:#00f">new</span> <span style="font-weight:700">CLIParser</span>(); <span style="color:#06f;font-style:italic">// new parser with recognized environment, recommended</span>
+<span style="font-weight:700">CLIParser</span> cliParser <span style="color:#00f">=</span> <span style="color:#00f">new</span> <span style="font-weight:700">CLIParser</span>(<span style="color:#00f">new</span> <span style="font-weight:700">Environment</span>(<span style="color:#093">"--"</span>, <span style="color:#093">"/"</span>, <span style="color:#093">'<span style="color:#6782d3">\\</span>'</span>)); <span style="color:#06f;font-style:italic">// new parser with special environment</span>
+</pre>
+<p>However, if you want to use a XML configuration, you will have to use the appropriate
+<a href="com/wisper/cli/CLIParser.html#getInstance(java.io.InputStream)">getInstance Method</a>.<br>
+<br>
+<pre style="background:rgba(238,238,238,0.92);color:#000"><span style="font-weight:700">CLIParser</span> cliParser <span style="color:#00f">=</span> <span style="font-weight:700">CLIParser</span><span style="color:#00f">.</span>getInstance(
+    this<span style="color:#00f">.</span>class<span style="color:#00f">.</span>getResourceAsStream(<span style="color:#093">"cli-config.xml"</span>)
+);
+</pre>
+</p>
+
+<h2>3. Provide input and access it</h2>
+<p>Provide input to parse. For more abstract sources you can use the class
+<a href="com/wisper/cli/Input.html">com.wisper.cli.Input</a>. For most cases this will be the solution:<br>
+<pre style="background:rgba(238,238,238,0.92);color:#000"><span style="font-weight:700">public</span> <span style="font-weight:700">static</span> <span style="font-weight:700">void</span> main(<span style="font-weight:700">final</span> <span style="font-weight:700">String</span>[] args)
+{
+    <span style="font-weight:700">CLIParser</span> cliParser <span style="color:#00f">=</span> <span style="color:#06f;font-style:italic">/* load the parser however you like */</span>;
+    <span style="font-weight:700">CLIParser</span><span style="color:#00f">.</span><span style="font-weight:700">ValidatedInput</span> input;
+    <span style="color:#00f">try</span>
+    {
+        input <span style="color:#00f">=</span> cliParser<span style="color:#00f">.</span>parse(args);
+    }
+    <span style="color:#00f">catch</span> (<span style="font-weight:700">ParseException</span> ex)
+    {
+        <span style="font-weight:700">System</span><span style="color:#00f">.</span>out<span style="color:#00f">.</span>println(<span style="color:#093">"Failed to initialize: "</span> <span style="color:#00f">+</span> ex<span style="color:#00f">.</span>getMessage());
+        <span style="color:#00f">return</span>;
+    }
+} 
+</pre>
+
+<a name="xmlconfig" />
+<h1>Configuring the parser with XML</h1>
+<p>The root-element of the config xml is an <code>&lt;cli&gt;</code>-Tag. It includes all definitions of flags,
+options and arguments and their possible values and validation information. A quick example:</p>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>xml</span> <span style='color:#274796; '>version</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>1.0</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>cli</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>flag</span> <span style='color:#274796; '>identifier</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>verbose</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>v<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>flag</span><span style='color:#a65700; '>></span>
+
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>argument</span> <span style='color:#274796; '>identifier</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>input</span><span style='color:#0000e6; '>"</span> <span style='color:#274796; '>index</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>0</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>filter</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>file</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+            <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>permissions</span><span style='color:#a65700; '>></span>READ<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>permissions</span><span style='color:#a65700; '>></span>
+            <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>existance</span><span style='color:#a65700; '>></span>MUST_EXIST<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>existance</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>filter</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>argument</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>cli</span><span style='color:#a65700; '>></span>
+</pre>
+<p>These CLI-Calls are equal:<br>
+<code>
+&lt;executable&gt; -v foo.txt<br>
+&lt;executable&gt; -verbose foo.txt</br>
+</code>
+</p>
+
+<a name="xmlconfig.flags" />
+<h2>Flags</h2>
+<p>Flags are configured using the <code>&lt;flag&gt;</code>-tag. It requires the identifier attribute to be set.
+<b>Note:</b> the content of the identifier-attribute is the string that you will have to use to access the flag with
+from your sourcecode.<br>
+Inside that tag you can specify as many aliases (for abbreviation or compatibility) as you wish. The identifier as well
+as all the aliases will be recognized.<br>
+For example:</p>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>flag</span> <span style='color:#274796; '>identifier</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>verbose</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>v<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>flag</span><span style='color:#a65700; '>></span>
+</pre>
+
+<a name="xmlconfig.options" />
+<h2>Options</h2>
+<p>Options are configured using the <code>&lt;option&gt;</code>-tag. It requires the identifier attribute to be set.
+<b>Note:</b> the content of the identifier-attribute is the string that you will have to use to access the option with
+from your sourcecode.<br>
+Inside that tag you can specify as many aliases (for abbreviation or compatibility) as you wish. The identifier as well
+as all the aliases will be recognized.<br>
+Optionally, you can specify a <code>&lt;default&gt;</code>-tag. This will be the value assumed when the option is not
+set.<br>
+Additionally, you can specify <b>one</b> <code>&lt;filter&gt;</code>-tag that will hint to the parser how to validate input given to that option.
+See below for <a href="#xmlconfig.filter">filters</a>.<br>
+for example:</p>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>option</span> <span style='color:#274796; '>identifier</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>output</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>out<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>o<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>
+</pre>
+
+<a name="xmlconfig.arguments" />
+<h2>Arguments</h2>
+<p>Arguments are configured using the <code>&lt;argument&gt;</code>-tag. It requires both the identifier and the index
+attribute to be set. Optionally, you can set the required-attribute to <code>true</code>. This will cause the parser to
+throw an error if no input could be mapped to this argument.<br>
+The content of the identifier-attribute is the string that you will have to use to access the option with
+from your sourcecode.<br>
+The content of the index-attriute needs to be an integer number greater or equal to 0. It defines what argument should
+be parsed as defined in the <code>&lt;argument&gt;</code> tag.<br>
+Optionally, you can specify a <code>&lt;default&gt;</code>-tag. This will be the value assumed when the argument is not
+set.<br>
+Additionally, you can specify <b>one</b> <code>&lt;filter&gt;</code>-tag that will hint to the parser how to validate
+input given to that argument. See below for <a href="#xmlconfig.filter">filters</a>.<br>
+Example:</p>
+
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>argument</span> <span style='color:#274796; '>identifier</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>format</span><span style='color:#0000e6; '>"</span> <span style='color:#274796; '>index</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>1</span><span style='color:#0000e6; '>"</span> <span style='color:#a65700; '>/></span>
+</pre>
+<code>&lt;executable&gt; -v foo.txt <b>someFormat</b></code>
+
+<a name="xmlconfig.filter" />
+<h2>Filters</h2>
+<p>A <code>&lt;filter&gt;</code>-tag can be specified for options and arguments. It tells the parser how to parse the values for these
+options/arguments, e.g. integers or files. There are 7 predefined filters (see below). You can also specify another class that is to filter
+values; it has to implement the <a href="com/wisper/cli/filter/ValueFilter.html">com.wisper.cli.filter.ValueFilter</a> interface.</p>
+<p>Either the type-attribute <b>or</b> the class attribute can be set on a <code>&lt;filter&gt;</code>-tag. What values are valid for the
+type-attribute is descibred below:</p>
+
+<a name="xmlconfig.filter.numeric" />
+<h3>Number filters: integer, decimal, big-integer and big-decimal</h3>
+<p>These filters try to parse the value as integer or decimal. You can specify <code>&lt;min&gt;</code>-, <code>&lt;max&gt;</code>-
+tags and a <code>&lt;radix&gt;</code>-tag for the integer filters; their functionality should be self-explaining.</p>
+
+<table border="0" cellpadding="3" cellspacing="0">
+<tr>
+<th class="colFirst" scope="col">Filter</th>
+<th class="colOne" scope="col">Value of type-attribute</th>
+<th class="colOne" scope="col">radix supported?</th>
+<th class="colLast" scope="col">Return-Type</th>
+</tr>
+<tr class="altColor">
+<td class="colFirst">Integer-Filter</td>
+<td class="colOne">integer</td>
+<td class="colOne">yes</td>
+<td class="colLast">java.lang.Long</td>
+</tr>
+<tr>
+<td class="colFirst">Decimal-Filter</td>
+<td class="colOne">decimal</td>
+<td class="colOne">no, radix = 10</td>
+<td class="colLast">java.lang.Double</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst">BigInteger-Filter</td>
+<td class="colOne">big-integer</td>
+<td class="colOne">yes</td>
+<td class="colLast">java.math.BigInteger</td>
+</tr>
+<tr>
+<td class="colFirst">BigDecimal-Filter</td>
+<td class="colOne">big-decimal</td>
+<td class="colOne">no, radix = 10</td>
+<td class="colLast">java.math.BigDecimal</td>
+</tr>
+</table>
+<br>
+<a>Example:</a>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>filter</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>integer</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>min</span><span style='color:#a65700; '>></span>0<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>min</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>radix</span><span style='color:#a65700; '>></span>16<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>radix</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>filter</span><span style='color:#a65700; '>></span>
+</pre>
+
+<a name="xmlconfig.filter.file" />
+<h3>File Filter</h3>
+<p>The file filter returns an instance of java.io.File. Whether or not a file will be accepted can be configured. These criteria are applicable:
+<ul>
+<li>existance: the file has to exist, the file may not exist or existance is irrelevant</li>
+<li>permissions: the has to be<ul><li>readable</li><li>writable</li><li>executable</li></ul></li>
+<li>it has to be a file/directory</li>
+<li>a specific extension is required</li>
+</ul>
+
+<p>To define the required existance-state use an <code>&lt;exinstance&gt;</code> tag. Its content has to be one of
+<a href="com/wisper/cli/filter/FileFilter.EXISTANCE.html">com.wisper.cli.filter.FileFilter.EXISTANCE</a>s values:
+<ul>
+<li>MUST_EXIST</li>
+<li>MUST_NOT_EXIST</li>
+<li>IRRELEVANT</li>
+</ul>
+</p>
+
+<p>To define the required permissions use a <code>&lt;permissions&gt;</code> tag. Its content has to be one of
+<a href="com/wisper/cli/filter/FileFilter.PERMISSION.html">com.wisper.cli.filter.FileFilter.PERMISSION</a>s values:
+<ul>
+<li>READ</li>
+<li>WRITE</li>
+<li>EXECUTE</li>
+<li>READ_WRITE</li>
+<li>READ_EXECUTE</li>
+<li>READ_WRITE_EXECUTE</li>
+<li>IRRELEVANT</li>
+</ul>
+<b>Note: on most OS, files that do not exist are also not readable.</b>
+</p>
+
+<p>To define whether the file has to be a file or a directory use a <code>&lt;type&gt;</code> tag. Its
+content has to be one of <a href="com/wisper/cli/filter/FileFilter.TYPE.html">com.wisper.cli.filter.FileFilter.TYPE</a>s values:
+<ul>
+<li>FILE</li>
+<li>DIRECTORY</li>
+<li>IRRELEVANT</li>
+</ul>
+</p>
+
+<p>To define the required extension use an <code>&lt;extension&gt;</code> tag.</p>
+
+<p>As an example a filter will serve that requires a readable xml file.</p>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>filter</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>file</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>extension</span><span style='color:#a65700; '>></span>xml<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>extension</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>type</span><span style='color:#a65700; '>></span>FILE<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>type</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>existance</span><span style='color:#a65700; '>></span>MUST_EXIST<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>existance</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>permissions</span><span style='color:#a65700; '>></span>READ<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>permissions</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>filter</span><span style='color:#a65700; '>></span>
+</pre>
+
+<a name="xmlconfig.filter.set" />
+<h3>Set Filter</h3>
+<p>The set filter allows only values from a given set; case-sensitivity is by default off but can be turned on by a
+caseSensitive-attribute. Specify the different possibilities with <code>&lt;value&gt;</code> tags. The set filter will
+always return values from the configuration and never the actual values. For Example:</p>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>filter</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>set</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>value</span><span style='color:#a65700; '>></span>AES128<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>value</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>value</span><span style='color:#a65700; '>></span>AES192<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>value</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>value</span><span style='color:#a65700; '>></span>AES256<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>value</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>value</span><span style='color:#a65700; '>></span>SERPENT<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>value</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>value</span><span style='color:#a65700; '>></span>THREEFISH<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>value</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>filter</span><span style='color:#a65700; '>></span>
+</pre>
+<p>This filter is case insensitive. Given the input <code>"ThReEFiSH"</code> it will return the string <code>"THREEFISH"</code>.</p>
+
+<a name="xmlconfig.filter.regex" />
+<h3>Regex Filter</h3>
+<p>The regex filter allows only values matching the given regex. It will return the entire input if matched or a group,
+if specified by a returnGroup-attribute. Specify the regex using a <code>&lt;regex</code>-tag. For example:</p>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>filter</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>regex</span><span style='color:#0000e6; '>"</span> <span style='color:#274796; '>returnGroup</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>1</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>regex</span><span style='color:#a65700; '>></span>(\d+)KG<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>regex</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>filter</span><span style='color:#a65700; '>></span>
+</pre>
+<p>Given the input <code>"15KG"</code> this filter will return the string <code>"15"</code>.
+
+<a name="xmlconfig.filter.self" />
+<h3>Custom Filters</h3>
+<p>By specifying a class-attribute in the <code>&lt;filter&gt;</code>-tag you can use your own filter-implementation. For example:</p>
+<pre style="background:rgba(238,238,238,0.92);color:#000"><span style="color:#00f">package</span> <span style="font-weight:700">com.myproject</span>;
+
+<span style="color:#00f">import</span> <span style="font-weight:700">com.wisper.cli.filter.ValueFilter</span>;
+<span style="color:#00f">import</span> <span style="font-weight:700">com.wisper.cli.ParseException</span>;
+
+<span style="font-weight:700">public</span> <span style="font-weight:700">class</span> <span style="">MyFilter</span> <span style="font-weight:700">implements</span> ValueFilter
+{
+    <span style="color:#06f;font-style:italic">// make sure there is a default-constructor with no arguments!</span>
+    
+    <span style="font-weight:700">@Override</span>
+    <span style="font-weight:700">public</span> <span style="font-weight:700">Object</span> <span style="color:#ff8000">parse</span>(<span style="font-weight:700">String</span> <span style="font-style:italic">value</span>)
+        <span style="font-weight:700">throws</span> <span style="font-weight:700">ParseException</span>
+    {
+        <span style="color:#00f">try</span>
+        {
+            <span style="font-weight:700">int</span> val <span style="color:#00f">=</span> <span style="font-weight:700">Integer</span><span style="color:#00f">.</span>parseInt(val);
+            <span style="color:#00f">if</span> (val <span style="color:#00f">%</span> <span style="color:#06f">8</span> <span style="color:#00f">!=</span> <span style="color:#06f">0</span>)
+            {
+                <span style="color:#00f">throw</span> <span style="color:#00f">new</span> <span style="font-weight:700">ParseException</span>(<span style="color:#093">"needs to be an integer multiple of 8"</span>);
+            }
+            <span style="color:#00f">return</span> val;
+        }
+        <span style="color:#00f">catch</span> (<span style="font-weight:700">NumberFormatException</span> ex)
+        {
+            <span style="color:#00f">throw</span> <span style="color:#00f">new</span> <span style="font-weight:700">ParseException</span>(<span style="color:#093">"needs to be an integer."</span>);
+        }
+    }
+}
+</pre>
+
+<a name="xmlconfig.rules" />
+<h2>Rules</h2>
+<p>You can specify rules that will be checked after all input has been parsed and that can reject that
+input in case they are not met. For example to require that an option is specified or that two options
+cannot be set at the same time. Again, you can also use your own implementations.<br>
+To refuse all flags and options that are not known by the parser, you will have to add the rule programmatically:</p>
+<pre style="background:rgba(238,238,238,0.92);color:#000"><span style="font-weight:700">CLIParser</span> cliParser <span style="color:#00f">=</span> <span style="color:#06f;font-style:italic">/* load the parser however you like */</span>;
+cliParser<span style="color:#00f">.</span>add(<span style="font-weight:700">Rule</span><span style="color:#6782d3"><span style="color:#00f">.</span>ONLY_KNWON_OPTIONS</span>);
+cliParser<span style="color:#00f">.</span>add(<span style="font-weight:700">Rule</span><span style="color:#6782d3"><span style="color:#00f">.</span>ONLY_KNWON_FLAGS</span>);
+</pre>
+<p>Almost any other combination can be configured via XML. There are 6 types of rules. Either the type-attribute
+<b>or</b> the class attribute can be set on a <code>&lt;filter&gt;</code>-tag. What values are valid for the
+type-attribute is descibred below:</p>
+
+<a name="xmlconfig.rules.optionset" />
+<h3>Option rule: option-set</h3>
+<p>This rule requires that one or more options/flags are set. Specify these options/flags with the
+<code>&lt;option&gt;</code>-tag. The content of these <code>&lt;option&gt;</code>-tags has to be
+the identifier-attribute of the defining option/flag. Not that rules should be at the end of the
+XML-file since referring to a not yet parsed option/flag will result in an error.<br>
+Example:</p>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>rule</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>option-set</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>input<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>rule</span><span style='color:#a65700; '>></span>
+</pre>
+
+<a name="xmlconfig.rules.optionxor" />
+<h3>Option rule: option-xor</h3>
+<p>Basically, this rule could be realised with a xor-rule and nested option-set rules. However, the
+error message produced by an option-xor rule is much more user-friendly. This rule is intended if options
+and flags cannot be set at the same time. For example a verbose- and a quiet-flag at the same time do
+not make much sense:</p>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>flag</span> <span style='color:#274796; '>identifier</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>verbose</span><span style='color:#0000e6; '>"</span> <span style='color:#a65700; '>/></span>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>flag</span> <span style='color:#274796; '>identifier</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>quiet</span><span style='color:#0000e6; '>"</span> <span style='color:#a65700; '>/></span>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>rule</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>option-xor</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>verbose<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>quiet<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>rule</span><span style='color:#a65700; '>></span>
+</pre>
+<p><b>Note: you can also refer to arguments here.</b></p>
+
+<a name="xmlconfig.rules.logical" />
+<h3>Logical rule: and, or, xor and not</h3>
+<p>These 4 rules connect other rules with the respective logical operator. For example: If a logfile should be
+written (<code>log</code> flag), then a logfile has to be specified (<code>logfile</code> option). In a later
+release there will be an <code>&lt;error&gt;</code>-tag to allow for more user-friendly error-messages on rule-fail.</p>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>flag</span> <span style='color:#274796; '>identifier</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>log</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>l<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>flag</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>option</span> <span style='color:#274796; '>identifier</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>logfile</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>lf<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>alias</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>filter</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>file</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>permissions</span><span style='color:#a65700; '>></span>WRITE<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>permissions</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>filter</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>
+
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>rule</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>xor</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>rule</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>not</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>rule</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>option-set</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+            <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>log<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>rule</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>rule</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>option-set</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+            <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>logfile<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>rule</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>rule</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>rule</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>option-set</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>log<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>logfile<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>rule</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>rule</span><span style='color:#a65700; '>></span>
+</pre>
+
+<a name="xmlconfig.rules.self" />
+<h3>Own implementations</h3>
+<p>You can implement your own rules by specifying a class-attribute instead of a type-attribute and implement
+the correct interface. There are two ways of doing so:
+
+<a name="xmlconfig.rules.self.simple" />
+<h4>Simple Rule</h4>
+<p>Implement <a href="com/wisper/cli/rule/Rule.html">com.wisper.rule.Rule</a>. If the specified class implements
+this interface the <code>&lt;rule&gt;</code>-tag my not have any contents and the class has to have a constructor
+without arguments.</p>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>rule</span> <span style='color:#274796; '>class</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>com.myproject.SimpleRule</span><span style='color:#0000e6; '>"</span> <span style='color:#a65700; '>/></span>
+</pre>
+
+<a name="xmlconfig.rules.self.combined" />
+<h4>Combined Rule: combine multilple rules</h4>
+<p>Implement <a href="com/wisper/cli/rule/CombinedRule.html">com.wisper.rule.CombinedRule</a>. If the specified class
+implements this interface the <code>&lt;rule&gt;</code>-tag may have nested <code>&lt;rule&gt;</code>-tags and the class
+has to have a <code>(Rule[])</code> constructor. Needless to say, the defined rules from the XML document will be passed
+to your class when constructing an instance.</p>
+<pre style='color:#000000;background:#ffffff;'>
+<span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>rule</span> <span style='color:#274796; '>class</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>com.myproject.CombinedRule</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>rule</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>option-set</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>input<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>rule</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>rule</span> <span style='color:#274796; '>type</span><span style='color:#808030; '>=</span><span style='color:#0000e6; '>"</span><span style='color:#0000e6; '>option-set</span><span style='color:#0000e6; '>"</span><span style='color:#a65700; '>></span>
+        <span style='color:#a65700; '>&lt;</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>output<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>option</span><span style='color:#a65700; '>></span>
+    <span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>rule</span><span style='color:#a65700; '>></span>
+<span style='color:#a65700; '>&lt;/</span><span style='color:#5f5035; '>rule</span><span style='color:#a65700; '>></span>
+</pre>
+</body>

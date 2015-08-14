@@ -1,0 +1,113 @@
+<!--
+configures for this input format:
+executalbe [flags] [options] [arguments...]
+e.g.
+convert --verbose -outtype csv -outfile foo.csv bar.xls
+        [FLAGS  ] [OPTIONS      NAME    VALUE ] [ARGUMENTS]
+-->
+<xml version="1.0">
+<cli>
+    <!--
+	Flag-Tag:
+	Parameters: 
+	 - identifier: Any string, unique among all flags (REQUIRED)
+	
+	Allowed sub-tags:
+	 - alias
+	-->
+	<flag identifier="verbose">
+		<alias>v</alias>
+	</flag>
+	
+	<!--
+	Option-Tag:
+	Parameters:
+	 - identifier: Any string, unique among all options and arguments (REQUIRED)
+	 
+	Allowed sub-tags:
+	 - alias
+	 - filter
+	 - default
+	-->
+	<option identifier="outfile">
+		<alias>out</alias>
+		<alias>o</alias>
+		<!--
+		Filter-Tag:
+		Parameters:
+		 - type: any of these: big-decimal, big-integer, decimal, integer,
+			file, set or regex. If not specified, a class-parameter is required.
+	     - class: a fully qualified classname of a class implementing
+		    com.wisper.cli.filter.ValueFilter
+		 - caseSensitive: true or false, only if type="set", false by default
+	    
+		Allowed sub-tags depent on the type parameter. If a class parameter is specified,
+		no sub-tags are allowed.
+		For big-decimal, big-integer, decimal and integer:
+		 - max
+		 - min
+        For big-integer and integer:
+         - radix
+		For file:
+		 - extension
+		 - type (file, directory or irrelevant)
+		 - existance (possible values: see enum FileFilter.EXISTANCE)
+		 - permissions (possible values: see enum FileFilter.PERMISSION)
+		For set:
+		 - value (one for each possible value)
+		For regex:
+		 - regex: The regex to filter the input with
+		
+		-->
+		<filter type="file">
+			<type>file</type>
+			<existance>IRRELEVANT</existance>
+			<permissions>WRITE</permission>
+		</filter>
+	</option>
+	<option identifier="outtype">
+		<filter type="set">
+			<value>csv</value>
+			<value>xls</value>
+			<value>ods</value>
+		</filter>
+	</option>
+	
+	<!--
+	Argument-Tag:
+	Parameters:
+	 - identifier: Any string, unique among all arguments and options (including their aliases) (REQUIRED)
+	 - index: The index at which this argument is placed
+	 - required: true or false, false by default
+	
+	Allowed sub-tags:
+	 - filter (see above)
+	 - default
+	-->
+	<argument identifier="input" index="0" required="true">
+		<filter type="file">
+			<permissions>READ</permissions>
+		</filter>
+	</argument>
+	
+	<!--
+	Rule-Tag:
+	Parameters:
+	 - type: One of these: and, or, xor, not, option-set, option-xor
+	 - class: A fully qualified classname of a class implmenting com.wisper.cli.rule.Rule
+	Either type or class can be specified. When class is specified, no sub-tags are allowed
+	unless the given class implements com.wisper.cli.rule.CombinedRule
+	
+	The allowed sub-tags depend on the type parameter.
+	For and, or, xor, not and class:
+	 - rule
+	For option-set, option-xor
+	 - option (wihtout sub-tags, e.g. <option>input</option>
+	-->
+	<rule type="and">
+		<rule class="com.mypackage.cli.ParserRule" />
+		<rule type="option-set">
+			<option>input</option>
+		</rule>
+	</rule>
+</cli>
