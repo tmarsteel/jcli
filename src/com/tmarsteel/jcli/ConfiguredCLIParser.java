@@ -290,7 +290,7 @@ public class ConfiguredCLIParser extends CLIParser
                     classname = "com.wisper.cli.filter.FileFilter";
                     break;
                 default:
-                    classname = "com.wisper.cli.filter." + node.getTextContent();
+                    classname = node.getTextContent();
             }
         }
         else
@@ -323,7 +323,7 @@ public class ConfiguredCLIParser extends CLIParser
                 {
                     throw new ParseException("Filter-Class " + classname +
                         " could not be loaded: Needs to declare at least "+
-                        "one of these constructors: (void) or (org.w3c.dom.Node)");
+                        "one of these constructors: () or (org.w3c.dom.Node)");
                 }
             }
         }
