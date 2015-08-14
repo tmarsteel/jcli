@@ -13,6 +13,12 @@ Download jCLI-X.X.jar from the dist/ directory or add this dependency to your PO
 </dependency>
 ```
 
+## Documentation
+
+* [Walkthrough](docs/walkthrough.md): an introduction to XML configuration
+* [detailed Documentation](docs/detailed.md) a full explanation of all XML directives and of how to create custom   filters and rules
+* [Programmatical Configuration](docs/programmatical.md) documentation of programmatical configuration
+
 ## Quick Start
 
 jCLI can be configured either via XML documents or programmtaically (modifying the parsed XML configuration is
@@ -82,9 +88,3 @@ On DOS systems (`File.separatorChar != '/'`) both flags and options are expected
 slash (`/`); whether something is a flag or an option is derived from context.
 
 Arguments are interally handled the same way as options - but they have to be configured to be accessed.
-
-## Further reading
-
-* [Walkthrough](docs/walkthrough.md): an introduction to XML configuration
-* [detailed Documentation](docs/detailed.md) a full explanation of all XML directives and of how to create custom   filters and rules
-* [Programmatical Configuration](docs/programmatical.md) documentation of programmatical configuration
