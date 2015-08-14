@@ -366,8 +366,15 @@ public class CLIParser
             final String optValue = input.getOption(option);
             if (optValue == null)
             {
-                vinput.optionValues.put(option.getPrimaryIdentifier(),
-                    option.getDefaultValue());
+                if (option.isRequired())
+                {
+                    throw new ParseException("Required option " + option.getPrimaryIdentifier() + " not set.");
+                }
+                else
+                {
+                    vinput.optionValues.put(option.getPrimaryIdentifier(),
+                        option.getDefaultValue());
+                }
             }
             else
             {

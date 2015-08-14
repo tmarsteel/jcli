@@ -155,6 +155,15 @@ public class Option
         return defaultValue;
     }
     
+    /**
+     * Returns whether this option is required to be set.
+     * @return Whether this option is required to be set.
+     */
+    public boolean isRequired()
+    {
+        return defaultValue == null;
+    }
+    
     @Override
     public String toString()
     {
