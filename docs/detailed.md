@@ -93,12 +93,12 @@ Either the type-attribute or the class attribute can be set on a `<filter>`-tag.
 
 These filters try to parse the value as integer or decimal. You MAY specify `<min>`, `<max>` and a `<radix>` tag for the integer filters; their functionality should be self explanatory.
 
-Filter 	          |Value of type-attribute |radix supported? |Return-Type
-------------------+------------------------+-----------------+---------------
-Integer-Filter    |integer                 |yes              |java.lang.Long
-Decimal-Filter    |decimal                 |no, radix = 10   |java.lang.Double
-BigInteger-Filter |big-integer             |yes              |java.math.BigInteger
-BigDecimal-Filter |big-decimal             |no, radix = 10   |java.math.BigDecimal
+|Filter            |Value of type-attribute |radix supported? |Return-Type          |
+|------------------|------------------------|-----------------|---------------------|
+|Integer-Filter    |integer                 |yes              |java.lang.Long       |
+|Decimal-Filter    |decimal                 |no, radix = 10   |java.lang.Double     |
+|BigInteger-Filter |big-integer             |yes              |java.math.BigInteger |
+|BigDecimal-Filter |big-decimal             |no, radix = 10   |java.math.BigDecimal |
 
 Example:
 
