@@ -5,11 +5,11 @@ import com.tmarsteel.jcli.RuleNotMetException;
 
 /**
  * Combines multiple rules with a logical and connection: all rules have to be met.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class AndRule extends CombinedRule
 {   
-    public AndRule(Rule[] rules)
+    public AndRule(BaseRule[] rules)
     {
         super(rules);
     }
@@ -18,7 +18,7 @@ public class AndRule extends CombinedRule
     public void validate(CLIParser intent, CLIParser.ValidatedInput params)
         throws RuleNotMetException
     {
-        for (Rule r:rules)
+        for (BaseRule r:rules)
         {
             r.validate(intent, params);
         }
@@ -27,7 +27,7 @@ public class AndRule extends CombinedRule
     public String toString()
     {
         String str = "(All of these conditions have to be met:\n";
-        for (Rule r:rules)
+        for (BaseRule r:rules)
         {
             str += r + "\n";
         }

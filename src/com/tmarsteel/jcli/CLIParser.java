@@ -1,147 +1,24 @@
 package com.tmarsteel.jcli;
 
-import com.tmarsteel.jcli.rule.Rule;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import com.tmarsteel.jcli.rule.BaseRule;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Properties;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 /**
  * Parses an argument-array in the given environment
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class CLIParser
 {
     protected final Environment env;
     protected final ArrayList<Option> options = new ArrayList<>();
     protected final ArrayList<Option> flags = new ArrayList<>();
-    protected final ArrayList<Rule> rules = new ArrayList<>();
+    protected final ArrayList<BaseRule> rules = new ArrayList<>();
     protected final ArrayList<Argument> arguments = new ArrayList<>();
     protected final boolean flagsOptionsDistinguishable;
-    
-    /**
-     * Parses the configuration-xml from <code>configInputStream</code> and returns
-     * an configured parser.
-     * @param configInputStream A stream to read the configuration from.
-     * @return A parser configured according to the configuration read from
-     * <code>configInputStream</code>.
-     * @throws SAXException If an XML Syntax-Error occurs.
-     * @throws IOException If an I/O-Error occurs.
-     * @throws ParseException If a semantic error occurs while parsing the xml.
-     */
-    public static CLIParser getInstance(InputStream configInputStream)
-        throws SAXException, IOException, ParseException
-    {
-        return getInstance(configInputStream, null);
-    }
-    
-    /**
-     * Parses the configuration-xml from <code>configInputStream</code> and returns
-     * an configured parser.
-     * @param configInputStream A stream to read the configuration from.
-     * @return A parser configured according to the configuration read from
-     * <code>configInputStream</code>.
-     * @throws SAXException If an XML Syntax-Error occurs.
-     * @throws IOException If an I/O-Error occurs.
-     * @throws ParseException If a semantic error occurs while parsing the xml.
-     */
-    public static CLIParser getInstance(InputStream configInputStream,
-        Environment env)
-        throws SAXException, IOException, ParseException
-    {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setValidating(false);
-        dbf.setIgnoringComments(true);
-        dbf.setIgnoringElementContentWhitespace(true);
-        
-        try
-        {
-            DocumentBuilder builder = dbf.newDocumentBuilder();
-            return getInstance(builder.parse(configInputStream), env);
-        }
-        catch (ParserConfigurationException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-    }
-    
-    /**
-     * Parses the configuration-xml from <code>configFile</code> and returns
-     * an configured parser.
-     * @param configFile A file to read the configuration from.
-     * @return A parser configured according to the configuration read from
-     * <code>configFile</code>.
-     * @throws SAXException If an XML Syntax-Error occurs.
-     * @throws IOException If an I/O-Error occurs.
-     * @throws ParseException If a semantic error occurs while parsing the xml.
-     */
-    public static CLIParser getInstance(File configFile)
-        throws IOException, SAXException, ParseException
-    {
-        return getInstance(configFile, null);
-    }
-    
-    /**
-     * Parses the configuration-xml from <code>configFile</code> and returns
-     * an configured parser.
-     * @param configFile A file to read the configuration from.
-     * @return A parser configured according to the configuration read from
-     * <code>configFile</code>.
-     * @throws SAXException If an XML Syntax-Error occurs.
-     * @throws IOException If an I/O-Error occurs.
-     * @throws ParseException If a semantic error occurs while parsing the xml.
-     */
-    public static CLIParser getInstance(File configFile, Environment env)
-        throws IOException, SAXException, ParseException
-    {
-        try (FileInputStream fIn = new FileInputStream(configFile))
-        {
-            return getInstance(fIn, env);
-        }
-    }
-    
-    /**
-     * Parses the configuration-xml in <code>xmlDocument</code> and returns
-     * an configured parser.
-     * @return A parser configured according to the configuration read from
-     * <code>xmlDocument</code>.
-     * @throws ParseException If a semantic error occurs while parsing the xml.
-     */
-    public static CLIParser getInstance(Document xmlDocument)
-        throws ParseException
-    {
-        return new ConfiguredCLIParser(xmlDocument);
-    }
-    
-    /**
-     * Parses the configuration-xml in <code>xmlDocument</code> and returns
-     * an configured parser.
-     * @return A parser configured according to the configuration read from
-     * <code>xmlDocument</code>.
-     * @throws ParseException If a semantic error occurs while parsing the xml.
-     */
-    public static CLIParser getInstance(Document xmlDocument, Environment env)
-        throws ParseException
-    {
-        if (env != null)
-        {
-            return new ConfiguredCLIParser(xmlDocument, env);
-        }
-        else
-        {
-            return getInstance(xmlDocument);
-        }
-    }
     
     /**
      * Constructs a new parser for the systems default environment.
@@ -275,7 +152,7 @@ public class CLIParser
      * Adds the given rule to the set of rules to check after input has been parsed.
      * @param r The rule to add.
      */
-    public synchronized void add(Rule r)
+    public synchronized void add(BaseRule r)
     {
         if (!this.rules.contains(r))
         {
@@ -424,7 +301,7 @@ public class CLIParser
         }
         
         // check the rules
-        Iterator<Rule> rIt = rules.iterator();
+        Iterator<BaseRule> rIt = rules.iterator();
         while (rIt.hasNext())
         {
             rIt.next().validate(this, vinput);
@@ -466,7 +343,7 @@ public class CLIParser
     
     /**
      * Represents a set of validated and organized inputs.
-     * @author Tobias Marstaller
+     * @author tmarsteel
      */
     public class ValidatedInput
     {

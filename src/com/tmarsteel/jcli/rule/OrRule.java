@@ -5,11 +5,11 @@ import com.tmarsteel.jcli.RuleNotMetException;
 
 /**
  * Combines multiple rules with a logical or connection: at least one has to be met.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class OrRule extends CombinedRule
 {   
-    public OrRule(Rule[] rules)
+    public OrRule(BaseRule[] rules)
     {
         super(rules);
     }
@@ -19,7 +19,7 @@ public class OrRule extends CombinedRule
         throws RuleNotMetException
     {
         RuleNotMetException lastEx = null;
-        for (Rule r:rules)
+        for (BaseRule r:rules)
         {
             try
             {
@@ -39,7 +39,7 @@ public class OrRule extends CombinedRule
     public String toString()
     {
         String str = "(At least one of these conditions have to be met:\n";
-        for (Rule r:rules)
+        for (BaseRule r:rules)
         {
             str += r + "\n";
         }

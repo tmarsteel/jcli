@@ -7,7 +7,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * Accepts values that to a file or directory meeting the specified requirements.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class FileFilter implements java.io.FileFilter, ValueFilter
 {

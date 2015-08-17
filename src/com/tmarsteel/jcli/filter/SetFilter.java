@@ -11,7 +11,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * Accepts only values from a given set of possible values.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class SetFilter implements ValueFilter
 {

@@ -9,7 +9,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * Accepts only Strings matching the given regex.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class RegexFilter implements ValueFilter
 {

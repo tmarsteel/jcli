@@ -6,9 +6,9 @@ import com.tmarsteel.jcli.RuleNotMetException;
 
 /**
  * Requires that the given option(s) is/are set.
- * @author Tobse
+ * @author tmarsteel
  */
-public class OptionSetRule extends Rule
+public class OptionSetRule extends BaseRule
 {
     protected Option[] options = null;
     

@@ -5,14 +5,14 @@ import com.tmarsteel.jcli.RuleNotMetException;
 
 /**
  * Only accepts input when exactly one of the specified rules are met.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class XorRule extends CombinedRule
 {
     /**
      * @param rules The rules to connect.
      */
-    public XorRule(Rule[] rules)
+    public XorRule(BaseRule[] rules)
     {
         super(rules);
     }
@@ -22,7 +22,7 @@ public class XorRule extends CombinedRule
         throws RuleNotMetException
     {
         boolean isSet = false;
-        for (Rule r : rules)
+        for (BaseRule r : rules)
         {
             boolean curSet = false;
             try
@@ -55,7 +55,7 @@ public class XorRule extends CombinedRule
     public String toString()
     {
         String str = "(Exactly one of these conditions has to be met:\n";
-        for (Rule r:rules)
+        for (BaseRule r:rules)
         {
             str += r + "\n";
         }

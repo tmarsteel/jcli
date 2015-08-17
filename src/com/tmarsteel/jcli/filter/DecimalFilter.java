@@ -1,12 +1,12 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ConfiguredCLIParser;
+import com.tmarsteel.jcli.parser.ConfiguredCLIParser;
 import com.tmarsteel.jcli.ParseException;
 import org.w3c.dom.Node;
 
 /**
  * Filters input as an integer number.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class DecimalFilter implements ValueFilter
 {

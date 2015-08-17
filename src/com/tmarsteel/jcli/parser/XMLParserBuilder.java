@@ -1,50 +1,226 @@
-package com.tmarsteel.jcli;
+package com.tmarsteel.jcli.parser;
 
-import com.tmarsteel.jcli.filter.BigIntegerFilter;
-import com.tmarsteel.jcli.filter.DecimalFilter;
-import com.tmarsteel.jcli.filter.FileFilter;
-import com.tmarsteel.jcli.filter.IntegerFilter;
-import com.tmarsteel.jcli.filter.RegexFilter;
-import com.tmarsteel.jcli.filter.SetFilter;
+import com.tmarsteel.jcli.Argument;
+import com.tmarsteel.jcli.CLIParser;
+import com.tmarsteel.jcli.Environment;
+import com.tmarsteel.jcli.Flag;
+import com.tmarsteel.jcli.Option;
+import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.filter.ValueFilter;
 import com.tmarsteel.jcli.rule.AndRule;
 import com.tmarsteel.jcli.rule.CombinedRule;
 import com.tmarsteel.jcli.rule.NotRule;
 import com.tmarsteel.jcli.rule.OptionSetRule;
 import com.tmarsteel.jcli.rule.OrRule;
-import com.tmarsteel.jcli.rule.Rule;
+import com.tmarsteel.jcli.rule.BaseRule;
 import com.tmarsteel.jcli.rule.XorOptionsRule;
 import com.tmarsteel.jcli.rule.XorRule;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
- * An arg parser that is constructed from a config-file
- * @author Tobias Marstaller
+ * Builder/Factory for Parsers, based on XML configuration.
+ * @author tmarsteel
  */
-public class ConfiguredCLIParser extends CLIParser
-{
-    public ConfiguredCLIParser(Document xmlDocument)
-        throws ParseException
+public class XMLParserBuilder
+{    
+    private Document baseDocument;
+    private Environment environment;
+    
+    private final Map<String,Class> filterTypeClass = new HashMap<>();
+    private final Map<String,Class> ruleTypeClass   = new HashMap<>();
+    
+    /**
+     * Parses the input from <code>configInputStream</code> as XML and creates a
+     * new ParserBuilder based on the resulting {@link Document}. This method does
+     * not perform any operations on the actual XML content.
+     * @param configInputStream A stream to read xml from.
+     * @return A ParserBuilder prepared with the {@link Document} resulting form
+     * <code>configInputStream</code>
+     * @throws SAXException If an XML Syntax-Error occurs.
+     * @throws IOException If an I/O-Error occurs.
+     */
+    public static XMLParserBuilder newParserBuilder(InputStream configInputStream)
+        throws SAXException, IOException
     {
-        this(xmlDocument, File.separatorChar == '/'? Environment.UNIX : Environment.DOS);
+        return newParserBuilder(configInputStream, null);
     }
-    public ConfiguredCLIParser(Document xmlDocument, Environment env)
-        throws ParseException
+    
+    /**
+     * Parses the input from <code>configInputStream</code> as XML and creates a
+     * new ParserBuilder based on the resulting {@link Document}. This method does
+     * not perform any operations on the actual XML content.
+     * @param configInputStream A stream to read xml from.
+     * @param env The environment configuration to pass on to the created parsers.
+     * @return A ParserBuilder prepared with the {@link Document} resulting form
+     * <code>configInputStream</code>
+     * @throws SAXException If an XML Syntax-Error occurs.
+     * @throws IOException If an I/O-Error occurs.
+     */
+    public static XMLParserBuilder newParserBuilder(InputStream configInputStream,
+        Environment env)
+        throws SAXException, IOException
     {
-        super(env);
-
-        Node rootNode = xmlDocument.getFirstChild();
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setValidating(false);
+        dbf.setIgnoringComments(true);
+        dbf.setIgnoringElementContentWhitespace(true);
+        
+        try
+        {
+            DocumentBuilder builder = dbf.newDocumentBuilder();
+            return new XMLParserBuilder(builder.parse(configInputStream), env);
+        }
+        catch (ParserConfigurationException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+    }
+    
+    /**
+     * Parses the file <code>configFile</code> as XML and creates a  new 
+     * ParserBuilder based on the resulting {@link Document}. This method does
+     * not perform any operations on the actual XML content.
+     * @param configFile The file to read xml from.
+     * @return A ParserBuilder prepared with the {@link Document} resulting form
+     * <code>configFile</code>
+     * @throws SAXException If an XML Syntax-Error occurs.
+     * @throws IOException If an I/O-Error occurs.
+     */
+    public static XMLParserBuilder newParserBuilder(File configFile)
+        throws IOException, SAXException
+    {
+        return newParserBuilder(configFile, null);
+    }
+    
+    /**
+     * Parses the file <code>configFile</code> as XML and creates a  new 
+     * ParserBuilder based on the resulting {@link Document}. This method does
+     * not perform any operations on the actual XML content.
+     * @param configFile The file to read xml from.
+     * @param env The environment configuration to pass on to the created parsers.
+     * @return A ParserBuilder prepared with the {@link Document} resulting form
+     * <code>configFile</code>
+     * @throws SAXException If an XML Syntax-Error occurs.
+     * @throws IOException If an I/O-Error occurs.
+     */
+    public static XMLParserBuilder newParserBuilder(File configFile, Environment env)
+        throws IOException, SAXException
+    {
+        try (FileInputStream fIn = new FileInputStream(configFile))
+        {
+            return newParserBuilder(fIn, env);
+        }
+    }
+    
+    /**
+     * Creates a new ParserBuilder based on the given {@link Document}. This
+     * method does not perform any operations on the actual XML content.
+     * @param xmlDocument The XML document to treat as configuration directives.
+     * @return A ParserBuilder prepared with the given {@link Document}
+     */
+    public static XMLParserBuilder newParserBuilder(Document xmlDocument)
+    {
+        return new XMLParserBuilder(xmlDocument, File.separatorChar == '/'? Environment.UNIX : Environment.DOS);
+    }
+    
+    /**
+     * Creates a new ParserBuilder based on the given {@link Document}.
+     * @param xmlDocument The XML document to treat as configuration directives.
+     * @param env The environment configuration to pass on to the created parsers.
+     */
+    public XMLParserBuilder(Document xmlDocument, Environment env)
+    {
+        this.baseDocument = xmlDocument;
+        this.environment = env;
+    }
+    
+    /**
+     * Registers the given filter type with the given class. If this builder
+     * finds a &lt;filter&gt; of type <code>type</code> it will attempt to
+     * instantiate a new instance of <code>cls</code>.
+     * @param type The type string to register.
+     * @param cls The class to register; must implement {@link ValueFilter}.
+     * @throws IllegalArgumentException If <code>cls</code> does not implement {@link ValueFilter}
+     * @throws NullPointerException If <code>type</code> is null.
+     */
+    public void setFilterType(String type, Class cls)
+    {
+        if (type == null)
+        {
+            throw new NullPointerException("type must not be null");
+        }
+        
+        if (!cls.isAssignableFrom(ValueFilter.class))
+        {
+            throw new IllegalArgumentException("The given class must implement com.tmarsteel.jcli.filter.ValueFilter");
+        }
+        
+        this.filterTypeClass.put(type, cls);
+    }
+    
+    /**
+     * Registers the given rule type with the given class. If this builder
+     * finds a &lt;rule&gt; of type <code>type</code> it will attempt to
+     * instantiate a new instance of <code>cls</code>.
+     * @param type The type string to register.
+     * @param cls The class to register; must implement {@link Rule} and have
+     * one of these constructor signatures: <code>()</code>, <code>(org.w3c.dom.Node)</code>
+     * @throws IllegalArgumentException If <code>cls</code> does not implement {@link ValueFilter}
+     * @throws NullPointerException If <code>type</code> is null.
+     */
+    public void setRuleType(String type, Class cls)
+    {
+        if (type == null)
+        {
+            throw new NullPointerException("type must not be null");
+        }
+        
+        if (!cls.isAssignableFrom(ValueFilter.class))
+        {
+            throw new IllegalArgumentException("The given class must implement com.tmarsteel.jcli.filter.Rule");
+        }
+        
+        this.ruleTypeClass.put(type, cls);
+    }
+    
+    /**
+     * {@inheritDoc}
+     * @return {@inheritDoc}
+     */
+    public CLIParser newInstance()
+    {
+        CLIParser p = new CLIParser();
+        this.configure(p);
+        return p;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void configure(CLIParser p)
+        throws MisconfigurationException
+    {
+        Node rootNode = baseDocument.getFirstChild();
+        
         if (!rootNode.getNodeName().equals("cli"))
         {
-            throw new ParseException("Root node must be named cli.");
+            throw new MisconfigurationException("Root node must be named cli.");
         }
 
         NodeList topNodes = rootNode.getChildNodes();
@@ -54,37 +230,36 @@ public class ConfiguredCLIParser extends CLIParser
             switch (node.getNodeName())
             {
                 case "flag":
-                    // parse the flag
-                    add(parseFlag(node));
+                    p.add(parseFlag(node));
                     break;
                 case "option":
-                    // parse the option
-                    add(parseOption(node));
+                    p.add(parseOption(node));
                     break;
                 case "argument":
-                    add(parseArgument(node));
+                    p.add(parseArgument(node));
                     break;
                 case "rule":
-                    add(parseRule(node));
+                    p.add(parseRule(node));
                     break;
             }
         }
     }
-
+    
     private Flag parseFlag(Node flagNode)
-        throws ParseException
+        throws MisconfigurationException
     {
         // resolve the primary identifier
         NamedNodeMap attrs = flagNode.getAttributes();
         Node node = attrs.getNamedItem("identifier");
+        
         if (node == null)
         {
-            throw new ParseException("Missing identifier attribute for flag");
+            throw new MisconfigurationException("Missing identifier attribute for flag");
         }
         final String primaryIdentifier = node.getTextContent();
         if (primaryIdentifier.isEmpty())
         {
-            throw new ParseException("Empty identifier attribute for flag");
+            throw new MisconfigurationException("Empty identifier attribute for flag");
         }
 
         // resolve aliases
@@ -96,19 +271,19 @@ public class ConfiguredCLIParser extends CLIParser
     }
 
     private Option parseOption(Node optNode)
-        throws ParseException
+        throws MisconfigurationException
     {
         // resolve the primary identifier
         NamedNodeMap attrs = optNode.getAttributes();
         Node node = attrs.getNamedItem("identifier");
         if (node == null)
         {
-            throw new ParseException("Missing identifier attribute for option");
+            throw new MisconfigurationException("Missing identifier attribute for option");
         }
         final String primaryIdentifier = node.getTextContent();
         if (primaryIdentifier.isEmpty())
         {
-            throw new ParseException("Empty identifier attribute for option");
+            throw new MisconfigurationException("Empty identifier attribute for option");
         }
 
         ArrayList<String> names = new ArrayList<>();
@@ -127,7 +302,7 @@ public class ConfiguredCLIParser extends CLIParser
                     final String alias = node.getTextContent();
                     if (alias == null || alias.isEmpty())
                     {
-                        throw new ParseException("Empty alias for option " + primaryIdentifier);
+                        throw new MisconfigurationException("Empty alias for option " + primaryIdentifier);
                     }   names.add(alias);
                     break;
                 case "filter":
@@ -137,7 +312,7 @@ public class ConfiguredCLIParser extends CLIParser
                     defValue = node.getTextContent();
                     break;
                 default:
-                    throw new ParseException("Unknown tag " + node.getNodeName());
+                    throw new MisconfigurationException("Unknown tag " + node.getNodeName());
             }
         }
 
@@ -145,25 +320,25 @@ public class ConfiguredCLIParser extends CLIParser
     }
 
     private Argument parseArgument(Node argNode)
-        throws ParseException
+        throws MisconfigurationException
     {
         // resolve the primary identifier
         NamedNodeMap attrs = argNode.getAttributes();
         Node node = attrs.getNamedItem("identifier");
         if (node == null)
         {
-            throw new ParseException("Missing identifier attribute for argument");
+            throw new MisconfigurationException("Missing identifier attribute for argument");
         }
         final String primaryIdentifier = node.getTextContent();
         if (primaryIdentifier.isEmpty())
         {
-            throw new ParseException("Empty identifier attribute for argument");
+            throw new MisconfigurationException("Empty identifier attribute for argument");
         }
 
         node = attrs.getNamedItem("index");
         if (node == null)
         {
-            throw new ParseException("Missing index attribute for argument");
+            throw new MisconfigurationException("Missing index attribute for argument");
         }
         final int index;
         try
@@ -172,12 +347,12 @@ public class ConfiguredCLIParser extends CLIParser
         }
         catch (NumberFormatException ex)
         {
-            throw new ParseException("Invalid index for argument (" +
+            throw new MisconfigurationException("Invalid index for argument (" +
                 node.getTextContent() + ")", ex);
         }
         if (primaryIdentifier.isEmpty())
         {
-            throw new ParseException("Empty identifier attribute for argument");
+            throw new MisconfigurationException("Empty identifier attribute for argument");
         }
 
         final boolean required;
@@ -188,17 +363,16 @@ public class ConfiguredCLIParser extends CLIParser
         }
         else
         {
-            if (node.getTextContent().equals("true"))
+            switch (node.getTextContent())
             {
-                required = true;
-            }
-            else if (node.getTextContent().equals("false"))
-            {
-                required = false;
-            }
-            else
-            {
-                throw new ParseException("Illegal value for attribute required");
+                case "true":
+                    required = true;
+                    break;
+                case "false":
+                    required = false;
+                    break;
+                default:
+                    throw new MisconfigurationException("Illegal value for attribute required");
             }
         }
 
@@ -220,7 +394,7 @@ public class ConfiguredCLIParser extends CLIParser
                         defValue = node.getTextContent();
                         break;
                     default:
-                        throw new ParseException("Unknown tag " + node.getNodeName()
+                        throw new MisconfigurationException("Unknown tag " + node.getNodeName()
                             + " in argument (index " + index + ")");
                 }
             }
@@ -231,7 +405,7 @@ public class ConfiguredCLIParser extends CLIParser
     }
 
     private static void getAliases(Node topNode, ArrayList<String> target)
-        throws ParseException
+        throws MisconfigurationException
     {
         NodeList children = topNode.getChildNodes();
         for (int i = 0;i < children.getLength();i++)
@@ -242,7 +416,7 @@ public class ConfiguredCLIParser extends CLIParser
                 final String alias = node.getTextContent();
                 if (alias == null || alias.isEmpty())
                 {
-                    throw new ParseException("Empty alias");
+                    throw new MisconfigurationException("Empty alias");
                 }
                 target.add(alias);
             }
@@ -250,7 +424,7 @@ public class ConfiguredCLIParser extends CLIParser
     }
 
     private static ValueFilter parseFilter(Node filterNode)
-        throws ParseException
+        throws MisconfigurationException
     {
         // look for type and class attributes
         NamedNodeMap attrs = filterNode.getAttributes();
@@ -263,7 +437,7 @@ public class ConfiguredCLIParser extends CLIParser
             node = attrs.getNamedItem("type");
             if (node == null)
             {
-                throw new ParseException("No type and no class attribute specified for filter");
+                throw new MisconfigurationException("No type and no class attribute specified for filter");
             }
 
             switch(node.getTextContent())
@@ -304,7 +478,7 @@ public class ConfiguredCLIParser extends CLIParser
             filterClass = ConfiguredCLIParser.class.getClassLoader().loadClass(classname);
             if (!ValueFilter.class.isAssignableFrom(filterClass))
             {
-                throw new ParseException("Class " + classname + " does not implement com.wisper.cli.filter.ValueFilter");
+                throw new MisconfigurationException("Class " + classname + " does not implement com.wisper.cli.filter.ValueFilter");
             }
 
             try
@@ -321,7 +495,7 @@ public class ConfiguredCLIParser extends CLIParser
                 }
                 catch (NoSuchMethodException ex2)
                 {
-                    throw new ParseException("Filter-Class " + classname +
+                    throw new MisconfigurationException("Filter-Class " + classname +
                         " could not be loaded: Needs to declare at least "+
                         "one of these constructors: () or (org.w3c.dom.Node)");
                 }
@@ -329,7 +503,7 @@ public class ConfiguredCLIParser extends CLIParser
         }
         catch (ClassNotFoundException ex)
         {
-            throw new ParseException("Filter-Class " + classname
+            throw new MisconfigurationException("Filter-Class " + classname
                 + " could not be loaded", ex);
         }
         catch (InstantiationException | IllegalAccessException
@@ -338,15 +512,15 @@ public class ConfiguredCLIParser extends CLIParser
             throw new RuntimeException("Falied to instantiate custom filter", ex);
         }
     }
-    private Rule parseRule(Node ruleNode)
-        throws ParseException
+    private BaseRule parseRule(Node ruleNode)
+        throws MisconfigurationException
     {
         NamedNodeMap attrs = ruleNode.getAttributes();
         Node node = attrs.getNamedItem("type");
         final String ruleType = node == null? "class" : node.getTextContent();
         Class ruleClass = null;
         String customClassName = null;
-        Rule finalRule = null;
+        BaseRule finalRule = null;
         String errorMessage = null;
         // no type is specified
         if (node == null)
@@ -355,7 +529,7 @@ public class ConfiguredCLIParser extends CLIParser
             node = attrs.getNamedItem("class");
             if (node == null)
             {
-                throw new ParseException("No type and no class atrribute specified for rule");
+                throw new MisconfigurationException("No type and no class atrribute specified for rule");
             }
             else
             {
@@ -368,7 +542,7 @@ public class ConfiguredCLIParser extends CLIParser
                 }
                 catch (ClassNotFoundException ex)
                 {
-                    throw new ParseException("Rule-class " + customClassName
+                    throw new MisconfigurationException("Rule-class " + customClassName
                         + " could not be loaded", ex);
                 }
             }
@@ -388,7 +562,7 @@ public class ConfiguredCLIParser extends CLIParser
                     Option o = getOptionOrFlag(node.getTextContent());
                     if (o == null)
                     {
-                        throw new ParseException("Unknown option "
+                        throw new MisconfigurationException("Unknown option "
                             + node.getTextContent() + "; place rules at the end"
                             + " of the document.");
                     }
@@ -399,7 +573,7 @@ public class ConfiguredCLIParser extends CLIParser
                     Option f = getFlag(node.getTextContent());
                     if (f == null)
                     {
-                        throw new ParseException("Unknown flag "
+                        throw new MisconfigurationException("Unknown flag "
                             + node.getTextContent() + "; place rules at the end"
                             + " of the document.");
                     }
@@ -411,7 +585,7 @@ public class ConfiguredCLIParser extends CLIParser
                 }
                 else if (!node.getNodeName().equals("#text"))
                 {
-                    throw new ParseException(
+                    throw new MisconfigurationException(
                         "Rules only allow rule, option and flag tags");
                 }
             }
@@ -429,7 +603,7 @@ public class ConfiguredCLIParser extends CLIParser
 
         // look for rule subtags
         NodeList children = ruleNode.getChildNodes();
-        ArrayList<Rule> subRules = new ArrayList<>();
+        ArrayList<BaseRule> subRules = new ArrayList<>();
         for (int i = 0;i < children.getLength();i++)
         {
             node = children.item(i);
@@ -443,7 +617,7 @@ public class ConfiguredCLIParser extends CLIParser
             }
             else if (!node.getNodeName().equals("#text"))
             {
-                throw new ParseException("Rule-tags only allow rule subtags");
+                throw new MisconfigurationException("Rule-tags only allow rule subtags");
             }
         }
 
@@ -465,7 +639,7 @@ public class ConfiguredCLIParser extends CLIParser
         }
         else if (!ruleType.equals("class"))
         {
-            throw new ParseException("Unknown rule type " + ruleType);
+            throw new MisconfigurationException("Unknown rule type " + ruleType);
         }
 
         try
@@ -474,29 +648,28 @@ public class ConfiguredCLIParser extends CLIParser
             { // we need at least one rule
                 if (subRules.size() < 1)
                 {
-                    throw new ParseException("Combined rules need to have at least one child-rule");
+                    throw new MisconfigurationException("Combined rules need to have at least one child-rule");
                 }
-                Constructor constr = ruleClass.getConstructor(Rule[].class);
-                finalRule = (Rule) constr.newInstance(
-                    (Object) subRules.toArray(new Rule[subRules.size()])
+                Constructor constr = ruleClass.getConstructor(BaseRule[].class);
+                finalRule = (BaseRule) constr.newInstance((Object) subRules.toArray(new BaseRule[subRules.size()])
                 );
             }
             else
             { // no sub-rules allowed
                 if (!subRules.isEmpty())
                 {
-                    throw new ParseException("No rules allowed within a non-combined rule");
+                    throw new MisconfigurationException("No rules allowed within a non-combined rule");
                 }
                 Constructor defConstr;
                 try
                 {
                     defConstr = ruleClass.getConstructor(Node.class);
-                    finalRule = (Rule) defConstr.newInstance(ruleNode);
+                    finalRule = (BaseRule) defConstr.newInstance(ruleNode);
                 }
                 catch (NoSuchMethodException ex)
                 {
                     defConstr = ruleClass.getConstructor();
-                    return (Rule) defConstr.newInstance();
+                    return (BaseRule) defConstr.newInstance();
                 }
             }
         }
@@ -510,7 +683,7 @@ public class ConfiguredCLIParser extends CLIParser
             }
             else
             {
-                throw new ParseException("Rule-class " + customClassName
+                throw new MisconfigurationException("Rule-class " + customClassName
                     + " could not be instantiated", ex);
             }
         }
@@ -522,144 +695,6 @@ public class ConfiguredCLIParser extends CLIParser
         {
             finalRule.setErrorMessage(errorMessage);
             return finalRule;
-        }
-    }
-
-    private Option getOption(String name)
-    {
-        for (Option o : options)
-        {
-            if (o.isIdentifiedBy(name))
-            {
-                return o;
-            }
-        }
-        return null;
-    }
-
-    private Option getFlag(String name)
-    {
-        for (Option o : flags)
-        {
-            if (o.isIdentifiedBy(name))
-            {
-                return o;
-            }
-        }
-        return null;
-    }
-
-    private Option getOptionOrFlag(String name)
-    {
-        Option o = getOption(name);
-        Option f = getFlag(name);
-        if (o != null && f != null)
-        {
-            return null;
-        }
-        else
-        {
-            return o == null? f : o;
-        }
-    }
-
-    public static class XMLUtils
-    {
-        /**
-         * Returns a string array with 2 entris:<br>
-         * 0: min value<br>
-         * 1: max value<br>.
-         * As none of both is required both may be null.
-         * @param topNode The node out of which to filter min and max tags.
-         */
-        public static String[] getMinMax(Node topNode)
-        {
-            NodeList children = topNode.getChildNodes();
-            String min = null;
-            String max = null;
-            for (int i = 0;i < children.getLength();i++)
-            {
-                Node node = children.item(i);
-                switch (node.getNodeName())
-                {
-                    case "min":
-                        min = node.getTextContent();
-                        break;
-                    case "max":
-                        max = node.getTextContent();
-                        break;
-                }
-            }
-            return new String[]{min, max};
-        }
-
-        /**
-         *
-         * Returns a string array with 3 entris:<br>
-         * 0: min value<br>
-         * 1: max value<br>
-         * 2: radix<br>.
-         * As none of these are requred every entry may be null..
-         * @param topNode The node out of which to filter min, max and radix tags
-         * @return
-         */
-        public static String[] getMinMaxRadix(Node topNode)
-        {
-            NodeList children = topNode.getChildNodes();
-            String min = null;
-            String max = null;
-            String radix = null;
-            for (int i = 0;i < children.getLength();i++)
-            {
-                Node node = children.item(i);
-                switch (node.getNodeName())
-                {
-                    case "min":
-                        min = node.getTextContent();
-                        break;
-                    case "max":
-                        max = node.getTextContent();
-                        break;
-                    case "radix":
-                        radix = node.getTextContent();
-                        break;
-                }
-            }
-            return new String[]{min, max, radix};
-        }
-
-        public static Double asDouble(String numeric)
-            throws ParseException
-        {
-            if (numeric == null)
-            {
-                return null;
-            }
-            try
-            {
-                return Double.parseDouble(numeric);
-            }
-            catch (NumberFormatException ex)
-            {
-                throw new ParseException("Invalid decimal number: " + numeric, ex);
-            }
-        }
-
-        public static Long asLong(String numeric)
-            throws ParseException
-        {
-            if (numeric == null)
-            {
-                return null;
-            }
-            try
-            {
-                return Long.parseLong(numeric);
-            }
-            catch (NumberFormatException ex)
-            {
-                throw new ParseException("Invalid integer number: " + numeric, ex);
-            }
         }
     }
 }

@@ -4,7 +4,7 @@ import com.tmarsteel.jcli.filter.ValueFilter;
 
 /**
  * Represents any parameter passed to the program besides flags and options.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class Argument
 {

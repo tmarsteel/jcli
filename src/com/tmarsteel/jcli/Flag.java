@@ -2,7 +2,7 @@ package com.tmarsteel.jcli;
 
 /**
  * Represents a flag; for easier use with {@link Option}.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class Flag extends Option
 {

@@ -2,13 +2,13 @@ package com.tmarsteel.jcli.rule;
 
 /**
  * Combines multiple rules with a logical connection.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
-public abstract class CombinedRule extends Rule
+public abstract class CombinedRule extends BaseRule
 {
-    protected Rule[] rules;
+    protected BaseRule[] rules;
     
-    public CombinedRule(Rule[] rules)
+    public CombinedRule(BaseRule[] rules)
     {
         this.rules = rules;
     }

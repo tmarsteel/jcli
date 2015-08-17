@@ -7,9 +7,9 @@ import com.tmarsteel.jcli.RuleNotMetException;
 /**
  * Accepts input if exactly one of the given options/flags is set/specified. Use
  * this class instead of {@link XorRule} for a more user-friendly error message.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
-public class XorOptionsRule extends Rule
+public class XorOptionsRule extends BaseRule
 {
     protected Option[] options;
     

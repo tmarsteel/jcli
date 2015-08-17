@@ -5,11 +5,11 @@ import com.tmarsteel.jcli.RuleNotMetException;
 
 /**
  *
- * @author Tobse
+ * @author tmarsteel
  */
 public class NotRule extends CombinedRule
 {
-    public NotRule(Rule[] negates)
+    public NotRule(BaseRule[] negates)
     {
         super(negates);
     }
@@ -18,7 +18,7 @@ public class NotRule extends CombinedRule
     public void validate(CLIParser intent, CLIParser.ValidatedInput params)
         throws RuleNotMetException
     {
-        for (Rule rule : rules)
+        for (BaseRule rule : rules)
         {
             boolean met = false;
             try

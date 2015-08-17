@@ -4,7 +4,7 @@ import java.io.File;
 
 /**
  * Represents a CLI environment.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class Environment
 {

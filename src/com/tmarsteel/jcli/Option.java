@@ -7,7 +7,7 @@ import java.util.Iterator;
 
 /**
  * Represents a Option or Flag, e.g. <code>--log-level 2</code> or <code>-verbose</code>
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class Option
 {

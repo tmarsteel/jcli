@@ -7,7 +7,7 @@ import java.util.Map.Entry;
 
 /**
  * Represents a set of input parameters.
- * @author Tobias Marstaller
+ * @author tmarsteel
  */
 public class Input
 {
