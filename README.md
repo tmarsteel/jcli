@@ -50,7 +50,7 @@ class SampleProgram
 {
     public static void main(final String[] args)
     {
-        CLIParser cliParser = /* load the parser however you like */;
+        CLIParser cliParser = new CLIParser();
         CLIParser.ValidatedInput input;
         try
         {
