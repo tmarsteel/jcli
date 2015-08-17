@@ -51,7 +51,7 @@ class SampleProgram
 {
     public static void main(final String[] args)
     {
-        CLIParser cliParser = /* load the parser however you like */;
+        CLIParser cliParser = new CLIParser();
         CLIParser.ValidatedInput input;
         try
         {
@@ -83,3 +83,10 @@ On DOS systems (`File.separatorChar != '/'`) both flags and options are expected
 slash (`/`); whether something is a flag or an option is derived from context.
 
 Arguments are interally handled the same way as options - but they have to be configured to be accessed.
+
+## Planned for Version 1.0
+
+* Configuration of additional Rules and Filters via the XML *type* attribute
+* Better Exception-Handling and Error reporting
+
+**If you have any suggestions/recommendations, please feel free to create issues and pull requests!**

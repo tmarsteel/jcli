@@ -14,7 +14,7 @@ The environment affects three values:
 * the prefix for flags
     * DOS: `/`, UNIX: `--`
 
-To simply enforce UNIX or DOS syntax, use `com.tmarsteel.jcli.Environment.UNIX` or `com.tmarsteel.jcli.DOS` constants:
+To simply enforce UNIX or DOS syntax, use `com.tmarsteel.jcli.Environment.UNIX` or `com.tmarsteel.jcli.Environment.DOS` constants:
 
 ```java
 CLIParser parser = CLIParser.getInstance(
@@ -137,7 +137,7 @@ validation for that, too.
     <argument index="0" identifier="input" required="true">
         <filter type="file">
             <permissions>READ</permissions>
-            <existance>MUST_EXIST</permissions>
+            <existance>MUST_EXIST</existance>
             <type>FILE</type>
             <extension>csv</extension>
         </filter>
@@ -183,11 +183,13 @@ class CSV2XLSStarter {
         {
             System.err.println("Failed to load internal configuration");
             System.err.println(ex);
+            System.exit(1);
         }
         catch (ParseException ex)
         {
             System.err.println("Please check your input:");
             System.err.println(ex.getMessage());
+            System.exit(1);
         }
         
         File inputFile = (File) input.getOption("input");
@@ -197,7 +199,7 @@ class CSV2XLSStarter {
         
         if (outputFile == null)
         {
-            outputFile = new File(/* exchange .csv for .xls in inputFile here*);
+            outputFile = new File(/* exchange .csv for .xls in inputFile here */);
         }
         
         // do the conversion!
