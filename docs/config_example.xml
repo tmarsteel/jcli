@@ -15,6 +15,7 @@ convert --verbose -outtype csv -outfile foo.csv bar.xls
 	Allowed sub-tags:
 	 - alias
 	-->
+	
 	<flag identifier="verbose">
 		<alias>v</alias>
 	</flag>
