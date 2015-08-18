@@ -3,6 +3,11 @@ package com.tmarsteel.jcli.rule;
 import com.tmarsteel.jcli.CLIParser;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.RuleNotMetException;
+import com.tmarsteel.jcli.parser.MisconfigurationException;
+import java.util.ArrayList;
+import java.util.List;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Requires that the given option(s) is/are set.
@@ -10,41 +15,69 @@ import com.tmarsteel.jcli.RuleNotMetException;
  */
 public class OptionSetRule extends BaseRule
 {
-    protected Option[] options = null;
+    protected String[] optionNames = null;
+    
+    public OptionSetRule(Node ruleNode)
+    {
+        NodeList children = ruleNode.getChildNodes();
+        List<String> optionNames = new ArrayList<>();
+        for (int i = 0;i < children.getLength();i++)
+        {
+            Node node = children.item(i);
+            if (node.getNodeName().equals("option"))
+            {
+                optionNames.add(node.getTextContent());
+            }
+            else if (node.getNodeName().equals("error"))
+            {
+                this.errorMessage = node.getTextContent();
+            }
+            else if (!node.getNodeName().equals("#text"))
+            {
+                throw new MisconfigurationException("The option-set rule allows only <option> subtags");
+            }
+        }
+        
+        this.optionNames = new String[optionNames.size()];
+        optionNames.toArray(this.optionNames);
+    }
     
     /**
-     * @param options The options to require.
+     * @param optionNames The options to require.
      */
-    public OptionSetRule(Option... options)
+    public OptionSetRule(String... optionNames)
     {
-        if (options.length == 0)
+        if (optionNames.length == 0)
         {
             throw new IllegalArgumentException("Need to specify at least one option.");
         }
-        this.options = options;
+        this.optionNames = optionNames;
     }
 
     @Override
-    public void validate(CLIParser intent, CLIParser.ValidatedInput params)
+    public void validate(CLIParser forParser, CLIParser.ValidatedInput params)
         throws RuleNotMetException
     {
-        for (Option o:options)
+        for (String name : optionNames)
         {
-            if (o.isFlag())
+            // determine whether the requested thing is a flag or an option
+            if (forParser.knowsFlag(name))
             {
-                if (!params.isFlagSet(o))
+                if (!params.isFlagSet(name))
                 {
-                    throw new RuleNotMetException("Required flag "
-                        + o.getPrimaryIdentifier() + " not set.");
+                    throw new RuleNotMetException("Required falg " + name + " not set!");
                 }
             }
-            else
+            else if (forParser.knowsOption(name))
             {
-                if (params.getOption(o) == null)
+                if (params.getOption(name) == null)
                 {
-                    throw new RuleNotMetException("Required option "
-                        + o.getPrimaryIdentifier() + " not set.");
+                    throw new RuleNotMetException("Required option " + name + " not set!");
                 }
+            }
+            else if (!params.isFlagSet(name) && params.getOption(name) == null)
+            {
+                throw new RuleNotMetException("Required flag or option " + name + " not set!");
             }
         }
     }
@@ -52,18 +85,18 @@ public class OptionSetRule extends BaseRule
     @Override
     public String toString()
     {
-        if (options.length == 1)
+        if (optionNames.length == 1)
         {
-            return options[0].toString() + " is set";
+            return optionNames[0] + " is set";
         }
         else
         {
             String str = "(These options are specified:\n";
-            for (Option o:options)
+            for (String name : optionNames)
             {
-                str += (o.isFlag()? "Flag " : "Option ")
-                    + o.getPrimaryIdentifier() + "\n";
+                str += name + "\n";
             }
+            
             return str + ")";
         }
     }

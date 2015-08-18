@@ -3,6 +3,7 @@ package com.tmarsteel.jcli;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 
 /**
@@ -11,9 +12,9 @@ import java.util.Map.Entry;
  */
 public class Input
 {
-    protected ArrayList<String> flags = new ArrayList<>();
+    protected List<String> flags = new ArrayList<>();
     protected HashMap<String,String> options = new HashMap<>();
-    protected ArrayList<String> arguments = new ArrayList<>();
+    protected List<String> arguments = new ArrayList<>();
     protected CLIParser intent;
     
     public Input()
@@ -108,7 +109,7 @@ public class Input
     public void add(Environment env, String paramStr)
         throws ParseException
     {  
-        ArrayList<String> params = new ArrayList<String>();
+        List<String> params = new ArrayList<String>();
         
         boolean inString = false;
         boolean escape = false;

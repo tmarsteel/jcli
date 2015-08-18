@@ -4,6 +4,7 @@ import com.tmarsteel.jcli.filter.ValueFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Represents a Option or Flag, e.g. <code>--log-level 2</code> or <code>-verbose</code>
@@ -11,7 +12,7 @@ import java.util.Iterator;
  */
 public class Option
 {
-    protected final ArrayList<String> names = new ArrayList<>();
+    protected final List<String> names = new ArrayList<>();
     protected final boolean isFlag;
     protected ValueFilter valueFilter;
     protected Object defaultValue;

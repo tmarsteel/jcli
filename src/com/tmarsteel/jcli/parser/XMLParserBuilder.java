@@ -13,6 +13,7 @@ import com.tmarsteel.jcli.rule.NotRule;
 import com.tmarsteel.jcli.rule.OptionSetRule;
 import com.tmarsteel.jcli.rule.OrRule;
 import com.tmarsteel.jcli.rule.BaseRule;
+import com.tmarsteel.jcli.rule.Rule;
 import com.tmarsteel.jcli.rule.XorOptionsRule;
 import com.tmarsteel.jcli.rule.XorRule;
 import java.io.File;
@@ -23,7 +24,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import javax.naming.OperationNotSupportedException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -148,6 +151,22 @@ public class XMLParserBuilder
     {
         this.baseDocument = xmlDocument;
         this.environment = env;
+        
+        // default filter and rule types
+        filterTypeClass.put("big-decimal", com.tmarsteel.jcli.filter.BigDecimalFilter.class);
+        filterTypeClass.put("big-integer", com.tmarsteel.jcli.filter.BigIntegerFilter.class);
+        filterTypeClass.put("decimal",     com.tmarsteel.jcli.filter.DecimalFilter.class);
+        filterTypeClass.put("integer",     com.tmarsteel.jcli.filter.IntegerFilter.class);
+        filterTypeClass.put("regex",       com.tmarsteel.jcli.filter.RegexFilter.class);
+        filterTypeClass.put("set",         com.tmarsteel.jcli.filter.SetFilter.class);
+        filterTypeClass.put("file",        com.tmarsteel.jcli.filter.FileFilter.class);
+        
+        ruleTypeClass.put("and",        com.tmarsteel.jcli.rule.AndRule.class);
+        ruleTypeClass.put("or",         com.tmarsteel.jcli.rule.OrRule.class);
+        ruleTypeClass.put("xor",        com.tmarsteel.jcli.rule.XorRule.class);
+        ruleTypeClass.put("not",        com.tmarsteel.jcli.rule.NotRule.class);
+        ruleTypeClass.put("option-xor", com.tmarsteel.jcli.rule.XorOptionsRule.class);
+        ruleTypeClass.put("option-set", com.tmarsteel.jcli.rule.OptionSetRule.class);
     }
     
     /**
@@ -178,6 +197,10 @@ public class XMLParserBuilder
      * Registers the given rule type with the given class. If this builder
      * finds a &lt;rule&gt; of type <code>type</code> it will attempt to
      * instantiate a new instance of <code>cls</code>.
+     * <code>cls</code> must implement {@link Rule} and have one of these
+     * constructor signatures: <code>(org.w3c.dom.Node)</code>,
+     * <code>(com.tmarsteel.jcli.Rule[])</code>, <code>()</code>.
+     * The signatures will be attempted in this order.
      * @param type The type string to register.
      * @param cls The class to register; must implement {@link Rule} and have
      * one of these constructor signatures: <code>()</code>, <code>(org.w3c.dom.Node)</code>
@@ -191,7 +214,7 @@ public class XMLParserBuilder
             throw new NullPointerException("type must not be null");
         }
         
-        if (!cls.isAssignableFrom(ValueFilter.class))
+        if (!cls.isAssignableFrom(Rule.class))
         {
             throw new IllegalArgumentException("The given class must implement com.tmarsteel.jcli.filter.Rule");
         }
@@ -286,7 +309,7 @@ public class XMLParserBuilder
             throw new MisconfigurationException("Empty identifier attribute for option");
         }
 
-        ArrayList<String> names = new ArrayList<>();
+        List<String> names = new ArrayList<>();
         names.add(primaryIdentifier);
         ValueFilter filter = null;
         String defValue = null;
@@ -404,7 +427,7 @@ public class XMLParserBuilder
         return arg;
     }
 
-    private static void getAliases(Node topNode, ArrayList<String> target)
+    private static void getAliases(Node topNode, List<String> target)
         throws MisconfigurationException
     {
         NodeList children = topNode.getChildNodes();
@@ -423,64 +446,56 @@ public class XMLParserBuilder
         }
     }
 
-    private static ValueFilter parseFilter(Node filterNode)
+    private ValueFilter parseFilter(Node filterNode)
         throws MisconfigurationException
     {
         // look for type and class attributes
         NamedNodeMap attrs = filterNode.getAttributes();
         Node node = attrs.getNamedItem("class");
 
-        String classname;
+        Class filterClass;
 
         if (node == null)
         {
+            // class attribute not set
             node = attrs.getNamedItem("type");
             if (node == null)
             {
                 throw new MisconfigurationException("No type and no class attribute specified for filter");
             }
 
-            switch(node.getTextContent())
+            filterClass = this.filterTypeClass.get(node.getTextContent());
+            
+            if (filterClass == null)
             {
-                case "big-decimal":
-                    classname = "com.wisper.cli.filter.BigDecimalFilter";
-                    break;
-                case "big-integer":
-                    classname = "com.wisper.cli.filter.BigIntegerFilter";
-                    break;
-                case "decimal":
-                    classname = "com.wisper.cli.filter.DecimalFilter";
-                    break;
-                case "integer":
-                    classname = "com.wisper.cli.filter.IntegerFilter";
-                    break;
-                case "regex":
-                    classname = "com.wisper.cli.filter.RegexFilter";
-                    break;
-                case "set":
-                    classname = "com.wisper.cli.filter.SetFilter";
-                    break;
-                case "file":
-                    classname = "com.wisper.cli.filter.FileFilter";
-                    break;
-                default:
-                    classname = node.getTextContent();
+                throw new MisconfigurationException("Unknown filter type " + node.getTextContent());
             }
+            
+            // classes in this.filterTypeClass are checked to implement Filter
+            // by setFilterType
         }
         else
         {
-            classname = node.getTextContent();
+            String classname = node.getTextContent();
+            
+            try
+            {
+                filterClass = ConfiguredCLIParser.class.getClassLoader().loadClass(classname);
+                
+                if (!ValueFilter.class.isAssignableFrom(filterClass))
+                {
+                    throw new MisconfigurationException("Class " + classname + " does not implement com.wisper.cli.filter.ValueFilter");
+                }
+            }
+            catch (ClassNotFoundException ex)
+            {
+                throw new MisconfigurationException("Filter-Class " + classname
+                    + " could not be loaded", ex);
+            }
         }
 
-        Class filterClass;
         try
         {
-            filterClass = ConfiguredCLIParser.class.getClassLoader().loadClass(classname);
-            if (!ValueFilter.class.isAssignableFrom(filterClass))
-            {
-                throw new MisconfigurationException("Class " + classname + " does not implement com.wisper.cli.filter.ValueFilter");
-            }
-
             try
             {
                 Constructor constr = filterClass.getConstructor(Node.class);
@@ -495,206 +510,154 @@ public class XMLParserBuilder
                 }
                 catch (NoSuchMethodException ex2)
                 {
-                    throw new MisconfigurationException("Filter-Class " + classname +
-                        " could not be loaded: Needs to declare at least "+
+                    throw new MisconfigurationException("Filter-Class " + filterClass.getCanonicalName() +
+                        " could not be instantiated: Needs to declare at least "+
                         "one of these constructors: () or (org.w3c.dom.Node)");
                 }
             }
         }
-        catch (ClassNotFoundException ex)
-        {
-            throw new MisconfigurationException("Filter-Class " + classname
-                + " could not be loaded", ex);
-        }
         catch (InstantiationException | IllegalAccessException
             | IllegalArgumentException | InvocationTargetException ex)
         {
-            throw new RuntimeException("Falied to instantiate custom filter", ex);
+            throw new RuntimeException("Falied to instantiate filter of class "
+                + filterClass.getCanonicalName(), ex);
         }
     }
-    private BaseRule parseRule(Node ruleNode)
+    
+    private Rule parseRule(Node ruleNode)
         throws MisconfigurationException
     {
+        NodeList ruleNodeChildren = ruleNode.getChildNodes();
         NamedNodeMap attrs = ruleNode.getAttributes();
-        Node node = attrs.getNamedItem("type");
-        final String ruleType = node == null? "class" : node.getTextContent();
-        Class ruleClass = null;
-        String customClassName = null;
-        BaseRule finalRule = null;
-        String errorMessage = null;
-        // no type is specified
+        Node node = attrs.getNamedItem("class");
+        
+        Class ruleClass;
+        
         if (node == null)
         {
-            // look for class attribute
-            node = attrs.getNamedItem("class");
+            node = attrs.getNamedItem("type");
+            
             if (node == null)
             {
-                throw new MisconfigurationException("No type and no class atrribute specified for rule");
+                throw new MisconfigurationException("Invalid rule-tag: missing class or type attribute");
             }
-            else
+            
+            ruleClass = ruleTypeClass.get(node.getTextContent());
+            
+            if (ruleClass == null)
             {
-                customClassName = node.getTextContent();
-
-                try
-                {
-                    ruleClass = ConfiguredCLIParser.class.getClassLoader()
-                        .loadClass(customClassName);
-                }
-                catch (ClassNotFoundException ex)
-                {
-                    throw new MisconfigurationException("Rule-class " + customClassName
-                        + " could not be loaded", ex);
-                }
+                throw new MisconfigurationException("Rule-Type " + node.getTextContent() +
+                    " unknown/not defined");
             }
-        }
-        // in case type is option-xor or option-set, we have to instantiate the
-        // corresponding class and look for option sub-tags; for the rest we need
-        // to look for rule subtags.
-        else if (ruleType.equals("option-xor") || ruleType.equals("option-set"))
-        {
-            NodeList children = ruleNode.getChildNodes();
-            ArrayList<Option> options = new ArrayList<>();
-            for (int i = 0;i < children.getLength();i++)
-            {
-                node = children.item(i);
-                if (node.getNodeName().equals("option"))
-                {
-                    Option o = getOptionOrFlag(node.getTextContent());
-                    if (o == null)
-                    {
-                        throw new MisconfigurationException("Unknown option "
-                            + node.getTextContent() + "; place rules at the end"
-                            + " of the document.");
-                    }
-                    options.add(o);
-                }
-                else if (node.getNodeName().equals("flag"))
-                {
-                    Option f = getFlag(node.getTextContent());
-                    if (f == null)
-                    {
-                        throw new MisconfigurationException("Unknown flag "
-                            + node.getTextContent() + "; place rules at the end"
-                            + " of the document.");
-                    }
-                    options.add(f);
-                }
-                else if (node.getNodeName().equals("error"))
-                {
-                    errorMessage = node.getTextContent();
-                }
-                else if (!node.getNodeName().equals("#text"))
-                {
-                    throw new MisconfigurationException(
-                        "Rules only allow rule, option and flag tags");
-                }
-            }
-            if (ruleType.equals("option-xor"))
-            {
-                finalRule = new XorOptionsRule(options.toArray(new Option[options.size()]));
-            }
-            else
-            {
-                finalRule = new OptionSetRule(options.toArray(new Option[options.size()]));
-            }
-            finalRule.setErrorMessage(errorMessage);
-            return finalRule;
-        }
-
-        // look for rule subtags
-        NodeList children = ruleNode.getChildNodes();
-        ArrayList<BaseRule> subRules = new ArrayList<>();
-        for (int i = 0;i < children.getLength();i++)
-        {
-            node = children.item(i);
-            if (node.getNodeName().equals("rule"))
-            {
-                subRules.add(parseRule(node));
-            }
-            else if (node.getNodeName().equals("error"))
-            {
-                errorMessage = node.getTextContent();
-            }
-            else if (!node.getNodeName().equals("#text"))
-            {
-                throw new MisconfigurationException("Rule-tags only allow rule subtags");
-            }
-        }
-
-        if (ruleType.equals("and"))
-        {
-            ruleClass = AndRule.class;
-        }
-        else if (ruleType.equals("or"))
-        {
-            ruleClass = OrRule.class;
-        }
-        else if (ruleType.equals("xor"))
-        {
-            ruleClass = XorRule.class;
-        }
-        else if (ruleType.equals("not"))
-        {
-            ruleClass = NotRule.class;
-        }
-        else if (!ruleType.equals("class"))
-        {
-            throw new MisconfigurationException("Unknown rule type " + ruleType);
-        }
-
-        try
-        {
-            if (CombinedRule.class.isAssignableFrom(ruleClass))
-            { // we need at least one rule
-                if (subRules.size() < 1)
-                {
-                    throw new MisconfigurationException("Combined rules need to have at least one child-rule");
-                }
-                Constructor constr = ruleClass.getConstructor(BaseRule[].class);
-                finalRule = (BaseRule) constr.newInstance((Object) subRules.toArray(new BaseRule[subRules.size()])
-                );
-            }
-            else
-            { // no sub-rules allowed
-                if (!subRules.isEmpty())
-                {
-                    throw new MisconfigurationException("No rules allowed within a non-combined rule");
-                }
-                Constructor defConstr;
-                try
-                {
-                    defConstr = ruleClass.getConstructor(Node.class);
-                    finalRule = (BaseRule) defConstr.newInstance(ruleNode);
-                }
-                catch (NoSuchMethodException ex)
-                {
-                    defConstr = ruleClass.getConstructor();
-                    return (BaseRule) defConstr.newInstance();
-                }
-            }
-        }
-        catch (NoSuchMethodException | InstantiationException
-            | IllegalAccessException | IllegalArgumentException
-            | InvocationTargetException ex)
-        {
-            if (customClassName == null)
-            {
-                throw new RuntimeException(ex);
-            }
-            else
-            {
-                throw new MisconfigurationException("Rule-class " + customClassName
-                    + " could not be instantiated", ex);
-            }
-        }
-        if (finalRule == null)
-        {
-            throw new RuntimeException("Internal error #01");
+            
+            // classes in ruleTypeClass are checked to implement Rule by
+            // setRuleType
         }
         else
         {
-            finalRule.setErrorMessage(errorMessage);
-            return finalRule;
+            try
+            {
+                ruleClass = getClass().getClassLoader().loadClass(node.getTextContent());
+                
+                if (!ruleClass.isAssignableFrom(Rule.class))
+                {
+                    throw new MisconfigurationException("Class " + ruleClass.getCanonicalName() +
+                        " does not implement com.tmarsteel.jcli.rule.Rule");
+                }
+            }
+            catch (ClassNotFoundException ex)
+            {
+                throw new MisconfigurationException("Rule-Class " +
+                    node.getTextContent() + " could not be loaded", ex);
+            }
         }
+        
+        Rule ruleInstance = null;
+        String errorMessage = null;
+        
+        // choose the appropriate constructor and create an instance
+        try
+        {
+            try
+            {
+                ruleInstance = (Rule) ruleClass.getConstructor(Node.class).newInstance(ruleNode);
+            }
+            catch (NoSuchMethodException ex)
+            {
+                try
+                {
+                    Constructor constr = ruleClass.getConstructor(Rule[].class);
+
+                    // look for rule subtags
+                    
+                    List<Rule> subRules = new ArrayList<>();
+                    for (int i = 0;i < ruleNodeChildren.getLength();i++)
+                    {
+                        node = ruleNodeChildren.item(i);
+                        if (node.getNodeName().equals("rule"))
+                        {
+                            subRules.add(parseRule(node));
+                        }
+                        else if (node.getNodeName().equals("error"))
+                        {
+                            errorMessage = node.getTextContent();
+                        }
+                        else if (!node.getNodeName().equals("#text"))
+                        {
+                            throw new MisconfigurationException("Error while parsing rule of class "
+                                + ruleClass.getCanonicalName() + ": constructor (Rule[]) allows only for <rule> and <error> subtags.");
+                        }
+                    }
+
+                    ruleInstance = (Rule) constr.newInstance((Object) subRules.toArray(new Rule[subRules.size()]));
+                }
+                catch (NoSuchMethodException ex2)
+                {
+                    try
+                    {
+                        ruleInstance = (Rule) ruleClass.getConstructor().newInstance();
+                    }
+                    catch (NoSuchMethodException ex3)
+                    {
+                        throw new RuntimeException("Rule-Class " + ruleClass.getCanonicalName()
+                            + " does not implement one of these constructors: (org.w3c.dom.Node), (com.tmarsteel.jcli.rule.Rule[]), ()");
+                    }
+                }
+            }
+        }
+        catch (InstantiationException | IllegalAccessException | InvocationTargetException ex)
+        {
+            throw new RuntimeException("Failed to instantiate rule of class " 
+                + ruleClass.getCanonicalName(), ex);
+        }
+        
+        // look for a error tag
+        if (errorMessage != null)
+        {
+            for (int i = 0;i < ruleNodeChildren.getLength();i++)
+            {
+                node = ruleNodeChildren.item(i);
+                if (node.getNodeName().equals("error"))
+                {
+                    errorMessage = node.getTextContent();
+                }
+            }
+        }
+        
+        // try to set the error message
+        if (errorMessage != null)
+        {
+            try
+            {
+                ruleInstance.setErrorMessage(errorMessage);
+            }
+            catch (OperationNotSupportedException ex)
+            {
+                throw new MisconfigurationException("Rule of class "
+                    + ruleClass.getCanonicalName() + " does not support custom error messages", ex);
+            }
+        }
+        
+        return ruleInstance;
     }
 }

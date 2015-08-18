@@ -4,6 +4,7 @@ import com.tmarsteel.jcli.CLIParser;
 import com.tmarsteel.jcli.RuleNotMetException;
 import java.util.Iterator;
 import java.util.Map;
+import javax.naming.OperationNotSupportedException;
 
 /**
  * @author tmarsteel
@@ -16,8 +17,20 @@ public interface Rule
      * @param params Input parameters.
      * @throws RuleNotMetException If this rule is not fulfilled by <code>params</code>.
      */
-    public void validate(CLIParser intent, CLIParser.ValidatedInput params)
+    public abstract void validate(CLIParser intent, CLIParser.ValidatedInput params)
         throws RuleNotMetException;
+    
+    /**
+     * Sets the error message that is to be included in the {@link RuleNotMetException}
+     * thrown by {@link #validate(com.tmarsteel.jcli.CLIParser, com.tmarsteel.jcli.CLIParser.ValidatedInput)}.
+     * @param errorMessage The error message to throw on failure.
+     * @throws OperationNotSupportedException If this rule does not support error messages.
+     */
+    default public void setErrorMessage(String errorMessage)
+        throws OperationNotSupportedException
+    {
+        throw new OperationNotSupportedException("This rule does not support custom error-messages");
+    }
     
     public static final Rule ONLY_KNOWN_FLAGS = (CLIParser intent, CLIParser.ValidatedInput params) -> {
         final Iterator<Map.Entry<String,Boolean>> flagIt = params.getFlagIterator();

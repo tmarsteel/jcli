@@ -26,6 +26,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.List;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -112,7 +113,7 @@ public class ConfiguredCLIParser extends CLIParser
             throw new ParseException("Empty identifier attribute for option");
         }
 
-        ArrayList<String> names = new ArrayList<>();
+        List<String> names = new ArrayList<>();
         names.add(primaryIdentifier);
         ValueFilter filter = null;
         String defValue = null;
@@ -231,7 +232,7 @@ public class ConfiguredCLIParser extends CLIParser
         return arg;
     }
 
-    private static void getAliases(Node topNode, ArrayList<String> target)
+    private static void getAliases(Node topNode, List<String> target)
         throws ParseException
     {
         NodeList children = topNode.getChildNodes();
@@ -380,7 +381,7 @@ public class ConfiguredCLIParser extends CLIParser
         else if (ruleType.equals("option-xor") || ruleType.equals("option-set"))
         {
             NodeList children = ruleNode.getChildNodes();
-            ArrayList<Option> options = new ArrayList<>();
+            List<Option> options = new ArrayList<>();
             for (int i = 0;i < children.getLength();i++)
             {
                 node = children.item(i);
@@ -430,7 +431,7 @@ public class ConfiguredCLIParser extends CLIParser
 
         // look for rule subtags
         NodeList children = ruleNode.getChildNodes();
-        ArrayList<BaseRule> subRules = new ArrayList<>();
+        List<BaseRule> subRules = new ArrayList<>();
         for (int i = 0;i < children.getLength();i++)
         {
             node = children.item(i);

@@ -1,9 +1,11 @@
 package com.tmarsteel.jcli;
 
 import com.tmarsteel.jcli.rule.BaseRule;
+import com.tmarsteel.jcli.rule.Rule;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
 
@@ -14,10 +16,10 @@ import java.util.Properties;
 public class CLIParser
 {
     protected final Environment env;
-    protected final ArrayList<Option> options = new ArrayList<>();
-    protected final ArrayList<Option> flags = new ArrayList<>();
-    protected final ArrayList<BaseRule> rules = new ArrayList<>();
-    protected final ArrayList<Argument> arguments = new ArrayList<>();
+    protected final List<Option> options = new ArrayList<>();
+    protected final List<Option> flags = new ArrayList<>();
+    protected final List<Rule> rules = new ArrayList<>();
+    protected final List<Argument> arguments = new ArrayList<>();
     protected final boolean flagsOptionsDistinguishable;
     
     /**
@@ -152,7 +154,7 @@ public class CLIParser
      * Adds the given rule to the set of rules to check after input has been parsed.
      * @param r The rule to add.
      */
-    public synchronized void add(BaseRule r)
+    public synchronized void add(Rule r)
     {
         if (!this.rules.contains(r))
         {
@@ -249,8 +251,7 @@ public class CLIParser
                 }
                 else
                 {
-                    vinput.optionValues.put(option.getPrimaryIdentifier(),
-                        option.getDefaultValue());
+                    vinput.optionValues.put(option.getPrimaryIdentifier(), option.getDefaultValue());
                 }
             }
             else
@@ -301,7 +302,7 @@ public class CLIParser
         }
         
         // check the rules
-        Iterator<BaseRule> rIt = rules.iterator();
+        Iterator<Rule> rIt = rules.iterator();
         while (rIt.hasNext())
         {
             rIt.next().validate(this, vinput);

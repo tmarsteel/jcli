@@ -8,6 +8,7 @@ public abstract class BaseRule implements Rule
 {
     protected String errorMessage;
     
+    @Override
     public void setErrorMessage(String msg)
     {
         this.errorMessage = msg;
