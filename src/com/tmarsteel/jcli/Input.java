@@ -92,6 +92,12 @@ public class Input
         return null;
     }
     
+    /**
+     * Returns the string value of the argument at index <code>index</code>
+     * or null if no value is given at that index.
+     * @param index The index of the argument to return
+     * @return The argument value or null if the argument was not specified.
+     */
     public String getArgument(int index)
     {
         return arguments.size() > index? arguments.get(index) : null;
