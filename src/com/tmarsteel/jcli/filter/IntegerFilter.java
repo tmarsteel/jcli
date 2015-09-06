@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.parser.ConfiguredCLIParser;
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.parser.XMLParserBuilder;
 import java.math.BigInteger;
 import org.w3c.dom.Node;
 
@@ -9,7 +9,7 @@ import org.w3c.dom.Node;
  * Filters input as an integer number.
  * @author tmarsteel
  */
-public class IntegerFilter implements ValueFilter
+public class IntegerFilter implements Filter
 {
     protected long minValue = Long.MIN_VALUE;
     protected long maxValue = Long.MAX_VALUE;
@@ -20,7 +20,7 @@ public class IntegerFilter implements ValueFilter
      public IntegerFilter(Node filterNode)
         throws ParseException
     {
-        String[] minMaxRadix = ConfiguredCLIParser.XMLUtils.getMinMaxRadix(filterNode);
+        String[] minMaxRadix = XMLParserBuilder.XMLUtils.getMinMaxRadix(filterNode);
 
         try
         {
@@ -38,8 +38,8 @@ public class IntegerFilter implements ValueFilter
             throw new ParseException("Invalid radix: " + minMaxRadix[2]);
         }
 
-       this.minValue = minMaxRadix[0] == null? Long.MIN_VALUE : ConfiguredCLIParser.XMLUtils.asLong(minMaxRadix[0]);
-       this.maxValue = minMaxRadix[1] == null? Long.MAX_VALUE : ConfiguredCLIParser.XMLUtils.asLong(minMaxRadix[1]);
+       this.minValue = minMaxRadix[0] == null? Long.MIN_VALUE : XMLParserBuilder.XMLUtils.asLong(minMaxRadix[0]);
+       this.maxValue = minMaxRadix[1] == null? Long.MAX_VALUE : XMLParserBuilder.XMLUtils.asLong(minMaxRadix[1]);
     }
 
     public IntegerFilter(int radix)

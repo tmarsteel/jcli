@@ -9,7 +9,7 @@ import org.w3c.dom.NodeList;
  * Accepts values that to a file or directory meeting the specified requirements.
  * @author tmarsteel
  */
-public class FileFilter implements java.io.FileFilter, ValueFilter
+public class FileFilter implements java.io.FileFilter, Filter
 {
     public enum EXISTANCE
     {

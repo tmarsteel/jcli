@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli;
 
-import com.tmarsteel.jcli.filter.ValueFilter;
+import com.tmarsteel.jcli.filter.Filter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -14,7 +14,7 @@ public class Option
 {
     protected final List<String> names = new ArrayList<>();
     protected final boolean isFlag;
-    protected ValueFilter valueFilter;
+    protected Filter valueFilter;
     protected Object defaultValue;
     
     /**
@@ -31,7 +31,7 @@ public class Option
      * checked by <code>filter</code> and that defaults to <code>defaultValue</code>.
      * @param names The names of the option.
      */
-    public Option(ValueFilter filter, Object defaultValue, String... names)
+    public Option(Filter filter, Object defaultValue, String... names)
     {
         this(false, names);
         this.valueFilter = filter;
@@ -57,7 +57,7 @@ public class Option
      * checked by <code>filter</code>.
      * @param names The names of the option.
      */
-    public Option(ValueFilter filter, String... names)
+    public Option(Filter filter, String... names)
     {
         this(filter, null, names);
     }

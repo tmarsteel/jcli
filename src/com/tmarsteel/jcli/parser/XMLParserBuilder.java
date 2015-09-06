@@ -6,16 +6,9 @@ import com.tmarsteel.jcli.Environment;
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.filter.ValueFilter;
-import com.tmarsteel.jcli.rule.AndRule;
-import com.tmarsteel.jcli.rule.CombinedRule;
-import com.tmarsteel.jcli.rule.NotRule;
-import com.tmarsteel.jcli.rule.OptionSetRule;
-import com.tmarsteel.jcli.rule.OrRule;
-import com.tmarsteel.jcli.rule.BaseRule;
+import com.tmarsteel.jcli.ParserBuilder;
+import com.tmarsteel.jcli.filter.Filter;
 import com.tmarsteel.jcli.rule.Rule;
-import com.tmarsteel.jcli.rule.XorOptionsRule;
-import com.tmarsteel.jcli.rule.XorRule;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,7 +33,7 @@ import org.xml.sax.SAXException;
  * Builder/Factory for Parsers, based on XML configuration.
  * @author tmarsteel
  */
-public class XMLParserBuilder
+public class XMLParserBuilder implements ParserBuilder
 {    
     private Document baseDocument;
     private Environment environment;
@@ -58,10 +51,10 @@ public class XMLParserBuilder
      * @throws SAXException If an XML Syntax-Error occurs.
      * @throws IOException If an I/O-Error occurs.
      */
-    public static XMLParserBuilder newParserBuilder(InputStream configInputStream)
+    public static XMLParserBuilder getInstance(InputStream configInputStream)
         throws SAXException, IOException
     {
-        return newParserBuilder(configInputStream, null);
+        return XMLParserBuilder.getInstance(configInputStream, null);
     }
     
     /**
@@ -75,7 +68,7 @@ public class XMLParserBuilder
      * @throws SAXException If an XML Syntax-Error occurs.
      * @throws IOException If an I/O-Error occurs.
      */
-    public static XMLParserBuilder newParserBuilder(InputStream configInputStream,
+    public static XMLParserBuilder getInstance(InputStream configInputStream,
         Environment env)
         throws SAXException, IOException
     {
@@ -105,10 +98,10 @@ public class XMLParserBuilder
      * @throws SAXException If an XML Syntax-Error occurs.
      * @throws IOException If an I/O-Error occurs.
      */
-    public static XMLParserBuilder newParserBuilder(File configFile)
+    public static XMLParserBuilder getInstance(File configFile)
         throws IOException, SAXException
     {
-        return newParserBuilder(configFile, null);
+        return XMLParserBuilder.getInstance(configFile, null);
     }
     
     /**
@@ -122,12 +115,12 @@ public class XMLParserBuilder
      * @throws SAXException If an XML Syntax-Error occurs.
      * @throws IOException If an I/O-Error occurs.
      */
-    public static XMLParserBuilder newParserBuilder(File configFile, Environment env)
+    public static XMLParserBuilder getInstance(File configFile, Environment env)
         throws IOException, SAXException
     {
         try (FileInputStream fIn = new FileInputStream(configFile))
         {
-            return newParserBuilder(fIn, env);
+            return XMLParserBuilder.getInstance(fIn, env);
         }
     }
     
@@ -137,7 +130,7 @@ public class XMLParserBuilder
      * @param xmlDocument The XML document to treat as configuration directives.
      * @return A ParserBuilder prepared with the given {@link Document}
      */
-    public static XMLParserBuilder newParserBuilder(Document xmlDocument)
+    public static XMLParserBuilder getInstance(Document xmlDocument)
     {
         return new XMLParserBuilder(xmlDocument, File.separatorChar == '/'? Environment.UNIX : Environment.DOS);
     }
@@ -174,8 +167,8 @@ public class XMLParserBuilder
      * finds a &lt;filter&gt; of type <code>type</code> it will attempt to
      * instantiate a new instance of <code>cls</code>.
      * @param type The type string to register.
-     * @param cls The class to register; must implement {@link ValueFilter}.
-     * @throws IllegalArgumentException If <code>cls</code> does not implement {@link ValueFilter}
+     * @param cls The class to register; must implement {@link Filter}.
+     * @throws IllegalArgumentException If <code>cls</code> does not implement {@link Filter}
      * @throws NullPointerException If <code>type</code> is null.
      */
     public void setFilterType(String type, Class cls)
@@ -185,7 +178,7 @@ public class XMLParserBuilder
             throw new NullPointerException("type must not be null");
         }
         
-        if (!cls.isAssignableFrom(ValueFilter.class))
+        if (!cls.isAssignableFrom(Filter.class))
         {
             throw new IllegalArgumentException("The given class must implement com.tmarsteel.jcli.filter.ValueFilter");
         }
@@ -204,7 +197,7 @@ public class XMLParserBuilder
      * @param type The type string to register.
      * @param cls The class to register; must implement {@link Rule} and have
      * one of these constructor signatures: <code>()</code>, <code>(org.w3c.dom.Node)</code>
-     * @throws IllegalArgumentException If <code>cls</code> does not implement {@link ValueFilter}
+     * @throws IllegalArgumentException If <code>cls</code> does not implement {@link Filter}
      * @throws NullPointerException If <code>type</code> is null.
      */
     public void setRuleType(String type, Class cls)
@@ -224,18 +217,8 @@ public class XMLParserBuilder
     
     /**
      * {@inheritDoc}
-     * @return {@inheritDoc}
      */
-    public CLIParser newInstance()
-    {
-        CLIParser p = new CLIParser();
-        this.configure(p);
-        return p;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
+    @Override
     public void configure(CLIParser p)
         throws MisconfigurationException
     {
@@ -266,6 +249,8 @@ public class XMLParserBuilder
                     break;
             }
         }
+        
+        p.setEnvironment(environment);
     }
     
     private Flag parseFlag(Node flagNode)
@@ -311,7 +296,7 @@ public class XMLParserBuilder
 
         List<String> names = new ArrayList<>();
         names.add(primaryIdentifier);
-        ValueFilter filter = null;
+        Filter filter = null;
         String defValue = null;
 
         NodeList childNodes = optNode.getChildNodes();
@@ -400,7 +385,7 @@ public class XMLParserBuilder
         }
 
         // look for a filter
-        ValueFilter filter = null;
+        Filter filter = null;
         String defValue = null;
         NodeList children = argNode.getChildNodes();
         for (int i = 0;i < children.getLength();i++)
@@ -446,7 +431,7 @@ public class XMLParserBuilder
         }
     }
 
-    private ValueFilter parseFilter(Node filterNode)
+    private Filter parseFilter(Node filterNode)
         throws MisconfigurationException
     {
         // look for type and class attributes
@@ -480,9 +465,9 @@ public class XMLParserBuilder
             
             try
             {
-                filterClass = ConfiguredCLIParser.class.getClassLoader().loadClass(classname);
+                filterClass = getClass().getClassLoader().loadClass(classname);
                 
-                if (!ValueFilter.class.isAssignableFrom(filterClass))
+                if (!Filter.class.isAssignableFrom(filterClass))
                 {
                     throw new MisconfigurationException("Class " + classname + " does not implement com.wisper.cli.filter.ValueFilter");
                 }
@@ -499,14 +484,14 @@ public class XMLParserBuilder
             try
             {
                 Constructor constr = filterClass.getConstructor(Node.class);
-                return (ValueFilter) constr.newInstance(filterNode);
+                return (Filter) constr.newInstance(filterNode);
             }
             catch (NoSuchMethodException ex)
             {
                 try
                 {
                     Constructor constr = filterClass.getConstructor();
-                    return (ValueFilter) constr.newInstance();
+                    return (Filter) constr.newInstance();
                 }
                 catch (NoSuchMethodException ex2)
                 {
@@ -659,5 +644,105 @@ public class XMLParserBuilder
         }
         
         return ruleInstance;
+    }
+    
+    public static class XMLUtils
+    {
+        /**
+         * Returns a string array with 2 entris:<br>
+         * 0: min value<br>
+         * 1: max value<br>.
+         * As none of both is required both may be null.
+         * @param topNode The node out of which to filter min and max tags.
+         */
+        public static String[] getMinMax(Node topNode)
+        {
+            NodeList children = topNode.getChildNodes();
+            String min = null;
+            String max = null;
+            for (int i = 0;i < children.getLength();i++)
+            {
+                Node node = children.item(i);
+                switch (node.getNodeName())
+                {
+                    case "min":
+                        min = node.getTextContent();
+                        break;
+                    case "max":
+                        max = node.getTextContent();
+                        break;
+                }
+            }
+            return new String[]{min, max};
+        }
+
+        /**
+         *
+         * Returns a string array with 3 entris:<br>
+         * 0: min value<br>
+         * 1: max value<br>
+         * 2: radix<br>.
+         * As none of these are requred every entry may be null..
+         * @param topNode The node out of which to filter min, max and radix tags
+         * @return
+         */
+        public static String[] getMinMaxRadix(Node topNode)
+        {
+            NodeList children = topNode.getChildNodes();
+            String min = null;
+            String max = null;
+            String radix = null;
+            for (int i = 0;i < children.getLength();i++)
+            {
+                Node node = children.item(i);
+                switch (node.getNodeName())
+                {
+                    case "min":
+                        min = node.getTextContent();
+                        break;
+                    case "max":
+                        max = node.getTextContent();
+                        break;
+                    case "radix":
+                        radix = node.getTextContent();
+                        break;
+                }
+            }
+            return new String[]{min, max, radix};
+        }
+
+        public static Double asDouble(String numeric)
+            throws ParseException
+        {
+            if (numeric == null)
+            {
+                return null;
+            }
+            try
+            {
+                return Double.parseDouble(numeric);
+            }
+            catch (NumberFormatException ex)
+            {
+                throw new ParseException("Invalid decimal number: " + numeric, ex);
+            }
+        }
+
+        public static Long asLong(String numeric)
+            throws ParseException
+        {
+            if (numeric == null)
+            {
+                return null;
+            }
+            try
+            {
+                return Long.parseLong(numeric);
+            }
+            catch (NumberFormatException ex)
+            {
+                throw new ParseException("Invalid integer number: " + numeric, ex);
+            }
+        }
     }
 }

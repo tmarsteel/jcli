@@ -13,7 +13,7 @@ import org.w3c.dom.NodeList;
  * Accepts only values from a given set of possible values.
  * @author tmarsteel
  */
-public class SetFilter implements ValueFilter
+public class SetFilter implements Filter
 {
     protected Collection<String> options;
     protected boolean caseSensitive = false;

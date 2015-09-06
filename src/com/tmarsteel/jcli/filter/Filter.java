@@ -6,7 +6,7 @@ import com.tmarsteel.jcli.ParseException;
  * Represents a filter for option values.
  * @author tmarsteel
  */
-public interface ValueFilter
+public interface Filter
 {
     /**
      * Parses the given value to the type required by this filter.

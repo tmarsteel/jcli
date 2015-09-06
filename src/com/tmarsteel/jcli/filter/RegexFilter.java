@@ -11,7 +11,7 @@ import org.w3c.dom.NodeList;
  * Accepts only Strings matching the given regex.
  * @author tmarsteel
  */
-public class RegexFilter implements ValueFilter
+public class RegexFilter implements Filter
 {
     protected Pattern pattern;
     protected int returnGroup = 0;

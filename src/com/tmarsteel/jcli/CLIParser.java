@@ -15,12 +15,12 @@ import java.util.Properties;
  */
 public class CLIParser
 {
-    protected final Environment env;
-    protected final List<Option> options = new ArrayList<>();
-    protected final List<Option> flags = new ArrayList<>();
-    protected final List<Rule> rules = new ArrayList<>();
-    protected final List<Argument> arguments = new ArrayList<>();
-    protected final boolean flagsOptionsDistinguishable;
+    private Environment env;
+    private final List<Option> options = new ArrayList<>();
+    private final List<Option> flags = new ArrayList<>();
+    private final List<Rule> rules = new ArrayList<>();
+    private final List<Argument> arguments = new ArrayList<>();
+    private final boolean flagsOptionsDistinguishable;
     
     /**
      * Constructs a new parser for the systems default environment.
@@ -32,11 +32,30 @@ public class CLIParser
     
     /**
      * Constructs a new parser for the specified environment.
+     * @param env The environment this parser should expect.
      */
     public CLIParser(Environment env)
     {
         this.env = env;
         this.flagsOptionsDistinguishable = !(env.getFlagMarker().equals(env.getOptionMarker()));
+    }
+    
+    /**
+     * Returns the environment this parser expects.
+     * @return The environment this parser expects.
+     */
+    public Environment getEnvironment()
+    {
+        return env;
+    }
+    
+    /**
+     * Sets the environment this parser should expect.
+     * @param env The environment this parser should expect.
+     */
+    public void setEnvironment(Environment env)
+    {
+        this.env = env;
     }
     
     /**

@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.parser.ConfiguredCLIParser;
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.parser.XMLParserBuilder;
 import java.math.BigInteger;
 import org.w3c.dom.Node;
 
@@ -9,7 +9,7 @@ import org.w3c.dom.Node;
  * Filters input as an integer number.
  * @author tmarsteel
  */
-public class BigIntegerFilter implements ValueFilter
+public class BigIntegerFilter implements Filter
 {
     protected BigInteger minValue = null;
     protected BigInteger maxValue = null;
@@ -20,7 +20,7 @@ public class BigIntegerFilter implements ValueFilter
     public BigIntegerFilter(Node filterNode)
         throws ParseException
     {
-        String[] minMaxRadix = ConfiguredCLIParser.XMLUtils.getMinMaxRadix(filterNode);
+        String[] minMaxRadix = XMLParserBuilder.XMLUtils.getMinMaxRadix(filterNode);
 
         try
         {

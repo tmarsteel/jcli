@@ -1,14 +1,14 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.parser.ConfiguredCLIParser;
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.parser.XMLParserBuilder;
 import org.w3c.dom.Node;
 
 /**
  * Filters input as an integer number.
  * @author tmarsteel
  */
-public class DecimalFilter implements ValueFilter
+public class DecimalFilter implements Filter
 {
     protected double minValue = Long.MIN_VALUE;
     protected double maxValue = Long.MAX_VALUE;
@@ -18,9 +18,9 @@ public class DecimalFilter implements ValueFilter
     public DecimalFilter(Node filterNode)
         throws ParseException
     {
-        String[] minMax = ConfiguredCLIParser.XMLUtils.getMinMax(filterNode);
-        this.minValue = ConfiguredCLIParser.XMLUtils.asDouble(minMax[0]);
-        this.maxValue = ConfiguredCLIParser.XMLUtils.asDouble(minMax[1]);
+        String[] minMax = XMLParserBuilder.XMLUtils.getMinMax(filterNode);
+        this.minValue = XMLParserBuilder.XMLUtils.asDouble(minMax[0]);
+        this.maxValue = XMLParserBuilder.XMLUtils.asDouble(minMax[1]);
     }
 
     public DecimalFilter(double minValue, double maxValue)

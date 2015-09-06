@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli;
 
-import com.tmarsteel.jcli.filter.ValueFilter;
+import com.tmarsteel.jcli.filter.Filter;
 
 /**
  * Represents any parameter passed to the program besides flags and options.
@@ -8,7 +8,7 @@ import com.tmarsteel.jcli.filter.ValueFilter;
  */
 public class Argument
 {
-    protected ValueFilter valueFilter;
+    protected Filter valueFilter;
     protected Object defaultValue;
     protected final int index;
     protected final String accessName;
@@ -51,7 +51,7 @@ public class Argument
      * @throws IllegalArgumentException If index is less than 0.
      */
     public Argument(String accessName, int index, Object defaultValue,
-        ValueFilter filter)
+        Filter filter)
     {
         this(accessName, index, defaultValue);
         this.valueFilter = filter;

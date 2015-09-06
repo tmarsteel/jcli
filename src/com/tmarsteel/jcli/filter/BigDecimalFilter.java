@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.parser.ConfiguredCLIParser;
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.parser.XMLParserBuilder;
 import java.math.BigDecimal;
 import org.w3c.dom.Node;
 
@@ -9,7 +9,7 @@ import org.w3c.dom.Node;
  * Filters input as an integer number.
  * @author tmarsteel
  */
-public class BigDecimalFilter implements ValueFilter
+public class BigDecimalFilter implements Filter
 {
     protected BigDecimal minValue = null;
     protected BigDecimal maxValue = null;
@@ -18,7 +18,7 @@ public class BigDecimalFilter implements ValueFilter
 
     public BigDecimalFilter(Node filterNode)
     {
-        String[] minMax = ConfiguredCLIParser.XMLUtils.getMinMax(filterNode);
+        String[] minMax = XMLParserBuilder.XMLUtils.getMinMax(filterNode);
         this.minValue = minMax[0] == null? null : new BigDecimal(minMax[0]);
         this.maxValue = minMax[1] == null? null : new BigDecimal(minMax[1]);
     }
