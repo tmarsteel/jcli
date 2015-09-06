@@ -18,12 +18,37 @@ public class Option
     protected Object defaultValue;
     
     /**
-     * Constructs a new flag.
+     * Constructs a new option.
      * @param names The names of the option.
      */
     public Option(String... names)
     {
-        this(true, names);
+        this(false, names);
+    }
+    
+    /**
+     * Constructs a new required option or flag.
+     * @param names The names of the option or flag.
+     */
+    public Option(boolean isFlag, String... names)
+    {
+        if (names.length == 0)
+        {
+            throw new IllegalArgumentException("At least one identifier is required");
+        }
+        this.names.addAll(Arrays.asList(names));
+        this.isFlag = isFlag;
+    }
+    
+    /**
+     * Constructs a new required option
+     * @param filter The filter to use, nullable
+     * @param names The names of the option.
+     */
+    public Option(Filter filter, String... names)
+    {
+        this(false, names);
+        this.valueFilter = filter;
     }
     
     /**
@@ -33,8 +58,8 @@ public class Option
      */
     public Option(Filter filter, Object defaultValue, String... names)
     {
-        this(false, names);
-        this.valueFilter = filter;
+        this(filter, names);
+        
         if (defaultValue != null && defaultValue instanceof String)
         {
             try
@@ -50,42 +75,6 @@ public class Option
         {
             this.defaultValue = defaultValue;
         }
-    }
-    
-    /**
-     * Constructs a new option that is <b>not required</b> and whichs values are
-     * checked by <code>filter</code>.
-     * @param names The names of the option.
-     */
-    public Option(Filter filter, String... names)
-    {
-        this(filter, null, names);
-    }
-    
-    /**
-     * Constructs a new option or flag.
-     * @param names The names of the option or flag.
-     */
-    public Option(boolean isFlag, String... names)
-    {
-        if (names.length == 0)
-        {
-            throw new IllegalArgumentException("At least one identifier is required");
-        }
-        this.names.addAll(Arrays.asList(names));
-        this.isFlag = isFlag;
-    }
-    
-    /**
-     * Constructs a new option that defaults to <code>defaultValue</code> and
-     * that accepts any value.
-     * @param names The names of the option or flag.
-     * @param defaultValue The value this option should default to.
-     */
-    public Option(Object defaultValue, String... names)
-    {
-        this(false, names);
-        this.defaultValue = defaultValue;
     }
 
     /**
