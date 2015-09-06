@@ -157,6 +157,6 @@ public class Option
     @Override
     public String toString()
     {
-        return names.get(0) + ' ' + (isFlag? "flag" : "option");
+        return this.getPrimaryIdentifier() + ' ' + (isFlag? "flag" : "option");
     }
 }
