@@ -15,7 +15,7 @@ public class Argument
     protected boolean required = false;
     
     /**
-     * Constructs a new argument placed at index <code>index</code> that can be
+     * Constructs a new required argument placed at index <code>index</code> that can be
      * accessed by <code>accessName</code> on code level.
      * @param accessName The name this argument should be accessed with.
      * @param index index The index this argument is placed at.
@@ -25,10 +25,11 @@ public class Argument
     {
         this.index = index;
         this.accessName = accessName;
+        this.required = true;
     }
     
     /**
-     * Constructs a new argument placed at index <code>index</code> that can be
+     * Constructs a new non-required argument placed at index <code>index</code> that can be
      * accessed by <code>accessName</code> on code level.
      * @param accessName The name this argument should be accessed with.
      * @param index index The index this argument is placed at.
@@ -39,10 +40,25 @@ public class Argument
     {
         this(accessName, index);
         this.defaultValue = defaultValue;
+        this.required = false;
     }
     
     /**
-     * Constructs a new argument placed at index <code>index</code> that can be
+     * Constructs a new required argument placed at index <code>index</code> that can be
+     * accessed by <code>accessName</code> on code level.
+     * @param accessName The name this argument should be accessed with.
+     * @param index index The index this argument is placed at.
+     * @param filter A filter to validate input for this argument.
+     * @throws IllegalArgumentException If index is less than 0.
+     */
+    public Argument(String accessName, int index, Filter filter)
+    {
+        this(accessName, index, null, filter);
+        this.required = true;
+    }
+    
+    /**
+     * Constructs a new non-required argument placed at index <code>index</code> that can be
      * accessed by <code>accessName</code> on code level.
      * @param accessName The name this argument should be accessed with.
      * @param index index The index this argument is placed at.
@@ -55,6 +71,7 @@ public class Argument
     {
         this(accessName, index, defaultValue);
         this.valueFilter = filter;
+        this.required = false;
     }
     
     /**
