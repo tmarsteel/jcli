@@ -9,7 +9,7 @@ import com.tmarsteel.jcli.RuleNotMetException;
  */
 public class NotRule extends CombinedRule
 {
-    public NotRule(BaseRule[] negates)
+    public NotRule(Rule[] negates)
     {
         super(negates);
     }
@@ -18,7 +18,7 @@ public class NotRule extends CombinedRule
     public void validate(Validator intent, Validator.ValidatedInput params)
         throws RuleNotMetException
     {
-        for (BaseRule rule : rules)
+        for (Rule rule : rules)
         {
             boolean met = false;
             try

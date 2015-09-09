@@ -6,9 +6,9 @@ package com.tmarsteel.jcli.rule;
  */
 public abstract class CombinedRule extends BaseRule
 {
-    protected BaseRule[] rules;
+    protected Rule[] rules;
     
-    public CombinedRule(BaseRule[] rules)
+    public CombinedRule(Rule[] rules)
     {
         this.rules = rules;
     }

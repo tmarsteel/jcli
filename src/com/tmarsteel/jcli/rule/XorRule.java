@@ -22,7 +22,7 @@ public class XorRule extends CombinedRule
         throws RuleNotMetException
     {
         boolean isSet = false;
-        for (BaseRule r : rules)
+        for (Rule r : rules)
         {
             boolean curSet = false;
             try
@@ -55,7 +55,7 @@ public class XorRule extends CombinedRule
     public String toString()
     {
         String str = "(Exactly one of these conditions has to be met:\n";
-        for (BaseRule r:rules)
+        for (Rule r:rules)
         {
             str += r + "\n";
         }

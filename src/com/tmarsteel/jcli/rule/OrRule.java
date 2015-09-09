@@ -9,7 +9,7 @@ import com.tmarsteel.jcli.RuleNotMetException;
  */
 public class OrRule extends CombinedRule
 {   
-    public OrRule(BaseRule[] rules)
+    public OrRule(Rule[] rules)
     {
         super(rules);
     }
@@ -19,7 +19,7 @@ public class OrRule extends CombinedRule
         throws RuleNotMetException
     {
         RuleNotMetException lastEx = null;
-        for (BaseRule r:rules)
+        for (Rule r:rules)
         {
             try
             {
@@ -39,7 +39,7 @@ public class OrRule extends CombinedRule
     public String toString()
     {
         String str = "(At least one of these conditions have to be met:\n";
-        for (BaseRule r:rules)
+        for (Rule r:rules)
         {
             str += r + "\n";
         }

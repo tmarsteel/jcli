@@ -9,7 +9,7 @@ import com.tmarsteel.jcli.RuleNotMetException;
  */
 public class AndRule extends CombinedRule
 {   
-    public AndRule(BaseRule[] rules)
+    public AndRule(Rule[] rules)
     {
         super(rules);
     }
@@ -18,7 +18,7 @@ public class AndRule extends CombinedRule
     public void validate(Validator intent, Validator.ValidatedInput params)
         throws RuleNotMetException
     {
-        for (BaseRule r:rules)
+        for (Rule r:rules)
         {
             r.validate(intent, params);
         }
@@ -27,7 +27,7 @@ public class AndRule extends CombinedRule
     public String toString()
     {
         String str = "(All of these conditions have to be met:\n";
-        for (BaseRule r:rules)
+        for (Rule r:rules)
         {
             str += r + "\n";
         }
