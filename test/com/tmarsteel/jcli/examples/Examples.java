@@ -5,8 +5,10 @@
  */
 package com.tmarsteel.jcli.examples;
 
-import com.tmarsteel.jcli.CLIParser;
+import com.tmarsteel.jcli.Validator;
 import com.tmarsteel.jcli.Environment;
+import com.tmarsteel.jcli.ParserBuilder;
+import com.tmarsteel.jcli.parser.XMLParserBuilder;
 
 /**
  *
@@ -16,14 +18,17 @@ public class Examples
 {    
     public static void main(String[] args) throws Exception
     {
-        CLIParser parser = CLIParser.getInstance(
+        ParserBuilder builder = XMLParserBuilder.getInstance(
             Examples.class.getResourceAsStream("example-config.xml"),
             Environment.UNIX
         );
         
-        String[] inputAR = new String[] { "--v" };
+        Validator parser = new Validator();
+        builder.configure(parser);
         
-        CLIParser.ValidatedInput input = parser.parse(inputAR);
+        String[] inputAR = new String[] { "-v", "--encoding", "UTF-8" };
+        
+        Validator.ValidatedInput input = parser.parse(inputAR);
         
         System.out.println(input.getOption("encoding"));
     }
