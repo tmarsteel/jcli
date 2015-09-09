@@ -50,6 +50,14 @@ public class XorOptionsRule extends BaseRule
                 prevSet = o;
             }
         }
+        
+        if (prevSet == null)
+        {
+            throw new RuleNotMetException(
+                errorMessage != null ? errorMessage :
+                "Either one of these options/flags must be set."
+            );
+        }
     }
     
     @Override
