@@ -12,7 +12,7 @@ public class XorRule extends CombinedRule
     /**
      * @param rules The rules to connect.
      */
-    public XorRule(BaseRule... rules)
+    public XorRule(Rule... rules)
     {
         super(rules);
     }
