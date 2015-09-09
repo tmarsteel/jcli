@@ -22,7 +22,7 @@
 	</target>
 	
 	<target name="compile" depends="-pre-compile">
-		<javac srcdir="src" destdir="build/classes"/>
+		<javac includeantruntime="false" srcdir="src" destdir="build/classes"/>
 	</target>
 	
 	<target name="javadoc">
@@ -51,5 +51,32 @@
 			 <fileset file="README.md" />
 			 <fileset file="LICENSE" />
 		</jar>
+	</target>
+	
+	<path id="test-classpath">
+		<pathelement location="lib/test/junit-4.12.jar" />
+		<pathelement location="lib/test/hamcrest-core-1.3.jar" />
+		<pathelement location="build/classes/" />
+		<pathelement location="build/test/classes" />
+	</path>
+	
+	<target name="-pre-compile-test">
+		<mkdir dir="build/test/classes" />
+	</target>
+	
+	<target name="compile-test" depends="compile,-pre-compile-test">
+		<javac includeantruntime="false" classpathref="test-classpath" srcdir="test" destdir="build/test/classes" />
+	</target>
+	
+	<target name="test" depends="clean,compile-test">
+		<mkdir dir="build/test/out" />
+	
+		<junit fork="true" showoutput="on">
+			<formatter type="plain" usefile="false" />
+			<classpath refid="test-classpath" />
+			<batchtest skipNonTests="on" todir="build/test/out">
+				<fileset dir="build/test/classes" />
+			</batchtest>
+		</junit>
 	</target>
 </project>
