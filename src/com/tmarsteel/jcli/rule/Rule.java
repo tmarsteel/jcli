@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli.rule;
 
-import com.tmarsteel.jcli.CLIParser;
+import com.tmarsteel.jcli.Validator;
 import com.tmarsteel.jcli.RuleNotMetException;
 import java.util.Iterator;
 import java.util.Map;
@@ -17,7 +17,7 @@ public interface Rule
      * @param params Input parameters.
      * @throws RuleNotMetException If this rule is not fulfilled by <code>params</code>.
      */
-    public abstract void validate(CLIParser intent, CLIParser.ValidatedInput params)
+    public abstract void validate(Validator intent, Validator.ValidatedInput params)
         throws RuleNotMetException;
     
     /**
@@ -32,7 +32,7 @@ public interface Rule
         throw new OperationNotSupportedException("This rule does not support custom error-messages");
     }
     
-    public static final Rule ONLY_KNOWN_FLAGS = (CLIParser intent, CLIParser.ValidatedInput params) -> {
+    public static final Rule ONLY_KNOWN_FLAGS = (Validator intent, Validator.ValidatedInput params) -> {
         final Iterator<Map.Entry<String,Boolean>> flagIt = params.getFlagIterator();
         String flagName;
 
@@ -46,7 +46,7 @@ public interface Rule
         }
     };
     
-    public static final Rule ONLY_KNOWN_OPTIONS = (CLIParser intent, CLIParser.ValidatedInput params) -> {
+    public static final Rule ONLY_KNOWN_OPTIONS = (Validator intent, Validator.ValidatedInput params) -> {
         Iterator<Map.Entry<String,Object>> optIt = params.getOptionIterator();
         String optName;
 

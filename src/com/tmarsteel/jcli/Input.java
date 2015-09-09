@@ -15,14 +15,14 @@ public class Input
     protected List<String> flags = new ArrayList<>();
     protected HashMap<String,String> options = new HashMap<>();
     protected List<String> arguments = new ArrayList<>();
-    protected CLIParser intent;
+    protected Validator intent;
     
     public Input()
     {
         this(null);
     }
     
-    public Input(CLIParser intent)
+    public Input(Validator intent)
     {
         this.intent = intent;
     }
@@ -34,7 +34,7 @@ public class Input
         add(env, args);
     }
     
-    public Input(CLIParser intent, Environment env, String[] args)
+    public Input(Validator intent, Environment env, String[] args)
         throws ParseException
     {
         this(intent);
@@ -48,7 +48,7 @@ public class Input
         add(env, argline);
     }
     
-    public Input(CLIParser intent, Environment env, String argline)
+    public Input(Validator intent, Environment env, String argline)
         throws ParseException
     {
         this(intent);
@@ -266,7 +266,7 @@ public class Input
      * <code>0</code> for neither.
      */
     private static byte getType(boolean flagsOptionsDistinguishable,
-        CLIParser intent, String param, Environment env,
+        Validator intent, String param, Environment env,
         boolean flagsOverOptions)
         throws ParseException
     {

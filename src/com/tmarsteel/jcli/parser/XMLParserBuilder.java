@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.parser;
 
 import com.tmarsteel.jcli.Argument;
-import com.tmarsteel.jcli.CLIParser;
+import com.tmarsteel.jcli.Validator;
 import com.tmarsteel.jcli.Environment;
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Option;
@@ -219,7 +219,7 @@ public class XMLParserBuilder implements ParserBuilder
      * {@inheritDoc}
      */
     @Override
-    public void configure(CLIParser p)
+    public void configure(Validator p)
         throws MisconfigurationException
     {
         Node rootNode = baseDocument.getFirstChild();

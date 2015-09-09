@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli.rule;
 
-import com.tmarsteel.jcli.CLIParser;
+import com.tmarsteel.jcli.Validator;
 import com.tmarsteel.jcli.RuleNotMetException;
 
 /**
@@ -15,7 +15,7 @@ public class OrRule extends CombinedRule
     }
     
     @Override
-    public void validate(CLIParser intent, CLIParser.ValidatedInput params)
+    public void validate(Validator intent, Validator.ValidatedInput params)
         throws RuleNotMetException
     {
         RuleNotMetException lastEx = null;

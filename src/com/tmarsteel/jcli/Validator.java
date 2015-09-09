@@ -13,11 +13,11 @@ import java.util.Properties;
  * Parses an argument-array in the given environment
  * @author tmarsteel
  */
-public class CLIParser
+public class Validator
 {
     private Environment env;
     private final List<Option> options = new ArrayList<>();
-    private final List<Option> flags = new ArrayList<>();
+    private final List<Flag> flags = new ArrayList<>();
     private final List<Rule> rules = new ArrayList<>();
     private final List<Argument> arguments = new ArrayList<>();
     private final boolean flagsOptionsDistinguishable;
@@ -25,7 +25,7 @@ public class CLIParser
     /**
      * Constructs a new parser for the systems default environment.
      */
-    public CLIParser()
+    public Validator()
     {
         this(Environment.getEnvironment());
     }
@@ -34,7 +34,7 @@ public class CLIParser
      * Constructs a new parser for the specified environment.
      * @param env The environment this parser should expect.
      */
-    public CLIParser(Environment env)
+    public Validator(Environment env)
     {
         this.env = env;
         this.flagsOptionsDistinguishable = !(env.getFlagMarker().equals(env.getOptionMarker()));
@@ -111,7 +111,7 @@ public class CLIParser
             {
                 if (!flags.contains(o))
                 {
-                    flags.add(o);
+                    flags.add((Flag) o);
                 }
                 else
                 {
@@ -136,10 +136,10 @@ public class CLIParser
         {
             // if flags and options are not distinguishable name-interference
             // has to be checked.
-            Iterator<Option> it = flags.iterator();
-            while (it.hasNext())
+            Iterator<Flag> fIt = flags.iterator();
+            while (fIt.hasNext())
             {
-                Option cur = it.next();
+                Option cur = fIt.next();
                 if (cur.isAmbigousWith(o))
                 {
                     throw new IllegalArgumentException("Flag "
@@ -147,10 +147,10 @@ public class CLIParser
                 }
             }
             
-            it = options.iterator();
-            while (it.hasNext())
+            Iterator<Option> oIt = options.iterator();
+            while (oIt.hasNext())
             {
-                Option cur = it.next();
+                Option cur = oIt.next();
                 if (cur.isAmbigousWith(o))
                 {
                     throw new IllegalArgumentException("Option "
@@ -158,9 +158,9 @@ public class CLIParser
                 }
             }
             
-            if (o.isFlag())
+            if (o instanceof Flag)
             {
-                flags.add(o);
+                flags.add((Flag) o);
             }
             else
             {
@@ -237,19 +237,19 @@ public class CLIParser
         ValidatedInput vinput = new ValidatedInput();
         
         // check for known flags
-        Iterator<Option> it = flags.iterator();
-        while (it.hasNext())
+        Iterator<Flag> flagIterator = flags.iterator();
+        while (flagIterator.hasNext())
         {
-            final Option flag = it.next();
+            final Flag flag = flagIterator.next();
             vinput.flagValues.put(flag.getPrimaryIdentifier(),
                 input.containsFlag(flag));
         }
         
         // check for unknown flags
-        Iterator<String> fIt = input.flags.iterator();
-        while (fIt.hasNext())
+        Iterator<String> stringIterator = input.flags.iterator();
+        while (stringIterator.hasNext())
         {
-            final String flag = fIt.next();
+            final String flag = stringIterator.next();
             if (!vinput.flagValues.containsKey(flag))
             {
                 vinput.flagValues.put(flag, Boolean.TRUE);
@@ -257,10 +257,10 @@ public class CLIParser
         }
         
         // check for known options
-        it = options.iterator();
-        while (it.hasNext())
+        Iterator<Option> optionIterator = options.iterator();
+        while (optionIterator.hasNext())
         {
-            final Option option = it.next();
+            final Option option = optionIterator.next();
             final String optValue = input.getOption(option);
             if (optValue == null)
             {
@@ -291,10 +291,10 @@ public class CLIParser
         }
         
         // check for unknown options
-        Iterator<Entry<String,String>> oIt = input.options.entrySet().iterator();
-        while (oIt.hasNext())
+        Iterator<Entry<String,String>> unknownOptionsIterator = input.options.entrySet().iterator();
+        while (unknownOptionsIterator.hasNext())
         {
-            final Entry<String,String> option = oIt.next();
+            final Entry<String,String> option = unknownOptionsIterator.next();
             if (!vinput.optionValues.containsKey(option.getKey()))
             {
                 vinput.optionValues.put(option.getKey(), option.getValue());

@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli.rule;
 
-import com.tmarsteel.jcli.CLIParser;
+import com.tmarsteel.jcli.Validator;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.RuleNotMetException;
 import com.tmarsteel.jcli.parser.MisconfigurationException;
@@ -55,7 +55,7 @@ public class OptionSetRule extends BaseRule
     }
 
     @Override
-    public void validate(CLIParser forParser, CLIParser.ValidatedInput params)
+    public void validate(Validator forParser, Validator.ValidatedInput params)
         throws RuleNotMetException
     {
         for (String name : optionNames)
