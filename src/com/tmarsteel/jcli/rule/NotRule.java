@@ -9,7 +9,7 @@ import com.tmarsteel.jcli.RuleNotMetException;
  */
 public class NotRule extends CombinedRule
 {
-    public NotRule(Rule[] negates)
+    public NotRule(Rule... negates)
     {
         super(negates);
     }

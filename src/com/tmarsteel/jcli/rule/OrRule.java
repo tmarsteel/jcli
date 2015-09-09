@@ -9,7 +9,7 @@ import com.tmarsteel.jcli.RuleNotMetException;
  */
 public class OrRule extends CombinedRule
 {   
-    public OrRule(Rule[] rules)
+    public OrRule(Rule... rules)
     {
         super(rules);
     }

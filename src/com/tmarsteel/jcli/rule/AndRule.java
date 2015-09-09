@@ -9,7 +9,7 @@ import com.tmarsteel.jcli.RuleNotMetException;
  */
 public class AndRule extends CombinedRule
 {   
-    public AndRule(Rule[] rules)
+    public AndRule(Rule... rules)
     {
         super(rules);
     }

@@ -8,7 +8,7 @@ public abstract class CombinedRule extends BaseRule
 {
     protected Rule[] rules;
     
-    public CombinedRule(Rule[] rules)
+    public CombinedRule(Rule... rules)
     {
         this.rules = rules;
     }
