@@ -18,7 +18,7 @@ public class Option
     protected Object defaultValue;
     
     /**
-     * Constructs a new option.
+     * Constructs a new required option.
      * @param names The names of the option.
      */
     public Option(String... names)
