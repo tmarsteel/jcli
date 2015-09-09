@@ -59,7 +59,7 @@ public class Input
      * Returns whether the given flag was within the input.
      * @return whether the given flag was within the input.
      */
-    public boolean containsFlag(Flag flag)
+    public boolean containsFlag(Option flag)
     {
         final Iterator<String> it = flags.iterator();
         while (it.hasNext())

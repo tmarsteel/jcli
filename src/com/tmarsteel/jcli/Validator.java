@@ -17,7 +17,7 @@ public class Validator
 {
     private Environment env;
     private final List<Option> options = new ArrayList<>();
-    private final List<Flag> flags = new ArrayList<>();
+    private final List<Option> flags = new ArrayList<>();
     private final List<Rule> rules = new ArrayList<>();
     private final List<Argument> arguments = new ArrayList<>();
     private final boolean flagsOptionsDistinguishable;
@@ -111,7 +111,7 @@ public class Validator
             {
                 if (!flags.contains(o))
                 {
-                    flags.add((Flag) o);
+                    flags.add(o);
                 }
                 else
                 {
@@ -136,10 +136,10 @@ public class Validator
         {
             // if flags and options are not distinguishable name-interference
             // has to be checked.
-            Iterator<Flag> fIt = flags.iterator();
-            while (fIt.hasNext())
+            Iterator<Option> it = flags.iterator();
+            while (it.hasNext())
             {
-                Option cur = fIt.next();
+                Option cur = it.next();
                 if (cur.isAmbigousWith(o))
                 {
                     throw new IllegalArgumentException("Flag "
@@ -147,10 +147,10 @@ public class Validator
                 }
             }
             
-            Iterator<Option> oIt = options.iterator();
-            while (oIt.hasNext())
+            it = options.iterator();
+            while (it.hasNext())
             {
-                Option cur = oIt.next();
+                Option cur = it.next();
                 if (cur.isAmbigousWith(o))
                 {
                     throw new IllegalArgumentException("Option "
@@ -158,9 +158,9 @@ public class Validator
                 }
             }
             
-            if (o instanceof Flag)
+            if (o.isFlag())
             {
-                flags.add((Flag) o);
+                flags.add(o);
             }
             else
             {
@@ -237,19 +237,19 @@ public class Validator
         ValidatedInput vinput = new ValidatedInput();
         
         // check for known flags
-        Iterator<Flag> flagIterator = flags.iterator();
-        while (flagIterator.hasNext())
+        Iterator<Option> it = flags.iterator();
+        while (it.hasNext())
         {
-            final Flag flag = flagIterator.next();
+            final Option flag = it.next();
             vinput.flagValues.put(flag.getPrimaryIdentifier(),
                 input.containsFlag(flag));
         }
         
         // check for unknown flags
-        Iterator<String> stringIterator = input.flags.iterator();
-        while (stringIterator.hasNext())
+        Iterator<String> fIt = input.flags.iterator();
+        while (fIt.hasNext())
         {
-            final String flag = stringIterator.next();
+            final String flag = fIt.next();
             if (!vinput.flagValues.containsKey(flag))
             {
                 vinput.flagValues.put(flag, Boolean.TRUE);
@@ -257,10 +257,10 @@ public class Validator
         }
         
         // check for known options
-        Iterator<Option> optionIterator = options.iterator();
-        while (optionIterator.hasNext())
+        it = options.iterator();
+        while (it.hasNext())
         {
-            final Option option = optionIterator.next();
+            final Option option = it.next();
             final String optValue = input.getOption(option);
             if (optValue == null)
             {
@@ -291,10 +291,10 @@ public class Validator
         }
         
         // check for unknown options
-        Iterator<Entry<String,String>> unknownOptionsIterator = input.options.entrySet().iterator();
-        while (unknownOptionsIterator.hasNext())
+        Iterator<Entry<String,String>> oIt = input.options.entrySet().iterator();
+        while (oIt.hasNext())
         {
-            final Entry<String,String> option = unknownOptionsIterator.next();
+            final Entry<String,String> option = oIt.next();
             if (!vinput.optionValues.containsKey(option.getKey()))
             {
                 vinput.optionValues.put(option.getKey(), option.getValue());
