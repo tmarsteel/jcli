@@ -14,3 +14,5 @@ distVersions/
 nbproject/
 build/
 dist/javadoc/
+lib/
+/dist/
