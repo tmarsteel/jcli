@@ -17,7 +17,16 @@ public class IntegerFilter implements Filter
 
     public IntegerFilter() {}
 
-     public IntegerFilter(Node filterNode)
+    /**
+     * Creates a new filter from a DOM node. <br>
+     * Node structure:
+     * Minimum, maximum and radix may be specified by &lt;min&gt;, &lt;max&gt;
+     * and &lt;radix&gt; subtags respectively.
+     * @param filterNode
+     * @throws ParseException If any of the given subtags (min, max, radix) does
+     * not contain an integer number.
+     */
+    public IntegerFilter(Node filterNode)
         throws ParseException
     {
         String[] minMaxRadix = XMLParserBuilder.XMLUtils.getMinMaxRadix(filterNode);

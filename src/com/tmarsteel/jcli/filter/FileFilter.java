@@ -17,6 +17,12 @@ public class FileFilter implements java.io.FileFilter, Filter
         MUST_NOT_EXIST,
         IRRELEVANT;
 
+        /**
+         * Checks whether the given file fulfills the requirement and throws
+         * and exception if that is not the case.
+         * @param file The file to test
+         * @throws ParseException If the given file does not fulfill 
+         */
         public void test(File file)
             throws ParseException
         {
@@ -61,6 +67,12 @@ public class FileFilter implements java.io.FileFilter, Filter
             this.execR = execR;
         }
 
+        /**
+         * Checks whether the given file fulfills the requirement and throws
+         * and exception if that is not the case.
+         * @param f The file to test
+         * @throws ParseException If the given file does not fulfill 
+         */
         public void test(File f)
             throws ParseException
         {
@@ -86,6 +98,12 @@ public class FileFilter implements java.io.FileFilter, Filter
         DIRECTORY,
         IRRELEVANT;
 
+        /**
+         * Checks whether the given file fulfills the requirement and throws
+         * and exception if that is not the case.
+         * @param file The file to test
+         * @throws ParseException If the given file does not fulfill 
+         */
         public void test(File file)
             throws ParseException
         {
@@ -120,12 +138,25 @@ public class FileFilter implements java.io.FileFilter, Filter
     protected TYPE fileType = TYPE.IRRELEVANT;
     protected String extension = null;
 
-
+    /**
+     * Creates a new filter that validates using the given {@link java.io.FileFilter}.
+     * @param filter The filter to validate with
+     */
     public FileFilter(java.io.FileFilter filter)
     {
         this.filter = filter;
     }
 
+    /**
+     * Creates a new filter from the given DOM node. <br>
+     * Node structure:
+     * The ENUM values for {@link PERMISSION}, {@link TYPE} and {@link EXISTANCE}
+     * may be specified by &lt;permission&gt;, &lt;type&gt; and &lt;existance&gt;
+     * subtags respectively.<br>
+     * The extension to force may be specified by an &lt;extension&gt; subtag.
+     * @param filterNode
+     * @throws ParseException 
+     */
     public FileFilter(Node filterNode)
         throws ParseException
     {
@@ -192,7 +223,7 @@ public class FileFilter implements java.io.FileFilter, Filter
     {
         try
         {
-            parse(pathname);
+            assertSuffices(pathname);
             return true;
         }
         catch (ParseException ex)
@@ -205,10 +236,20 @@ public class FileFilter implements java.io.FileFilter, Filter
     public Object parse(String value)
         throws ParseException
     {
-        return parse(new File(value));
+        File f = new File(value);
+        assertSuffices(f);
+        
+        return f;
     }
 
-    public File parse(File file)
+    /**
+     * Checks whether the given file fulfills all the requirements of this filter
+     * and throws an exception if that is not the case.
+     * @param file The file to check
+     * @throws ParseException If the given file does not fulfill the requirements
+     * of this filter.
+     */
+    public void assertSuffices(File file)
         throws ParseException
     {
         if (filter == null)
@@ -223,15 +264,10 @@ public class FileFilter implements java.io.FileFilter, Filter
                     throw new ParseException("extension needs to be " + extension);
                 }
             }
-            return file;
         }
         else
         {
-            if (filter.accept(file))
-            {
-                return file;
-            }
-            else
+            if (!filter.accept(file))
             {
                 throw new ParseException("invalid file");
             }

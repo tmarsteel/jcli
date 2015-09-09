@@ -16,16 +16,35 @@ public class RegexFilter implements Filter
     protected Pattern pattern;
     protected int returnGroup = 0;
 
+    /**
+     * Creates a new filter matching against the given pattern.
+     * @param pattern The pattern to compile and then match against
+     */
     public RegexFilter(Pattern pattern)
     {
         this.pattern = pattern;
     }
 
+    /**
+     * Creates a new filter matching against the given pattern.
+     * @param regex The pattern to match against
+     */
     public RegexFilter(String regex)
     {
         this(Pattern.compile(regex));
     }
 
+    /**
+     * Creates a new filter from a DOM node. <br>
+     * Node structure: The regex itself must be contained in a &lt;regex&gt;
+     * subtag.
+     * The group to return may be specified by the <code>returnGroup</code>
+     * attribute in <code>filterNode</code>.
+     * @param filterNode
+     * @throws ParseException If the return group attribute is not set to an 
+     * integer value or any other tag than &lt;regex&gt; is found within
+     * <code>filterNode</code>
+     */
     public RegexFilter(Node filterNode)
         throws ParseException
     {
