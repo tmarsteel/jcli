@@ -1,9 +1,12 @@
 package com.tmarsteel.jcli;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -12,8 +15,8 @@ import java.util.Map.Entry;
  */
 public class Input
 {
-    protected List<String> flags = new ArrayList<>();
-    protected HashMap<String,String> options = new HashMap<>();
+    protected Collection<String> flags = new HashSet<>();
+    protected Map<String,String> options = new HashMap<>();
     protected List<String> arguments = new ArrayList<>();
     protected Validator intent;
     
@@ -59,7 +62,7 @@ public class Input
      * Returns whether the given flag was within the input.
      * @return whether the given flag was within the input.
      */
-    public boolean containsFlag(Option flag)
+    public boolean containsFlag(Flag flag)
     {
         final Iterator<String> it = flags.iterator();
         while (it.hasNext())

@@ -17,13 +17,13 @@ public class Validator
 {
     private Environment env;
     private final List<Option> options = new ArrayList<>();
-    private final List<Option> flags = new ArrayList<>();
+    private final List<Flag> flags = new ArrayList<>();
     private final List<Rule> rules = new ArrayList<>();
     private final List<Argument> arguments = new ArrayList<>();
     private final boolean flagsOptionsDistinguishable;
     
     /**
-     * Constructs a new parser for the systems default environment.
+     * Constructs a new validator for the systems default environment.
      */
     public Validator()
     {
@@ -31,8 +31,8 @@ public class Validator
     }
     
     /**
-     * Constructs a new parser for the specified environment.
-     * @param env The environment this parser should expect.
+     * Constructs a new validator for the specified environment.
+     * @param env The environment this validator should expect.
      */
     public Validator(Environment env)
     {
@@ -41,8 +41,8 @@ public class Validator
     }
     
     /**
-     * Returns the environment this parser expects.
-     * @return The environment this parser expects.
+     * Returns the environment this validator expects.
+     * @return The environment this validator expects.
      */
     public Environment getEnvironment()
     {
@@ -50,8 +50,8 @@ public class Validator
     }
     
     /**
-     * Sets the environment this parser should expect.
-     * @param env The environment this parser should expect.
+     * Sets the environment this validator should expect.
+     * @param env The environment this validator should expect.
      */
     public void setEnvironment(Environment env)
     {
@@ -59,13 +59,13 @@ public class Validator
     }
     
     /**
-     * Returns whether this parser is sensible for the given flag.
+     * Returns whether this validator is sensible for the given flag.
      * @param name The name of the flag to check for.
-     * @return Whether this parser is sensible for the given flag.
+     * @return Whether this validator is sensible for the given flag.
      */
     public boolean knowsFlag(String name)
     {
-        for (Option f:flags)
+        for (Flag f : flags)
         {
             if (f.isIdentifiedBy(name))
             {
@@ -76,9 +76,9 @@ public class Validator
     }
     
     /**
-     * Returns whether this parser is sensible for the given option.
-     * @param name The name of the option to check for.
-     * @return Whether this parser is sensible for the given option.
+     * Returns whether this validator is sensible for the given option or argument.
+     * @param name The name of the option or argument to check for.
+     * @return Whether this validator is sensible for the given option or argument.
      */
     public boolean knowsOption(String name)
     {
@@ -89,6 +89,7 @@ public class Validator
                 return true;
             }
         }
+        
         for (Argument a:arguments)
         {
             if (a.getIdentifier().equals(name))
@@ -100,46 +101,26 @@ public class Validator
     }
     
     /**
-     * Adds the given flag or option to the list of known flags / options.
-     * @param o The flag or option to add.
+     * Adds the given option to the list of known options.
+     * @param o The option to add.
      */
     public synchronized void add(Option o)
     {
         if (flagsOptionsDistinguishable)
         {
-            if (o.isFlag())
+            if (!options.contains(o))
             {
-                if (!flags.contains(o))
-                {
-                    flags.add(o);
-                }
-                else
-                {
-                    throw new IllegalArgumentException("Flag " + o.getPrimaryIdentifier()
-                        + " already registered.");
-                }
-            }
-            else
-            {
-                if (!options.contains(o))
-                {
-                    options.add(o);
-                }
-                else
-                {
-                    throw new IllegalArgumentException("Option " + o.getPrimaryIdentifier()
-                        + " already registered.");
-                }
+                options.add(o);
             }
         }
         else
         {
             // if flags and options are not distinguishable name-interference
             // has to be checked.
-            Iterator<Option> it = flags.iterator();
+            Iterator<Flag> it = flags.iterator();
             while (it.hasNext())
             {
-                Option cur = it.next();
+                Flag cur = it.next();
                 if (cur.isAmbigousWith(o))
                 {
                     throw new IllegalArgumentException("Flag "
@@ -147,25 +128,38 @@ public class Validator
                 }
             }
             
-            it = options.iterator();
+            options.add(o);
+        }
+    }
+    
+    /**
+     * Adds the given flag to the list of known flags.
+     * @param f The flag to add.
+     */
+    public synchronized void add(Flag f)
+    {
+        if (flagsOptionsDistinguishable)
+        {
+            if (!flags.contains(f))
+            {
+                flags.add(f);
+            }
+        }
+        else
+        {
+            // if flags and options are not distinguishable name-interference
+            // has to be checked.
+            Iterator<Option> it = options.iterator();
             while (it.hasNext())
             {
                 Option cur = it.next();
-                if (cur.isAmbigousWith(o))
+                if (cur.isAmbigousWith(f))
                 {
-                    throw new IllegalArgumentException("Option "
-                        + cur + " is ambigous with " + o);
+                    throw new IllegalArgumentException(cur + " is ambigous with " + f);
                 }
             }
             
-            if (o.isFlag())
-            {
-                flags.add(o);
-            }
-            else
-            {
-                options.add(o);
-            }
+            flags.add(f);
         }
     }
     
@@ -204,10 +198,10 @@ public class Validator
     }
     
     /**
-     * Parses the given input.
+     * Parses and validates the given input.
      * @param argline A string containing the input parameters, e.g.
      *  <code>"-v --input foo.txt"</code>
-     * @return The parsed input.
+     * @return The parsed and validated input.
      */
     public ValidatedInput parse(String argline)
         throws ParseException
@@ -216,9 +210,9 @@ public class Validator
     }
     
     /**
-     * Parses the given input.
-     * @param args The input parameters to parse.
-     * @return The parsed input.
+     * Parses and validates the given input.
+     * @param args The input parameters to parse and validate.
+     * @return The parsed and validated input.
      */
     public ValidatedInput parse(String[] args)
         throws ParseException
@@ -237,10 +231,10 @@ public class Validator
         ValidatedInput vinput = new ValidatedInput();
         
         // check for known flags
-        Iterator<Option> it = flags.iterator();
-        while (it.hasNext())
+        Iterator<Flag> flagIt = flags.iterator();
+        while (flagIt.hasNext())
         {
-            final Option flag = it.next();
+            final Flag flag = flagIt.next();
             vinput.flagValues.put(flag.getPrimaryIdentifier(),
                 input.containsFlag(flag));
         }
@@ -257,11 +251,12 @@ public class Validator
         }
         
         // check for known options
-        it = options.iterator();
-        while (it.hasNext())
+        Iterator<Option> optionIt = options.iterator();
+        while (optionIt.hasNext())
         {
-            final Option option = it.next();
+            final Option option = optionIt.next();
             final String optValue = input.getOption(option);
+            
             if (optValue == null)
             {
                 if (option.isRequired())
@@ -331,27 +326,7 @@ public class Validator
     }
     
     /**
-     * Returns the default value for the given option or null if such an option
-     * was not specified.
-     * @param optionName The name of the option to obtain the default value from.
-     * @return The default value for the given option or null if such an option
-     */
-    public Object getDefaultValue(final String optionName)
-    {
-        final Iterator<Option> it = options.iterator();
-        while (it.hasNext())
-        {
-            final Option opt = it.next();
-            if (opt.isIdentifiedBy(optionName))
-            {
-                return opt.getDefaultValue();
-            }
-        }
-        return null;
-    }
-    
-    /**
-     * Resets this parser to the state it was in after being constructed.
+     * Resets this validator to the state it was in after being constructed.
      */
     public void reset()
     {
@@ -363,9 +338,9 @@ public class Validator
     
     /**
      * Represents a set of validated and organized inputs.
-     * @author tmarsteel
+     * @author Tobias Marstaller
      */
-    public class ValidatedInput
+    public static class ValidatedInput
     {
         protected HashMap<String,Boolean> flagValues = new HashMap<>();
         protected HashMap<String,Object> optionValues = new HashMap<>();
@@ -405,9 +380,9 @@ public class Validator
          * Returns whether the given flag was set.
          * @return Whether the given flag was set.
          */
-        public boolean isFlagSet(Option flag)
+        public boolean isFlagSet(Flag flag)
         {
-            return flag.isFlag() && isFlagSet(flag.getPrimaryIdentifier());
+            return isFlagSet(flag.getPrimaryIdentifier());
         }
         
         /**
@@ -444,26 +419,20 @@ public class Validator
         }
         
         /**
-         * Writes all values of the flags and options known by this input to an
-         * instance of {@link java.util.Properties}. The boolean state of flags
+         * Writes all values of the flags, options and arguments known by this
+         * input to an instance of {@link java.util.Properties}. The boolean state of flags
          * will be represented by the strings <code>"true"</code> and
          * <code>"false"</code>
          */
         public void writeTo(final Properties to)
         {
-            final Iterator<Entry<String,Boolean>> flagIt = flagValues.entrySet().iterator();
-            while (flagIt.hasNext())
-            {
-                final Entry<String,Boolean> cur = flagIt.next();
-                to.setProperty(cur.getKey(), cur.getValue()? "true" : "false");
-            }
-            
-            final Iterator<Entry<String,Object>> optionsIt = optionValues.entrySet().iterator();
-            while (optionsIt.hasNext())
-            {
-                final Entry<String,Object> cur = optionsIt.next();
-                to.setProperty(cur.getKey(), cur.getValue().toString());
-            }
+            flagValues.entrySet().forEach((entry) -> {
+                to.setProperty(entry.getKey(), entry.getValue()? "true" : "false");
+            });
+           
+            optionValues.entrySet().forEach((entry) -> {
+                to.setProperty(entry.getKey(), entry.getValue().toString());
+            });
         }
     }
 }

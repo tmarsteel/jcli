@@ -1,7 +1,8 @@
 package com.tmarsteel.jcli.rule;
 
+import com.tmarsteel.jcli.Flag;
+import com.tmarsteel.jcli.Identifiable;
 import com.tmarsteel.jcli.Validator;
-import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.RuleNotMetException;
 
 /**
@@ -11,12 +12,12 @@ import com.tmarsteel.jcli.RuleNotMetException;
  */
 public class XorOptionsRule extends BaseRule
 {
-    protected Option[] options;
+    protected Identifiable[] options;
     
     /**
      * @param options The options/flags to connect.
      */
-    public XorOptionsRule(Option... options)
+    public XorOptionsRule(Identifiable... options)
     {
         this.options = options;
     }
@@ -25,18 +26,18 @@ public class XorOptionsRule extends BaseRule
     public void validate(Validator intent, Validator.ValidatedInput params)
         throws RuleNotMetException
     {
-        Option prevSet = null;
+        Identifiable prevSet = null;
         
-        for (Option o:options)
+        for (Identifiable o:options)
         {
             boolean curSet = false;
-            if (o.isFlag())
+            if (o instanceof Flag)
             {
-                curSet = params.isFlagSet(o);
+                curSet = params.isFlagSet(o.getPrimaryIdentifier());
             }
             else
             {
-                curSet = params.getOption(o) != null;
+                curSet = params.getOption(o.getPrimaryIdentifier()) != null;
             }
             if (curSet)
             {
@@ -64,7 +65,7 @@ public class XorOptionsRule extends BaseRule
     public String toString()
     {
         String str = "(Exactly one of these can be set at the same time:\n";
-        for (Option o:options)
+        for (Identifiable o:options)
         {
             str += o + "\n";
         }
