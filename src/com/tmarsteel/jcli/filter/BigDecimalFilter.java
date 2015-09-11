@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.parser.XMLParserBuilder;
+import com.tmarsteel.jcli.validator.XMLParserBuilder;
 import java.math.BigDecimal;
 import org.w3c.dom.Node;
 

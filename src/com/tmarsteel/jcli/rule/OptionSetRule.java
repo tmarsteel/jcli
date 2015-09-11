@@ -3,7 +3,7 @@ package com.tmarsteel.jcli.rule;
 import com.tmarsteel.jcli.Validator;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.RuleNotMetException;
-import com.tmarsteel.jcli.parser.MisconfigurationException;
+import com.tmarsteel.jcli.validator.MisconfigurationException;
 import java.util.ArrayList;
 import java.util.List;
 import org.w3c.dom.Node;

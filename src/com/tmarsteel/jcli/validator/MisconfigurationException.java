@@ -1,4 +1,4 @@
-package com.tmarsteel.jcli.parser;
+package com.tmarsteel.jcli.validator;
 
 /**
  * Thrown when a configuration is to be applied that is invalid/falwed.

@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli;
 
 import com.tmarsteel.jcli.Validator;
-import com.tmarsteel.jcli.parser.MisconfigurationException;
+import com.tmarsteel.jcli.validator.MisconfigurationException;
 
 public interface ParserBuilder
 {    

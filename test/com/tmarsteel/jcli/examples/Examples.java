@@ -8,7 +8,7 @@ package com.tmarsteel.jcli.examples;
 import com.tmarsteel.jcli.Validator;
 import com.tmarsteel.jcli.Environment;
 import com.tmarsteel.jcli.ParserBuilder;
-import com.tmarsteel.jcli.parser.XMLParserBuilder;
+import com.tmarsteel.jcli.validator.XMLParserBuilder;
 
 /**
  *
