@@ -4,6 +4,10 @@ import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Identifiable;
 import com.tmarsteel.jcli.Validator;
 import com.tmarsteel.jcli.RuleNotMetException;
+import java.util.ArrayList;
+import java.util.List;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Accepts input if exactly one of the given options/flags is set/specified. Use
@@ -12,47 +16,79 @@ import com.tmarsteel.jcli.RuleNotMetException;
  */
 public class XorOptionsRule extends BaseRule
 {
-    protected Identifiable[] options;
+    protected String[] options;
     
     /**
      * @param options The options/flags to connect.
      */
     public XorOptionsRule(Identifiable... options)
     {
-        this.options = options;
+        this.options = new String[options.length];
+        
+        for (int i = 0;i < options.length;i++)
+        {
+            this.options[i] = options[i].getPrimaryIdentifier();
+        }
+    }
+    
+    /**
+     * Node structure: <br>
+     * List all the identifiable flags, options and arguments in &lt;option&gt;
+     * subtags.
+     * @param node 
+     */
+    public XorOptionsRule(Node node)
+    {
+        NodeList children = node.getChildNodes();
+        
+        List<String> parsedOptions = new ArrayList<>();
+        
+        for (int i = 0;i < children.getLength();i++)
+        {
+            Node cNode = children.item(i);
+            
+            switch (cNode.getNodeName())
+            {
+                case "#text":
+                    continue;
+                case "option":
+                    parsedOptions.add(cNode.getTextContent().trim());
+                    break;
+            }
+        }
+        
+        parsedOptions.toArray(this.options = new String[parsedOptions.size()]);
     }
     
     @Override
     public void validate(Validator intent, Validator.ValidatedInput params)
         throws RuleNotMetException
     {
-        Identifiable prevSet = null;
+        boolean prevSet = false;
+        boolean anySet = false;
         
-        for (Identifiable o:options)
+        for (String o:options)
         {
-            boolean curSet = false;
-            if (o instanceof Flag)
+            if (params.isFlagSet(o) || params.getOption(o) != null)
             {
-                curSet = params.isFlagSet(o.getPrimaryIdentifier());
-            }
-            else
-            {
-                curSet = params.getOption(o.getPrimaryIdentifier()) != null;
-            }
-            if (curSet)
-            {
-                if (prevSet != null)
+                anySet = true;
+                
+                if (prevSet)
                 {
                     throw new RuleNotMetException(
                         errorMessage != null ? errorMessage :
                         prevSet + " and " + o + " cannot be set at the same time."
                     );
                 }
-                prevSet = o;
+                prevSet = true;
+            }
+            else
+            {
+                prevSet = false;
             }
         }
         
-        if (prevSet == null)
+        if (!anySet)
         {
             throw new RuleNotMetException(
                 errorMessage != null ? errorMessage :
@@ -65,7 +101,7 @@ public class XorOptionsRule extends BaseRule
     public String toString()
     {
         String str = "(Exactly one of these can be set at the same time:\n";
-        for (Identifiable o:options)
+        for (String o:options)
         {
             str += o + "\n";
         }
