@@ -1,9 +1,10 @@
-package com.tmarsteel.jcli;
+package com.tmarsteel.jcli.validator;
 
+import com.tmarsteel.jcli.Validator;
 import com.tmarsteel.jcli.Validator;
 import com.tmarsteel.jcli.validator.MisconfigurationException;
 
-public interface ParserBuilder
+public interface ValidatorBuilder
 {    
     /**
      * Applies the preconfigurations in this builder to the given {@link Validator}

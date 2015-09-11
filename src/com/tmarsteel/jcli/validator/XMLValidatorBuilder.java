@@ -6,7 +6,6 @@ import com.tmarsteel.jcli.Environment;
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.ParserBuilder;
 import com.tmarsteel.jcli.filter.Filter;
 import com.tmarsteel.jcli.rule.Rule;
 import java.io.File;
@@ -33,7 +32,7 @@ import org.xml.sax.SAXException;
  * Builder/Factory for Parsers, based on XML configuration.
  * @author tmarsteel
  */
-public class XMLParserBuilder implements ParserBuilder
+public class XMLValidatorBuilder implements ValidatorBuilder
 {    
     private Document baseDocument;
     private Environment environment;
@@ -51,10 +50,10 @@ public class XMLParserBuilder implements ParserBuilder
      * @throws SAXException If an XML Syntax-Error occurs.
      * @throws IOException If an I/O-Error occurs.
      */
-    public static XMLParserBuilder getInstance(InputStream configInputStream)
+    public static XMLValidatorBuilder getInstance(InputStream configInputStream)
         throws SAXException, IOException
     {
-        return XMLParserBuilder.getInstance(configInputStream, null);
+        return XMLValidatorBuilder.getInstance(configInputStream, null);
     }
     
     /**
@@ -68,7 +67,7 @@ public class XMLParserBuilder implements ParserBuilder
      * @throws SAXException If an XML Syntax-Error occurs.
      * @throws IOException If an I/O-Error occurs.
      */
-    public static XMLParserBuilder getInstance(InputStream configInputStream,
+    public static XMLValidatorBuilder getInstance(InputStream configInputStream,
         Environment env)
         throws SAXException, IOException
     {
@@ -80,7 +79,7 @@ public class XMLParserBuilder implements ParserBuilder
         try
         {
             DocumentBuilder builder = dbf.newDocumentBuilder();
-            return new XMLParserBuilder(builder.parse(configInputStream), env);
+            return new XMLValidatorBuilder(builder.parse(configInputStream), env);
         }
         catch (ParserConfigurationException ex)
         {
@@ -98,10 +97,10 @@ public class XMLParserBuilder implements ParserBuilder
      * @throws SAXException If an XML Syntax-Error occurs.
      * @throws IOException If an I/O-Error occurs.
      */
-    public static XMLParserBuilder getInstance(File configFile)
+    public static XMLValidatorBuilder getInstance(File configFile)
         throws IOException, SAXException
     {
-        return XMLParserBuilder.getInstance(configFile, null);
+        return XMLValidatorBuilder.getInstance(configFile, null);
     }
     
     /**
@@ -115,12 +114,12 @@ public class XMLParserBuilder implements ParserBuilder
      * @throws SAXException If an XML Syntax-Error occurs.
      * @throws IOException If an I/O-Error occurs.
      */
-    public static XMLParserBuilder getInstance(File configFile, Environment env)
+    public static XMLValidatorBuilder getInstance(File configFile, Environment env)
         throws IOException, SAXException
     {
         try (FileInputStream fIn = new FileInputStream(configFile))
         {
-            return XMLParserBuilder.getInstance(fIn, env);
+            return XMLValidatorBuilder.getInstance(fIn, env);
         }
     }
     
@@ -130,9 +129,9 @@ public class XMLParserBuilder implements ParserBuilder
      * @param xmlDocument The XML document to treat as configuration directives.
      * @return A ParserBuilder prepared with the given {@link Document}
      */
-    public static XMLParserBuilder getInstance(Document xmlDocument)
+    public static XMLValidatorBuilder getInstance(Document xmlDocument)
     {
-        return new XMLParserBuilder(xmlDocument, File.separatorChar == '/'? Environment.UNIX : Environment.DOS);
+        return new XMLValidatorBuilder(xmlDocument, File.separatorChar == '/'? Environment.UNIX : Environment.DOS);
     }
     
     /**
@@ -140,7 +139,7 @@ public class XMLParserBuilder implements ParserBuilder
      * @param xmlDocument The XML document to treat as configuration directives.
      * @param env The environment configuration to pass on to the created parsers.
      */
-    public XMLParserBuilder(Document xmlDocument, Environment env)
+    public XMLValidatorBuilder(Document xmlDocument, Environment env)
     {
         this.baseDocument = xmlDocument;
         this.environment = env;

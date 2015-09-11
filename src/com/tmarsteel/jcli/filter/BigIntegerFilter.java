@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.validator.XMLParserBuilder;
+import com.tmarsteel.jcli.validator.XMLValidatorBuilder;
 import java.math.BigInteger;
 import org.w3c.dom.Node;
 
@@ -20,7 +20,7 @@ public class BigIntegerFilter implements Filter
     public BigIntegerFilter(Node filterNode)
         throws ParseException
     {
-        String[] minMaxRadix = XMLParserBuilder.XMLUtils.getMinMaxRadix(filterNode);
+        String[] minMaxRadix = XMLValidatorBuilder.XMLUtils.getMinMaxRadix(filterNode);
 
         try
         {
