@@ -4,7 +4,6 @@ import com.tmarsteel.jcli.Argument;
 import com.tmarsteel.jcli.Environment;
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Option;
-import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.filter.Filter;
 import com.tmarsteel.jcli.rule.Rule;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
@@ -729,7 +728,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
         }
 
-        public static Long asLong(String numeric)
+        public static Long asLong(String numeric, int radix)
             throws ValidationException
         {
             if (numeric == null)
@@ -738,7 +737,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
             try
             {
-                return Long.parseLong(numeric);
+                return Long.parseLong(numeric, radix);
             }
             catch (NumberFormatException ex)
             {

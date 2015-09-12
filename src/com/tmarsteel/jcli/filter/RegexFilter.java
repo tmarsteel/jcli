@@ -120,4 +120,30 @@ public class RegexFilter implements Filter
     {
         this.returnGroup = returnGroup;
     }
+
+    /**
+     * Returns the pattern used to validate input.
+     * @return The pattern used to validate input.
+     */
+    public Pattern getPattern()
+    {
+        return pattern;
+    }
+
+    /**
+     * Sets the pattern used to validate input. If a new object is set, the 
+     * return group is reset to 0.
+     * @param pattern The pattern used to validate input.
+     */
+    public void setPattern(Pattern pattern)
+    {
+        if (pattern != this.pattern)
+        {
+            returnGroup = 0;
+        }
+        
+        this.pattern = pattern;
+    }
+    
+    
 }

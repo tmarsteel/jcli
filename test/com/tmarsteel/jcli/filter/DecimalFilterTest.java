@@ -1,15 +1,23 @@
 package com.tmarsteel.jcli.filter;
 
+import com.tmarsteel.jcli.XMLTest;
 import com.tmarsteel.jcli.validation.ValidationException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 
 /**
  * @author Tobias Marstaller
  */
-public class DecimalFilterTest
+public class DecimalFilterTest extends XMLTest
 { 
+    public DecimalFilterTest()
+    {
+        this.testXML = "DecimalFilterTest.xml";
+        this.testNodesName = "filter";
+    }
+    
     @Test
     public void testParseSucceedsWithoutLimit()
         throws ValidationException
@@ -92,5 +100,22 @@ public class DecimalFilterTest
         String number = "1.09380aaaaa";
         
         Object ret = bdf.parse(number);
+    }
+    
+    @Test
+    public void testNodeConstructor()
+        throws ValidationException
+    {
+        DecimalFilter filter = new DecimalFilter(testNodes.item(0));
+        
+        assertEquals(10.1D, filter.getMinValue(), 0.1D);
+        assertEquals(2000.978765487D, filter.getMaxValue(), 0.1D);
+    }
+    
+    @Test(expected = ValidationException.class)
+    public void nodeConstructorShouldFailOnNonNumerical()
+        throws ValidationException
+    {
+        DecimalFilter filter = new DecimalFilter(testNodes.item(1));
     }
 }

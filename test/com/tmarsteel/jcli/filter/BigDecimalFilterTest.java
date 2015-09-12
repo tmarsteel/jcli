@@ -1,5 +1,6 @@
 package com.tmarsteel.jcli.filter;
 
+import com.tmarsteel.jcli.XMLTest;
 import com.tmarsteel.jcli.validation.ValidationException;
 import java.math.BigDecimal;
 import static org.junit.Assert.*;
@@ -8,8 +9,14 @@ import org.junit.Test;
 /**
  * @author Tobias Marstaller
  */
-public class BigDecimalFilterTest
+public class BigDecimalFilterTest extends XMLTest
 {
+    public BigDecimalFilterTest()
+    {
+        this.testXML = "BigDecimalFilterTest.xml";
+        this.testNodesName = "filter";
+    }
+    
     @Test
     public void testParseSucceedsWithoutLimit()
         throws ValidationException
@@ -92,5 +99,20 @@ public class BigDecimalFilterTest
         String number = "1.0938209380aaaaa";
         
         Object ret = bdf.parse(number);
+    }
+    
+    @Test
+    public void testNodeConstructor()
+    {
+        BigDecimalFilter filter = new BigDecimalFilter(testNodes.item(0));
+        
+        assertEquals(filter.getMinValue().toPlainString(), "10.1");
+        assertEquals(filter.getMaxValue().toPlainString(), "2000.978765487");
+    }
+    
+    @Test(expected = NumberFormatException.class)
+    public void nodeConstructorShouldFailOnNonNumerical()
+    {
+        BigDecimalFilter filter = new BigDecimalFilter(testNodes.item(1));
     }
 }

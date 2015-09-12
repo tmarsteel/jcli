@@ -3,7 +3,6 @@ package com.tmarsteel.jcli.filter;
 import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.validation.ValidationException;
 import com.tmarsteel.jcli.validation.configuration.XMLValidatorConfigurator;
-import java.math.BigInteger;
 import org.w3c.dom.Node;
 
 /**
@@ -48,8 +47,8 @@ public class IntegerFilter implements Filter
             throw new ValidationException("Invalid radix: " + minMaxRadix[2]);
         }
 
-       this.minValue = minMaxRadix[0] == null? Long.MIN_VALUE : XMLValidatorConfigurator.XMLUtils.asLong(minMaxRadix[0]);
-       this.maxValue = minMaxRadix[1] == null? Long.MAX_VALUE : XMLValidatorConfigurator.XMLUtils.asLong(minMaxRadix[1]);
+       this.minValue = minMaxRadix[0] == null? Long.MIN_VALUE : XMLValidatorConfigurator.XMLUtils.asLong(minMaxRadix[0], radix);
+       this.maxValue = minMaxRadix[1] == null? Long.MAX_VALUE : XMLValidatorConfigurator.XMLUtils.asLong(minMaxRadix[1], radix);
     }
 
     public IntegerFilter(int radix)
@@ -102,4 +101,26 @@ public class IntegerFilter implements Filter
     {
         this.radix = radix;
     }
+
+    public long getMinValue()
+    {
+        return minValue;
+    }
+
+    public void setMinValue(long minValue)
+    {
+        this.minValue = minValue;
+    }
+
+    public long getMaxValue()
+    {
+        return maxValue;
+    }
+
+    public void setMaxValue(long maxValue)
+    {
+        this.maxValue = maxValue;
+    }
+    
+    
 }

@@ -38,9 +38,9 @@ public class BigIntegerFilter implements Filter
         {
             throw new ParseException("Invalid radix: " + minMaxRadix[2]);
         }
-
-        this.minValue = minMaxRadix[0] == null? null : new BigInteger(minMaxRadix[0]);
-        this.maxValue = minMaxRadix[1] == null? null : new BigInteger(minMaxRadix[1]);
+        
+        this.minValue = minMaxRadix[0] == null? null : new BigInteger(minMaxRadix[0], radix);
+        this.maxValue = minMaxRadix[1] == null? null : new BigInteger(minMaxRadix[1], radix);
     }
 
     public BigIntegerFilter(int radix)
@@ -92,5 +92,25 @@ public class BigIntegerFilter implements Filter
     public void setRadix(int radix)
     {
         this.radix = radix;
+    }
+
+    public BigInteger getMinValue()
+    {
+        return minValue;
+    }
+
+    public void setMinValue(BigInteger minValue)
+    {
+        this.minValue = minValue;
+    }
+
+    public BigInteger getMaxValue()
+    {
+        return maxValue;
+    }
+
+    public void setMaxValue(BigInteger maxValue)
+    {
+        this.maxValue = maxValue;
     }
 }
