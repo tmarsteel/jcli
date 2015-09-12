@@ -104,11 +104,6 @@ public class BigDecimalFilterTest extends XMLTest
     @Test
     public void testNodeConstructor()
     {
-        if (testNodes == null)
-        {
-            fail("The test-document could not be loaded. See errors for #setUp()");
-        }
-        
         BigDecimalFilter filter = new BigDecimalFilter(testNodes.item(0));
         
         assertEquals(filter.getMinValue().toPlainString(), "10.1");
@@ -118,11 +113,6 @@ public class BigDecimalFilterTest extends XMLTest
     @Test(expected = NumberFormatException.class)
     public void nodeConstructorShouldFailOnNonNumerical()
     {
-        if (testNodes == null)
-        {
-            fail("The test-document could not be loaded. See errors for #setUp()");
-        }
-        
         BigDecimalFilter filter = new BigDecimalFilter(testNodes.item(1));
     }
 }

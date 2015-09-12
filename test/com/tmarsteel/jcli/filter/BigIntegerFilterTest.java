@@ -114,11 +114,6 @@ public class BigIntegerFilterTest extends XMLTest
     public void testNodeConstructor()
         throws ParseException
     {
-        if (testNodes == null)
-        {
-            fail("The test-document could not be loaded. See errors for #setUp()");
-        }
-        
         BigIntegerFilter filter = new BigIntegerFilter(testNodes.item(0));
         
         assertEquals(filter.getMinValue().toString(), "10");
@@ -129,11 +124,6 @@ public class BigIntegerFilterTest extends XMLTest
     public void testNodeConstructorWithRadix()
         throws ParseException
     {
-        if (testNodes == null)
-        {
-            fail("The test-document could not be loaded. See errors for #setUp()");
-        }
-        
         BigIntegerFilter filter = new BigIntegerFilter(testNodes.item(1));
         
         assertEquals(filter.getMinValue().toString(10), "10");
@@ -145,11 +135,6 @@ public class BigIntegerFilterTest extends XMLTest
     public void nodeConstructorShouldFailOnNonNumerical()
         throws ParseException
     {
-        if (testNodes == null)
-        {
-            fail("The test-document could not be loaded. See errors for #setUp()");
-        }
-
         BigIntegerFilter filter = new BigIntegerFilter(testNodes.item(2));
     }
 }

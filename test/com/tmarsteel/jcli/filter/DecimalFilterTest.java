@@ -106,11 +106,6 @@ public class DecimalFilterTest extends XMLTest
     public void testNodeConstructor()
         throws ValidationException
     {
-        if (testNodes == null)
-        {
-            fail("The test-document could not be loaded. See errors for #setUp()");
-        }
-        
         DecimalFilter filter = new DecimalFilter(testNodes.item(0));
         
         assertEquals(10.1D, filter.getMinValue(), 0.1D);
@@ -121,11 +116,6 @@ public class DecimalFilterTest extends XMLTest
     public void nodeConstructorShouldFailOnNonNumerical()
         throws ValidationException
     {
-        if (testNodes == null)
-        {
-            fail("The test-document could not be loaded. See errors for #setUp()");
-        }
-        
         DecimalFilter filter = new DecimalFilter(testNodes.item(1));
     }
 }

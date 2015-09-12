@@ -105,11 +105,6 @@ public class IntegerFilterTest extends XMLTest
     public void testNodeConstructor()
         throws ParseException, ValidationException
     {
-        if (testNodes == null)
-        {
-            fail("The test-document could not be loaded. See errors for #setUp()");
-        }
-        
         IntegerFilter filter = new IntegerFilter(testNodes.item(0));
         
         assertEquals(filter.getMinValue(), 10);
@@ -120,11 +115,6 @@ public class IntegerFilterTest extends XMLTest
     public void testNodeConstructorWithRadix()
         throws ParseException, ValidationException
     {
-        if (testNodes == null)
-        {
-            fail("The test-document could not be loaded. See errors for #setUp()");
-        }
-        
         IntegerFilter filter = new IntegerFilter(testNodes.item(1));
         
         assertEquals(filter.getMinValue(), 10);
@@ -136,11 +126,6 @@ public class IntegerFilterTest extends XMLTest
     public void nodeConstructorShouldFailOnNonNumerical()
         throws ParseException, ValidationException
     {
-        if (testNodes == null)
-        {
-            fail("The test-document could not be loaded. See errors for #setUp()");
-        }
-
         IntegerFilter filter = new IntegerFilter(testNodes.item(2));
     }
 }
