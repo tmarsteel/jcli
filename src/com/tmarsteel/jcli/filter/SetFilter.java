@@ -110,6 +110,11 @@ public class SetFilter implements Filter
                 throw new ValidationException("set-filters only allow value tags");
             }
         }
+        
+        if (this.options.isEmpty())
+        {
+            throw new IllegalArgumentException("Need to specify at least one value");
+        }
     }
 
     @Override

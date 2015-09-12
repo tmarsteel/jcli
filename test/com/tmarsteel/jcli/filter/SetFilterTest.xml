@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cli>
+    <!-- filter 0: should succeed -->
+    <filter type="set">
+        <value>foo</value>
+        <value>bar</value>
+    </filter>
+    
+    <!-- filter 1: should succeed -->
+    <filter type="set" caseSensitive="true">
+        <value>foo</value>
+        <value>bar</value>
+    </filter>
+    
+    <!-- filter 2: should fail -->
+    <filter type="set">
+    </filter>
+</cli>
