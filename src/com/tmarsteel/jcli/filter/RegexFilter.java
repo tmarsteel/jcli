@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.validator.ValidationException;
+import com.tmarsteel.jcli.validation.ValidationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.w3c.dom.NamedNodeMap;

@@ -1,8 +1,8 @@
-package com.tmarsteel.jcli.validator.configuration;
+package com.tmarsteel.jcli.validation.configuration;
 
-import com.tmarsteel.jcli.validator.MisconfigurationException;
-import com.tmarsteel.jcli.validator.MisconfigurationException;
-import com.tmarsteel.jcli.validator.Validator;
+import com.tmarsteel.jcli.validation.MisconfigurationException;
+import com.tmarsteel.jcli.validation.MisconfigurationException;
+import com.tmarsteel.jcli.validation.Validator;
 
 public interface ValidatorConfigurator
 {    

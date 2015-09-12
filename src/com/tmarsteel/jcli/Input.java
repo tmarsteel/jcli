@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli;
 
-import com.tmarsteel.jcli.validator.Validator;
+import com.tmarsteel.jcli.validation.Validator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

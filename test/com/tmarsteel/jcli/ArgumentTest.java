@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli;
 
 import com.tmarsteel.jcli.filter.Filter;
-import com.tmarsteel.jcli.validator.ValidationException;
+import com.tmarsteel.jcli.validation.ValidationException;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Test;

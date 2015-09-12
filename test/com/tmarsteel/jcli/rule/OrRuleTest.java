@@ -2,9 +2,9 @@ package com.tmarsteel.jcli.rule;
 
 import com.tmarsteel.jcli.Input;
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.validator.RuleNotMetException;
-import com.tmarsteel.jcli.validator.ValidationException;
-import com.tmarsteel.jcli.validator.Validator;
+import com.tmarsteel.jcli.validation.RuleNotMetException;
+import com.tmarsteel.jcli.validation.ValidationException;
+import com.tmarsteel.jcli.validation.Validator;
 import org.junit.Before;
 import org.junit.Test;
 

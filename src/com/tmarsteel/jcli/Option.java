@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli;
 
 import com.tmarsteel.jcli.filter.Filter;
-import com.tmarsteel.jcli.validator.ValidationException;
+import com.tmarsteel.jcli.validation.ValidationException;
 
 /**
  * Represents a Option or Flag, e.g. <code>--log-level 2</code> or <code>-verbose</code>

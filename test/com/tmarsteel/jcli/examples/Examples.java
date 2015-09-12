@@ -5,10 +5,10 @@
  */
 package com.tmarsteel.jcli.examples;
 
-import com.tmarsteel.jcli.validator.Validator;
+import com.tmarsteel.jcli.validation.Validator;
 import com.tmarsteel.jcli.Environment;
-import com.tmarsteel.jcli.validator.configuration.ValidatorConfigurator;
-import com.tmarsteel.jcli.validator.configuration.XMLValidatorConfigurator;
+import com.tmarsteel.jcli.validation.configuration.ValidatorConfigurator;
+import com.tmarsteel.jcli.validation.configuration.XMLValidatorConfigurator;
 
 /**
  *

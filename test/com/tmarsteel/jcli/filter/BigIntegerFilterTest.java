@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.validator.ValidationException;
+import com.tmarsteel.jcli.validation.ValidationException;
 import java.math.BigInteger;
 import static org.junit.Assert.*;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.tmarsteel.jcli.validator;
+package com.tmarsteel.jcli.validation;
 
 import com.tmarsteel.jcli.Argument;
 import com.tmarsteel.jcli.Environment;

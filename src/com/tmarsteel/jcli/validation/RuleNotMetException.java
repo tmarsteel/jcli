@@ -1,4 +1,4 @@
-package com.tmarsteel.jcli.validator;
+package com.tmarsteel.jcli.validation;
 
 public class RuleNotMetException extends ValidationException
 {
