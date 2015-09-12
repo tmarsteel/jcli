@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.validator.builder.XMLValidatorBuilder;
+import com.tmarsteel.jcli.validator.configuration.XMLValidatorConfigurator;
 import java.math.BigDecimal;
 import org.w3c.dom.Node;
 
@@ -18,7 +18,7 @@ public class BigDecimalFilter implements Filter
 
     public BigDecimalFilter(Node filterNode)
     {
-        String[] minMax = XMLValidatorBuilder.XMLUtils.getMinMax(filterNode);
+        String[] minMax = XMLValidatorConfigurator.XMLUtils.getMinMax(filterNode);
         this.minValue = minMax[0] == null? null : new BigDecimal(minMax[0]);
         this.maxValue = minMax[1] == null? null : new BigDecimal(minMax[1]);
     }

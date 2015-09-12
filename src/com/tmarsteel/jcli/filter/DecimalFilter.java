@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.validator.builder.XMLValidatorBuilder;
+import com.tmarsteel.jcli.validator.configuration.XMLValidatorConfigurator;
 import org.w3c.dom.Node;
 
 /**
@@ -18,9 +18,9 @@ public class DecimalFilter implements Filter
     public DecimalFilter(Node filterNode)
         throws ParseException
     {
-        String[] minMax = XMLValidatorBuilder.XMLUtils.getMinMax(filterNode);
-        this.minValue = XMLValidatorBuilder.XMLUtils.asDouble(minMax[0]);
-        this.maxValue = XMLValidatorBuilder.XMLUtils.asDouble(minMax[1]);
+        String[] minMax = XMLValidatorConfigurator.XMLUtils.getMinMax(filterNode);
+        this.minValue = XMLValidatorConfigurator.XMLUtils.asDouble(minMax[0]);
+        this.maxValue = XMLValidatorConfigurator.XMLUtils.asDouble(minMax[1]);
     }
 
     public DecimalFilter(double minValue, double maxValue)

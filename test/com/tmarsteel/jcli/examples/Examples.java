@@ -7,8 +7,8 @@ package com.tmarsteel.jcli.examples;
 
 import com.tmarsteel.jcli.validator.Validator;
 import com.tmarsteel.jcli.Environment;
-import com.tmarsteel.jcli.validator.builder.ValidatorBuilder;
-import com.tmarsteel.jcli.validator.builder.XMLValidatorBuilder;
+import com.tmarsteel.jcli.validator.configuration.ValidatorConfigurator;
+import com.tmarsteel.jcli.validator.configuration.XMLValidatorConfigurator;
 
 /**
  *
@@ -18,7 +18,7 @@ public class Examples
 {    
     public static void main(String[] args) throws Exception
     {
-        ValidatorBuilder builder = XMLValidatorBuilder.getInstance(
+        ValidatorConfigurator builder = XMLValidatorConfigurator.getInstance(
             Examples.class.getResourceAsStream("example-config.xml"),
             Environment.UNIX
         );

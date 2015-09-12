@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.validator.builder.XMLValidatorBuilder;
+import com.tmarsteel.jcli.validator.configuration.XMLValidatorConfigurator;
 import java.math.BigInteger;
 import org.w3c.dom.Node;
 
@@ -29,7 +29,7 @@ public class IntegerFilter implements Filter
     public IntegerFilter(Node filterNode)
         throws ParseException
     {
-        String[] minMaxRadix = XMLValidatorBuilder.XMLUtils.getMinMaxRadix(filterNode);
+        String[] minMaxRadix = XMLValidatorConfigurator.XMLUtils.getMinMaxRadix(filterNode);
 
         try
         {
@@ -47,8 +47,8 @@ public class IntegerFilter implements Filter
             throw new ParseException("Invalid radix: " + minMaxRadix[2]);
         }
 
-       this.minValue = minMaxRadix[0] == null? Long.MIN_VALUE : XMLValidatorBuilder.XMLUtils.asLong(minMaxRadix[0]);
-       this.maxValue = minMaxRadix[1] == null? Long.MAX_VALUE : XMLValidatorBuilder.XMLUtils.asLong(minMaxRadix[1]);
+       this.minValue = minMaxRadix[0] == null? Long.MIN_VALUE : XMLValidatorConfigurator.XMLUtils.asLong(minMaxRadix[0]);
+       this.maxValue = minMaxRadix[1] == null? Long.MAX_VALUE : XMLValidatorConfigurator.XMLUtils.asLong(minMaxRadix[1]);
     }
 
     public IntegerFilter(int radix)
