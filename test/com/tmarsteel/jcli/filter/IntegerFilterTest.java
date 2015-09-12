@@ -3,16 +3,8 @@ package com.tmarsteel.jcli.filter;
 import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.XMLTest;
 import com.tmarsteel.jcli.validation.ValidationException;
-import java.io.IOException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.Assert.*;
-import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * @author Tobias Marstaller
@@ -21,7 +13,7 @@ public class IntegerFilterTest extends XMLTest
 {
     public IntegerFilterTest()
     {
-        this.testXML = "DecimalFilterTest.xml";
+        this.testXML = "IntegerFilterTest.xml";
         this.testNodesName = "filter";
     }
     

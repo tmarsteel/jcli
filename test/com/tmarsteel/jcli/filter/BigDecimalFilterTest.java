@@ -2,17 +2,9 @@ package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.XMLTest;
 import com.tmarsteel.jcli.validation.ValidationException;
-import java.io.IOException;
 import java.math.BigDecimal;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.Assert.*;
-import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * @author Tobias Marstaller
@@ -21,7 +13,7 @@ public class BigDecimalFilterTest extends XMLTest
 {
     public BigDecimalFilterTest()
     {
-        this.testXML = "BigIntegerFilterTest.xml";
+        this.testXML = "BigDecimalFilterTest.xml";
         this.testNodesName = "filter";
     }
     
