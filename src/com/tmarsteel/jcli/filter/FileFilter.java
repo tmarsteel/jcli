@@ -247,7 +247,7 @@ public class FileFilter implements java.io.FileFilter, Filter
      * Checks whether the given file fulfills all the requirements of this filter
      * and throws an exception if that is not the case.
      * @param file The file to check
-     * @throws ParseException If the given file does not fulfill the requirements
+     * @throws ValidationException If the given file does not fulfill the requirements
      * of this filter.
      */
     public void assertSuffices(File file)
@@ -260,7 +260,12 @@ public class FileFilter implements java.io.FileFilter, Filter
             permissionStatus.test(file);
             if (extension != null)
             {
-                if (!(file.getName().substring(file.getName().length() - extension.length()).equalsIgnoreCase(extension)))
+                String fName = file.getName();
+                
+                // if the name ends with a dot, the substring will fail
+                if (fName.lastIndexOf('.') == -1 ||
+                    fName.endsWith(".") ||
+                    !(fName.substring(fName.lastIndexOf('.') + 1).equalsIgnoreCase(extension)))
                 {
                     throw new ValidationException("extension needs to be " + extension);
                 }
@@ -282,6 +287,12 @@ public class FileFilter implements java.io.FileFilter, Filter
 
     public void setExtension(String extension)
     {
+        // cut leading .
+        if (extension.charAt(0) == '0')
+        {
+            extension = extension.substring(1);
+        }
+        
         this.extension = extension;
     }
 
