@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cli>
+    <!-- filter 0: should succeed -->
+    <filter type="regex" returnGroup="1">
+        <regex>^a(.+)f$</regex>
+    </filter>
+    
+    <!-- filter 1: should fail -->
+    <filter type="regex" returnGroup="f">
+        <regex>^a(.+)f$</regex>
+    </filter>
+</cli>

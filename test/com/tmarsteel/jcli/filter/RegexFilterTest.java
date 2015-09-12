@@ -1,23 +1,22 @@
 package com.tmarsteel.jcli.filter;
 
+import com.tmarsteel.jcli.XMLTest;
 import com.tmarsteel.jcli.validation.ValidationException;
-import java.io.IOException;
 import java.util.regex.Pattern;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * @author Tobias Marstaller
  */
-public class RegexFilterTest
+public class RegexFilterTest extends XMLTest
 {
+    public RegexFilterTest()
+    {
+        testXML = "RegexFilterTest.xml";
+        testNodesName = "filter";
+    }
+    
     @Test
     public void testParseSucceedsWithoutReturnGroup()
         throws ValidationException
@@ -56,6 +55,20 @@ public class RegexFilterTest
         filter.parse("bc");
     }
     
-    // -----------------
-
+    @Test
+    public void testNodeConstructor()
+        throws ValidationException
+    {
+        RegexFilter f = new RegexFilter(testNodes.item(0));
+        
+        assertEquals(f.getPattern().pattern(), "^a(.+)f$");
+        assertEquals(f.getReturnGroup(), 1);
+    }
+    
+    @Test(expected = ValidationException.class)
+    public void nodeConstructorShouldFailOnNonNumericReturnGroup()
+        throws ValidationException
+    {
+        RegexFilter f = new RegexFilter(testNodes.item(1));
+    }
 }
