@@ -1,6 +1,5 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.validation.ValidationException;
 import com.tmarsteel.jcli.validation.configuration.XMLValidatorConfigurator;
 import java.math.BigDecimal;
@@ -12,8 +11,8 @@ import org.w3c.dom.Node;
  */
 public class BigDecimalFilter implements Filter
 {
-    protected BigDecimal minValue = null;
-    protected BigDecimal maxValue = null;
+    private BigDecimal minValue = null;
+    private BigDecimal maxValue = null;
 
     public BigDecimalFilter() {}
 
@@ -51,5 +50,25 @@ public class BigDecimalFilter implements Filter
         {
             throw new ValidationException("Decimal value required", ex);
         }
+    }
+
+    public BigDecimal getMinValue()
+    {
+        return minValue;
+    }
+
+    public void setMinValue(BigDecimal minValue)
+    {
+        this.minValue = minValue;
+    }
+
+    public BigDecimal getMaxValue()
+    {
+        return maxValue;
+    }
+
+    public void setMaxValue(BigDecimal maxValue)
+    {
+        this.maxValue = maxValue;
     }
 }

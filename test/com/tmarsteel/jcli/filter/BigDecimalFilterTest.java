@@ -1,9 +1,17 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.validation.ValidationException;
+import java.io.IOException;
 import java.math.BigDecimal;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.Assert.*;
+import org.junit.Before;
 import org.junit.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 /**
  * @author Tobias Marstaller
@@ -92,5 +100,52 @@ public class BigDecimalFilterTest
         String number = "1.0938209380aaaaa";
         
         Object ret = bdf.parse(number);
+    }
+    
+    // --------------------
+    
+    private Document testDocument;
+    
+    @Before
+    public void setUp()
+        throws ParserConfigurationException, SAXException, IOException
+    {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setValidating(false);
+        dbf.setIgnoringComments(true);
+        dbf.setIgnoringElementContentWhitespace(true);
+        
+        DocumentBuilder builder = dbf.newDocumentBuilder();
+        
+        testDocument = builder.parse(getClass().getResourceAsStream("BigDecimalFilterTest.xml"));
+    }
+    
+    @Test
+    public void testNodeConstructor()
+    {
+        if (testDocument == null)
+        {
+            fail("The test-document could not be loaded. See errors for #setUp()");
+        }
+        
+        Node testNode = testDocument.getDocumentElement().getElementsByTagName("filter").item(0);
+        
+        BigDecimalFilter filter = new BigDecimalFilter(testNode);
+        
+        assertEquals(filter.getMinValue().toPlainString(), "10.1");
+        assertEquals(filter.getMaxValue().toPlainString(), "2000.978765487");
+    }
+    
+    @Test(expected = NumberFormatException.class)
+    public void nodeConstructorShouldFailOnNonNumerical()
+    {
+        if (testDocument == null)
+        {
+            fail("The test-document could not be loaded. See errors for #setUp()");
+        }
+        
+        Node testNode = testDocument.getDocumentElement().getElementsByTagName("filter").item(1);
+        
+        BigDecimalFilter filter = new BigDecimalFilter(testNode);
     }
 }
