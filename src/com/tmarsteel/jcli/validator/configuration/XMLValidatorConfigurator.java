@@ -8,6 +8,7 @@ import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.filter.Filter;
 import com.tmarsteel.jcli.rule.Rule;
 import com.tmarsteel.jcli.validator.MisconfigurationException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import com.tmarsteel.jcli.validator.Validator;
 import java.io.File;
 import java.io.FileInputStream;
@@ -712,7 +713,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         }
 
         public static Double asDouble(String numeric)
-            throws ParseException
+            throws ValidationException
         {
             if (numeric == null)
             {
@@ -724,12 +725,12 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
             catch (NumberFormatException ex)
             {
-                throw new ParseException("Invalid decimal number: " + numeric, ex);
+                throw new ValidationException("Invalid decimal number: " + numeric, ex);
             }
         }
 
         public static Long asLong(String numeric)
-            throws ParseException
+            throws ValidationException
         {
             if (numeric == null)
             {
@@ -741,7 +742,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
             catch (NumberFormatException ex)
             {
-                throw new ParseException("Invalid integer number: " + numeric, ex);
+                throw new ValidationException("Invalid integer number: " + numeric, ex);
             }
         }
     }

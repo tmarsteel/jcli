@@ -1,7 +1,6 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
-import java.math.BigDecimal;
+import com.tmarsteel.jcli.validator.ValidationException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -13,7 +12,7 @@ public class DecimalFilterTest
 { 
     @Test
     public void testParseSucceedsWithoutLimit()
-        throws ParseException
+        throws ValidationException
     {
         DecimalFilter bdf = new DecimalFilter();
         
@@ -27,7 +26,7 @@ public class DecimalFilterTest
     
     @Test
     public void testParseSucceedsWithLimit()
-        throws ParseException
+        throws ValidationException
     {
         DecimalFilter bdf = new DecimalFilter(
             1.0054f,
@@ -42,9 +41,9 @@ public class DecimalFilterTest
         assertEquals(String.valueOf(ret), number);
     }
 
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithInputBelowLimit()
-        throws ParseException
+        throws ValidationException
     {
         DecimalFilter bdf = new DecimalFilter(
             1.0054f,
@@ -56,9 +55,9 @@ public class DecimalFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithInputAboveLimit()
-        throws ParseException
+        throws ValidationException
     {
         DecimalFilter bdf = new DecimalFilter(
             1.0054f,
@@ -70,9 +69,9 @@ public class DecimalFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithNonNumericInputWithoutLimit()
-        throws ParseException
+        throws ValidationException
     {
         DecimalFilter bdf = new DecimalFilter();
         
@@ -81,9 +80,9 @@ public class DecimalFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithNonNumericInputWithLimit()
-        throws ParseException
+        throws ValidationException
     {
         DecimalFilter bdf = new DecimalFilter(
             1.0054f,

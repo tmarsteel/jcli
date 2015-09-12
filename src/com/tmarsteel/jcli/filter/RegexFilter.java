@@ -1,11 +1,11 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * Accepts only Strings matching the given regex.
@@ -46,7 +46,7 @@ public class RegexFilter implements Filter
      * <code>filterNode</code>
      */
     public RegexFilter(Node filterNode)
-        throws ParseException
+        throws ValidationException
     {
         NamedNodeMap attrs = filterNode.getAttributes();
         // look for the return-group attribute
@@ -63,7 +63,7 @@ public class RegexFilter implements Filter
             }
             catch (NumberFormatException ex)
             {
-                throw new ParseException("Value of returnGroup attribute needs to be an integer");
+                throw new ValidationException("Value of returnGroup attribute needs to be an integer");
             }
         }
 
@@ -78,13 +78,13 @@ public class RegexFilter implements Filter
         }
         else
         {
-            throw new ParseException("regex-filters only allow regex tags");
+            throw new ValidationException("regex-filters only allow regex tags");
         }
     }
 
     @Override
     public Object parse(String value)
-        throws ParseException
+        throws ValidationException
     {
         Matcher m = pattern.matcher(value);
         if (m.matches())
@@ -93,7 +93,7 @@ public class RegexFilter implements Filter
         }
         else
         {
-            throw new ParseException("value needs to match regex " + pattern.pattern());
+            throw new ValidationException("value needs to match regex " + pattern.pattern());
         }
     }
 

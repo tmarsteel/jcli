@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
@@ -11,7 +11,7 @@ public class IntegerFilterTest
 {
     @Test
     public void testParseSucceedsWithoutLimit()
-        throws ParseException
+        throws ValidationException
     {
         IntegerFilter bdf = new IntegerFilter();
         
@@ -25,7 +25,7 @@ public class IntegerFilterTest
     
     @Test
     public void testParseSucceedsWithLimit()
-        throws ParseException
+        throws ValidationException
     {
         IntegerFilter bdf = new IntegerFilter(
             1000005478L,
@@ -40,9 +40,9 @@ public class IntegerFilterTest
         assertEquals(String.valueOf(ret), number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithInputBelowLimit()
-        throws ParseException
+        throws ValidationException
     {
         IntegerFilter bdf = new IntegerFilter(
             1000005478L,
@@ -54,9 +54,9 @@ public class IntegerFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithInputAboveLimit()
-        throws ParseException
+        throws ValidationException
     {
         IntegerFilter bdf = new IntegerFilter(
             1000005478L,
@@ -68,9 +68,9 @@ public class IntegerFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithNonNumericInputWithoutLimit()
-        throws ParseException
+        throws ValidationException
     {
         IntegerFilter bdf = new IntegerFilter();
         
@@ -79,9 +79,9 @@ public class IntegerFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithNonNumericInputWithLimit()
-        throws ParseException
+        throws ValidationException
     {
         IntegerFilter bdf = new IntegerFilter(
             1000005478L,

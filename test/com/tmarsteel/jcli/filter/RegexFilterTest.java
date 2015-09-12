@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import java.util.regex.Pattern;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -12,7 +12,7 @@ public class RegexFilterTest
 {
     @Test
     public void testParseSucceedsWithoutReturnGroup()
-        throws ParseException
+        throws ValidationException
     {
         RegexFilter filter = new RegexFilter(Pattern.compile("^a.+$"));
         
@@ -21,7 +21,7 @@ public class RegexFilterTest
     
     @Test
     public void testParseSucceedsWithReturnGroup()
-        throws ParseException
+        throws ValidationException
     {
         RegexFilter filter = new RegexFilter(Pattern.compile("^a(.+)$"));
         filter.setReturnGroup(1);
@@ -29,18 +29,18 @@ public class RegexFilterTest
         assertEquals(filter.parse("abc"), "bc");
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailesWithoutReturnGroup()
-        throws ParseException
+        throws ValidationException
     {
         RegexFilter filter = new RegexFilter(Pattern.compile("^a.+$"));
         
         filter.parse("bc");
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailesWithReturnGroup()
-        throws ParseException
+        throws ValidationException
     {
         RegexFilter filter = new RegexFilter(Pattern.compile("^a(.+)$"));
         filter.setReturnGroup(1);

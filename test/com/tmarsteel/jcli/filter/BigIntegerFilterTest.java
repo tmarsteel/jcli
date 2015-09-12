@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import java.math.BigInteger;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -12,7 +12,7 @@ public class BigIntegerFilterTest
 {
     @Test
     public void testParseSucceedsWithoutLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigIntegerFilter bdf = new BigIntegerFilter();
         
@@ -26,7 +26,7 @@ public class BigIntegerFilterTest
     
     @Test
     public void testParseSucceedsWithLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigIntegerFilter bdf = new BigIntegerFilter(
             new BigInteger("100000000000000000056789"),
@@ -41,9 +41,9 @@ public class BigIntegerFilterTest
         assertEquals(((BigInteger) ret).toString(), number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithInputBelowLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigIntegerFilter bdf = new BigIntegerFilter(
             new BigInteger("100000000000000000056789"),
@@ -55,9 +55,9 @@ public class BigIntegerFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithInputAboveLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigIntegerFilter bdf = new BigIntegerFilter(
             new BigInteger("100000000000000000056789"),
@@ -69,9 +69,9 @@ public class BigIntegerFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithNonNumericInputWithoutLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigIntegerFilter bdf = new BigIntegerFilter();
         
@@ -80,9 +80,9 @@ public class BigIntegerFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithNonNumericInputWithLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigIntegerFilter bdf = new BigIntegerFilter(
             new BigInteger("100000000000000000056789"),

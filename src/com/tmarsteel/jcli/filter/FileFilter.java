@@ -1,6 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import java.io.File;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,21 +25,21 @@ public class FileFilter implements java.io.FileFilter, Filter
          * @throws ParseException If the given file does not fulfill 
          */
         public void test(File file)
-            throws ParseException
+            throws ValidationException
         {
             switch (this)
             {
                 case MUST_EXIST:
                     if (!file.exists())
                     {
-                        throw new ParseException("file " + file.getPath() +
+                        throw new ValidationException("file " + file.getPath() +
                             " not found");
                     }
                     break;
                 case MUST_NOT_EXIST:
                     if (file.exists())
                     {
-                        throw new ParseException("file must not exist.");
+                        throw new ValidationException("file must not exist.");
                     }
                     break;
             }
@@ -74,20 +75,20 @@ public class FileFilter implements java.io.FileFilter, Filter
          * @throws ParseException If the given file does not fulfill 
          */
         public void test(File f)
-            throws ParseException
+            throws ValidationException
         {
             if (readR && !f.canRead())
             {
-                throw new ParseException("not readable");
+                throw new ValidationException("not readable");
             }
             if (writeR && !f.canWrite())
             {
-                throw new ParseException("not writeable");
+                throw new ValidationException("not writeable");
             }
             // non-existant files will always return false on this
             if (execR && !f.canExecute() && f.exists())
             {
-                throw new ParseException("cannot execute / list");
+                throw new ValidationException("cannot execute / list");
             }
         }
     }
@@ -105,7 +106,7 @@ public class FileFilter implements java.io.FileFilter, Filter
          * @throws ParseException If the given file does not fulfill 
          */
         public void test(File file)
-            throws ParseException
+            throws ValidationException
         {
             if (this != IRRELEVANT)
             {
@@ -118,13 +119,13 @@ public class FileFilter implements java.io.FileFilter, Filter
                     case FILE:
                         if (!file.isFile())
                         {
-                            throw new ParseException("needs to be a file");
+                            throw new ValidationException("needs to be a file");
                         }
                         break;
                     case DIRECTORY:
                         if (!file.isDirectory())
                         {
-                            throw new ParseException("needs to be a directory");
+                            throw new ValidationException("needs to be a directory");
                         }
                         break;
                 }
@@ -226,7 +227,7 @@ public class FileFilter implements java.io.FileFilter, Filter
             assertSuffices(pathname);
             return true;
         }
-        catch (ParseException ex)
+        catch (ValidationException ex)
         {
             return false;
         }
@@ -234,7 +235,7 @@ public class FileFilter implements java.io.FileFilter, Filter
 
     @Override
     public Object parse(String value)
-        throws ParseException
+        throws ValidationException
     {
         File f = new File(value);
         assertSuffices(f);
@@ -250,7 +251,7 @@ public class FileFilter implements java.io.FileFilter, Filter
      * of this filter.
      */
     public void assertSuffices(File file)
-        throws ParseException
+        throws ValidationException
     {
         if (filter == null)
         {
@@ -261,7 +262,7 @@ public class FileFilter implements java.io.FileFilter, Filter
             {
                 if (!(file.getName().substring(file.getName().length() - extension.length()).equalsIgnoreCase(extension)))
                 {
-                    throw new ParseException("extension needs to be " + extension);
+                    throw new ValidationException("extension needs to be " + extension);
                 }
             }
         }
@@ -269,7 +270,7 @@ public class FileFilter implements java.io.FileFilter, Filter
         {
             if (!filter.accept(file))
             {
-                throw new ParseException("invalid file");
+                throw new ValidationException("invalid file");
             }
         }
     }

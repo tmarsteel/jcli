@@ -1,6 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import com.tmarsteel.jcli.validator.configuration.XMLValidatorConfigurator;
 import java.math.BigDecimal;
 import org.w3c.dom.Node;
@@ -31,24 +32,24 @@ public class BigDecimalFilter implements Filter
 
     @Override
     public Object parse(String value)
-        throws ParseException
+        throws ValidationException
     {
         try
         {
             BigDecimal n = new BigDecimal(value);
             if (minValue != null && n.compareTo(minValue) < 0)
             {
-                throw new ParseException("Value less than minimum");
+                throw new ValidationException("Value less than minimum");
             }
             if (maxValue != null && n.compareTo(maxValue) > 0)
             {
-                throw new ParseException("Value greater than maximum");
+                throw new ValidationException("Value greater than maximum");
             }
             return n;
         }
         catch (NumberFormatException ex)
         {
-            throw new ParseException("Decimal value required", ex);
+            throw new ValidationException("Decimal value required", ex);
         }
     }
 }

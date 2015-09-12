@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import com.tmarsteel.jcli.validator.configuration.XMLValidatorConfigurator;
 import org.w3c.dom.Node;
 
@@ -16,7 +16,7 @@ public class DecimalFilter implements Filter
     public DecimalFilter() {}
 
     public DecimalFilter(Node filterNode)
-        throws ParseException
+        throws ValidationException
     {
         String[] minMax = XMLValidatorConfigurator.XMLUtils.getMinMax(filterNode);
         this.minValue = XMLValidatorConfigurator.XMLUtils.asDouble(minMax[0]);
@@ -31,24 +31,24 @@ public class DecimalFilter implements Filter
 
     @Override
     public Object parse(String value)
-        throws ParseException
+        throws ValidationException
     {
         try
         {
             Double n = Double.parseDouble(value);
             if (n < minValue)
             {
-                throw new ParseException("Value less than minimum (" + Double.toString(minValue) + ')');
+                throw new ValidationException("Value less than minimum (" + Double.toString(minValue) + ')');
             }
             if (n > maxValue)
             {
-                throw new ParseException("Value greater than maximum (" + Double.toString(maxValue) + ')');
+                throw new ValidationException("Value greater than maximum (" + Double.toString(maxValue) + ')');
             }
             return n;
         }
         catch (NumberFormatException ex)
         {
-            throw new ParseException("Decimal value required", ex);
+            throw new ValidationException("Decimal value required", ex);
         }
     }
 }

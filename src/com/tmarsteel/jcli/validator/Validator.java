@@ -6,7 +6,6 @@ import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Input;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.rule.BaseRule;
 import com.tmarsteel.jcli.rule.Rule;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -210,7 +209,7 @@ public class Validator
      * @return The parsed and validated input.
      */
     public ValidatedInput parse(String argline)
-        throws ParseException
+        throws ParseException, ValidationException
     {
         return parse(new Input(this, this.env, argline));
     }
@@ -221,7 +220,7 @@ public class Validator
      * @return The parsed and validated input.
      */
     public ValidatedInput parse(String[] args)
-        throws ParseException
+        throws ParseException, ValidationException
     {
         return parse(new Input(this, this.env, args));
     }
@@ -232,7 +231,7 @@ public class Validator
      * @return The parsed input.
      */
     public ValidatedInput parse(Input input)
-        throws ParseException
+        throws ValidationException
     {
         ValidatedInput vinput = new ValidatedInput();
         
@@ -267,7 +266,7 @@ public class Validator
             {
                 if (option.isRequired())
                 {
-                    throw new ParseException("Required option " + option.getPrimaryIdentifier() + " not set.");
+                    throw new ValidationException("Required option " + option.getPrimaryIdentifier() + " not set.");
                 }
                 else
                 {
@@ -282,9 +281,9 @@ public class Validator
                 {
                     value = option.parse(optValue);
                 }
-                catch (ParseException ex)
+                catch (ValidationException ex)
                 {
-                    throw new ParseException("Invalid value for option " +
+                    throw new ValidationException("Invalid value for option " +
                         option.getPrimaryIdentifier() + ": " + ex.getMessage(), ex);
                 }
                 vinput.optionValues.put(option.getPrimaryIdentifier(), value);
@@ -310,7 +309,7 @@ public class Validator
             {
                 if (arg.isRequired())
                 {
-                    throw new ParseException("You must specify at least "
+                    throw new ValidationException("You must specify at least "
                         + (arg.getIndex() + 1) + " argument(s).");
                 }
                 vinput.optionValues.put(arg.getIdentifier(), arg.getDefaultValue());

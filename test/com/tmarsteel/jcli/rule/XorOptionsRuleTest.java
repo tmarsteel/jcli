@@ -5,6 +5,7 @@ import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Input;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import com.tmarsteel.jcli.validator.Validator;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,9 +51,9 @@ public class XorOptionsRuleTest
         return v;
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testFailsWithTrueTrue()
-        throws ParseException
+        throws ValidationException
     {
         Validator v = newValidator();
         v.add(new XorOptionsRule(flagSet, optionSet));
@@ -62,7 +63,7 @@ public class XorOptionsRuleTest
     
     @Test
     public void testSucceedsWithTrueFalse()
-        throws ParseException
+        throws ValidationException
     {
         Validator v = newValidator();
         v.add(new XorOptionsRule(flagSet, flagNotSet));
@@ -70,9 +71,9 @@ public class XorOptionsRuleTest
         v.parse(dummyInput);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testFailsWithFalseFalse()
-        throws ParseException
+        throws ValidationException
     {
         Validator v = newValidator();
         v.add(new XorOptionsRule(flagNotSet, flag2NotSet));

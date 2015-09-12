@@ -1,6 +1,7 @@
 package com.tmarsteel.jcli;
 
 import com.tmarsteel.jcli.filter.Filter;
+import com.tmarsteel.jcli.validator.ValidationException;
 
 /**
  * Represents a Option or Flag, e.g. <code>--log-level 2</code> or <code>-verbose</code>
@@ -37,7 +38,7 @@ public class Option extends Identifiable
             {
                 this.defaultValue = parse((String) defaultValue);
             }
-            catch (ParseException ex)
+            catch (ValidationException ex)
             {
                 this.defaultValue = defaultValue;
             }
@@ -52,10 +53,10 @@ public class Option extends Identifiable
      * Parses the given value to the type required by this option.
      * @param value The value to be parsed.
      * @return The parsed value.
-     * @throws ParseException If value does not match this filter.
+     * @throws ValidationException If value does not match this filter.
      */
     public Object parse(String value)
-        throws ParseException
+        throws ValidationException
     {
         return valueFilter == null? value : valueFilter.parse(value);
     }

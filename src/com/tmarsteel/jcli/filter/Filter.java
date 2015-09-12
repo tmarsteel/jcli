@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 
 /**
  * Represents a filter for option values.
@@ -12,8 +12,8 @@ public interface Filter
      * Parses the given value to the type required by this filter.
      * @param value The value to be parsed.
      * @return The parsed value.
-     * @throws ParseException If value does not match this filter.
+     * @throws ValidationException If value does not match this filter.
      */
     public Object parse(String value)
-        throws ParseException;
+        throws ValidationException;
 }

@@ -1,12 +1,9 @@
 package com.tmarsteel.jcli;
 
 import com.tmarsteel.jcli.filter.Filter;
+import com.tmarsteel.jcli.validator.ValidationException;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -21,7 +18,7 @@ public class ArgumentTest {
 
     @Test
     public void parseShouldReturnValueWithoutFilter()
-        throws ParseException
+        throws ValidationException
     {
         Argument a = new Argument("name", 0);
         
@@ -32,7 +29,7 @@ public class ArgumentTest {
     
     @Test
     public void parseShouldInvokeFilter()
-        throws ParseException
+        throws ValidationException
     {
         final Map<String,Boolean> expectedCalls = new HashMap<>();
         

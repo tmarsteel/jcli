@@ -1,6 +1,7 @@
 package com.tmarsteel.jcli;
 
 import com.tmarsteel.jcli.filter.Filter;
+import com.tmarsteel.jcli.validator.ValidationException;
 
 /**
  * Represents any parameter passed to the program besides flags and options.
@@ -106,10 +107,10 @@ public class Argument
      * Parses the given value to the type required by this argument.
      * @param input The value to be parsed.
      * @return The parsed value.
-     * @throws ParseException If value does not match this filter.
+     * @throws ValidationException If value does not match this filter.
      */
     public Object parse(String input)
-        throws ParseException
+        throws ValidationException
     {
         return valueFilter == null? input : valueFilter.parse(input);
     }

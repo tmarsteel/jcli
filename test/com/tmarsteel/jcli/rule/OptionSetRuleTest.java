@@ -5,9 +5,8 @@ import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Input;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.validator.RuleNotMetException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import com.tmarsteel.jcli.validator.Validator;
-import com.tmarsteel.jcli.filter.Filter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,7 +45,7 @@ public class OptionSetRuleTest
     
     @Test
     public void testValidateSucceedsWithOptionSet()
-        throws ParseException
+        throws ValidationException
     {
         Validator v = newValidator();
         v.add(new OptionSetRule(optionSet.getPrimaryIdentifier()));
@@ -54,9 +53,9 @@ public class OptionSetRuleTest
         v.parse(dummyInput);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testValidateFailsWithOptionNotSet()
-        throws ParseException
+        throws ValidationException
     {
         Validator v = newValidator();
         v.add(new OptionSetRule(flagNotSet.getPrimaryIdentifier()));

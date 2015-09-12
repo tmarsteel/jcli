@@ -1,8 +1,6 @@
 package com.tmarsteel.jcli.validator;
 
-import com.tmarsteel.jcli.ParseException;
-
-public class RuleNotMetException extends ParseException
+public class RuleNotMetException extends ValidationException
 {
     public RuleNotMetException(String message)
     {

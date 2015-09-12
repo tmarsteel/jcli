@@ -1,6 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import com.tmarsteel.jcli.validator.configuration.XMLValidatorConfigurator;
 import java.math.BigInteger;
 import org.w3c.dom.Node;
@@ -27,7 +28,7 @@ public class IntegerFilter implements Filter
      * not contain an integer number.
      */
     public IntegerFilter(Node filterNode)
-        throws ParseException
+        throws ValidationException
     {
         String[] minMaxRadix = XMLValidatorConfigurator.XMLUtils.getMinMaxRadix(filterNode);
 
@@ -44,7 +45,7 @@ public class IntegerFilter implements Filter
         }
         catch (NumberFormatException ex)
         {
-            throw new ParseException("Invalid radix: " + minMaxRadix[2]);
+            throw new ValidationException("Invalid radix: " + minMaxRadix[2]);
         }
 
        this.minValue = minMaxRadix[0] == null? Long.MIN_VALUE : XMLValidatorConfigurator.XMLUtils.asLong(minMaxRadix[0]);
@@ -71,24 +72,24 @@ public class IntegerFilter implements Filter
 
     @Override
     public Object parse(String value)
-        throws ParseException
+        throws ValidationException
     {
         try
         {
             Long n = Long.parseLong(value, radix);
             if (n < minValue)
             {
-                throw new ParseException("Value less than minimum (" + Long.toString(minValue, radix) + ')');
+                throw new ValidationException("Value less than minimum (" + Long.toString(minValue, radix) + ')');
             }
             if (n > maxValue)
             {
-                throw new ParseException("Value greater than maximum (" + Long.toString(maxValue, radix) + ')');
+                throw new ValidationException("Value greater than maximum (" + Long.toString(maxValue, radix) + ')');
             }
             return n;
         }
         catch (NumberFormatException ex)
         {
-            throw new ParseException("Integer value with radix " + radix + " required", ex);
+            throw new ValidationException("Integer value with radix " + radix + " required", ex);
         }
     }
 

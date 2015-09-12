@@ -1,6 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -73,7 +74,8 @@ public class SetFilter implements Filter
      * @param filterNode
      * @throws ParseException If any other subtag than &lt;value&gt; is found.
      */
-    public SetFilter(Node filterNode) throws ParseException
+    public SetFilter(Node filterNode)
+        throws ValidationException
     {
         NamedNodeMap attrs = filterNode.getAttributes();
         // look for caseSensitive attribute
@@ -105,14 +107,14 @@ public class SetFilter implements Filter
             }
             else if (!cNode.getNodeName().equals("#text"))
             {
-                throw new ParseException("set-filters only allow value tags");
+                throw new ValidationException("set-filters only allow value tags");
             }
         }
     }
 
     @Override
     public Object parse(String value)
-        throws ParseException
+        throws ValidationException
     {
         final Iterator<String> it = options.iterator();
         while (it.hasNext())
@@ -133,7 +135,7 @@ public class SetFilter implements Filter
                 }
             }
         }
-        throw new ParseException(value + " is not a possible value.");
+        throw new ValidationException(value + " is not a possible value.");
     }
 
     /**

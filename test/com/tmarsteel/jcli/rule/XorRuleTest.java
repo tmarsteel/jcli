@@ -3,6 +3,7 @@ package com.tmarsteel.jcli.rule;
 import com.tmarsteel.jcli.Input;
 import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.validator.RuleNotMetException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import com.tmarsteel.jcli.validator.Validator;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,7 @@ public class XorRuleTest
     
     @Before
     public void setUp()
-        throws ParseException
+        throws ParseException, ValidationException
     {
         intent = new Validator();
         Input dummyInput = new Input();

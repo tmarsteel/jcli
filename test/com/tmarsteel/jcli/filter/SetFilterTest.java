@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -11,7 +11,7 @@ public class SetFilterTest
 {
     @Test
     public void testParseCI()
-        throws ParseException
+        throws ValidationException
     {
         SetFilter filter = new SetFilter("a", "b");
         
@@ -23,34 +23,34 @@ public class SetFilterTest
     
     @Test
     public void testParseCS()
-        throws ParseException
+        throws ValidationException
     {
         SetFilter filter = new SetFilter("a", "b");
         
         assertEquals(filter.parse("A"), "a");
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseCIFailsOnNonExistent()
-        throws ParseException
+        throws ValidationException
     {
         SetFilter filter = new SetFilter("a", "b");
         
         filter.parse("c");
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseCSFailsOnCaseError()
-        throws ParseException
+        throws ValidationException
     {
         SetFilter filter = new SetFilter(true, "a", "b");
         
         filter.parse("A");
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseCSFailsOnNonExistent()
-        throws ParseException
+        throws ValidationException
     {
         SetFilter filter = new SetFilter(true, "a", "b");
         

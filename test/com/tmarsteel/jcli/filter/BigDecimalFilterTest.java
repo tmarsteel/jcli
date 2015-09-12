@@ -1,6 +1,6 @@
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.validator.ValidationException;
 import java.math.BigDecimal;
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -12,7 +12,7 @@ public class BigDecimalFilterTest
 {
     @Test
     public void testParseSucceedsWithoutLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigDecimalFilter bdf = new BigDecimalFilter();
         
@@ -26,7 +26,7 @@ public class BigDecimalFilterTest
     
     @Test
     public void testParseSucceedsWithLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigDecimalFilter bdf = new BigDecimalFilter(
             new BigDecimal("1.00000000000000000056789"),
@@ -41,9 +41,9 @@ public class BigDecimalFilterTest
         assertEquals(((BigDecimal) ret).toPlainString(), number);
     }
 
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithInputBelowLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigDecimalFilter bdf = new BigDecimalFilter(
             new BigDecimal("1.00000000000000000056789"),
@@ -55,9 +55,9 @@ public class BigDecimalFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithInputAboveLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigDecimalFilter bdf = new BigDecimalFilter(
             new BigDecimal("1.00000000000000000056789"),
@@ -69,9 +69,9 @@ public class BigDecimalFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithNonNumericInputWithoutLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigDecimalFilter bdf = new BigDecimalFilter();
         
@@ -80,9 +80,9 @@ public class BigDecimalFilterTest
         Object ret = bdf.parse(number);
     }
     
-    @Test(expected=ParseException.class)
+    @Test(expected=ValidationException.class)
     public void testParseFailsWithNonNumericInputWithLimit()
-        throws ParseException
+        throws ValidationException
     {
         BigDecimalFilter bdf = new BigDecimalFilter(
             new BigDecimal("1.00000000000000000056789"),
