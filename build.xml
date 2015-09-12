@@ -19,6 +19,13 @@
 	<target name="-pre-compile">
 		<mkdir dir="dist" />
 		<mkdir dir="build/classes" />
+		
+		<!-- copy all needed resources -->
+		<copy todir="build/classes">
+			<fileset dir="src/">
+				<exclude name="**/*.java"></exclude>
+			</fileset>
+		</copy>
 	</target>
 	
 	<target name="compile" depends="-pre-compile">
