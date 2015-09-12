@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.rule;
 
-import com.tmarsteel.jcli.Validator;
-import com.tmarsteel.jcli.RuleNotMetException;
+import com.tmarsteel.jcli.validator.Validator;
+import com.tmarsteel.jcli.validator.RuleNotMetException;
 
 /**
  * Only accepts input when exactly one of the specified rules are met.

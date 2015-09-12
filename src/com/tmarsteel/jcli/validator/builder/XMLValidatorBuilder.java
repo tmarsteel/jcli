@@ -1,13 +1,14 @@
-package com.tmarsteel.jcli.validator;
+package com.tmarsteel.jcli.validator.builder;
 
 import com.tmarsteel.jcli.Argument;
-import com.tmarsteel.jcli.Validator;
 import com.tmarsteel.jcli.Environment;
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.filter.Filter;
 import com.tmarsteel.jcli.rule.Rule;
+import com.tmarsteel.jcli.validator.MisconfigurationException;
+import com.tmarsteel.jcli.validator.Validator;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

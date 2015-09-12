@@ -1,7 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.validator.XMLValidatorBuilder;
+import com.tmarsteel.jcli.validator.builder.XMLValidatorBuilder;
 import org.w3c.dom.Node;
 
 /**

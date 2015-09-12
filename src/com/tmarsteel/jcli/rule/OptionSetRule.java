@@ -1,8 +1,8 @@
 package com.tmarsteel.jcli.rule;
 
-import com.tmarsteel.jcli.Validator;
+import com.tmarsteel.jcli.validator.Validator;
 import com.tmarsteel.jcli.Option;
-import com.tmarsteel.jcli.RuleNotMetException;
+import com.tmarsteel.jcli.validator.RuleNotMetException;
 import com.tmarsteel.jcli.validator.MisconfigurationException;
 import java.util.ArrayList;
 import java.util.List;

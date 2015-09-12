@@ -5,7 +5,7 @@ import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Input;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.Validator;
+import com.tmarsteel.jcli.validator.Validator;
 import org.junit.Before;
 import org.junit.Test;
 

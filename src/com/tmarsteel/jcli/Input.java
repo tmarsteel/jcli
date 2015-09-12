@@ -1,5 +1,6 @@
 package com.tmarsteel.jcli;
 
+import com.tmarsteel.jcli.validator.Validator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,14 +11,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Represents a set of input parameters.
- * @author tmarsteel
+ * Parses cli commands (entire command line strings or String[]s) and provides
+ * facilities to access these.
+ * @author Tobias Marstaller
  */
 public class Input
 {
-    protected Collection<String> flags = new HashSet<>();
-    protected Map<String,String> options = new HashMap<>();
-    protected List<String> arguments = new ArrayList<>();
+    private Collection<String> flags = new HashSet<>();
+    private Map<String,String> options = new HashMap<>();
+    private List<String> arguments = new ArrayList<>();
     protected Validator intent;
     
     public Input()
@@ -25,11 +27,26 @@ public class Input
         this(null);
     }
     
+    /**
+     * @param intent A validator which known options and flags to use in the case
+     * the flags and options cannot be distinguished by prefix (<code>flagMarker</code>
+     * and <code>optionMarker</code> are equal).
+     */
     public Input(Validator intent)
     {
         this.intent = intent;
     }
     
+    /**
+     * Creates a new instance and {@link #add(com.tmarsteel.jcli.Environment, java.lang.String[])}s
+     * the <code>args</code> to it. <br>
+     * <b>Note:</b> If <code>env.flagMarker</code> equals <code>env.optionMarker</code>
+     * a {@link ParseException} will be thrown. To avoid this, use
+     * {@link #Input(com.tmarsteel.jcli.validator.Validator, com.tmarsteel.jcli.Environment, java.lang.String[])}.
+     * @param env The environment to parse <code>args</code> in
+     * @param args Input to parse.
+     * @throws ParseException 
+     */
     public Input(Environment env, String[] args)
         throws ParseException
     {
@@ -37,6 +54,16 @@ public class Input
         add(env, args);
     }
     
+    /**
+     * Creates a new instance and {@link #add(com.tmarsteel.jcli.Environment, java.lang.String[])}s
+     * the <code>args</code> to it.
+     * @param intent A validator which known options and flags to use in the case
+     * the flags and options cannot be distinguished by prefix (<code>flagMarker</code>
+     * and <code>optionMarker</code> are equal).
+     * @param env The environment to parse <code>args</code> in
+     * @param args Input to parse.
+     * @throws ParseException 
+     */
     public Input(Validator intent, Environment env, String[] args)
         throws ParseException
     {
@@ -44,6 +71,16 @@ public class Input
         add(env, args);
     }
     
+    /**
+     * Creates a new instance and {@link #add(com.tmarsteel.jcli.Environment, java.lang.String)}s
+     * the <code>args</code> to it.
+     * <b>Note:</b> If <code>env.flagMarker</code> equals <code>env.optionMarker</code>
+     * a {@link ParseException} will be thrown. To avoid this, use
+     * {@link #Input(com.tmarsteel.jcli.validator.Validator, com.tmarsteel.jcli.Environment, java.lang.String)}.
+     * @param env The environment to parse <code>args</code> in
+     * @param argline Input to parse.
+     * @throws ParseException 
+     */
     public Input(Environment env, String argline)
         throws ParseException
     {
@@ -51,6 +88,16 @@ public class Input
         add(env, argline);
     }
     
+    /**
+     * Creates a new instance and {@link #add(com.tmarsteel.jcli.Environment, java.lang.String)}s
+     * the <code>args</code> to it.
+     * @param intent A validator which known options and flags to use in the case
+     * the flags and options cannot be distinguished by prefix (<code>flagMarker</code>
+     * and <code>optionMarker</code> are equal).
+     * @param env The environment to parse <code>args</code> in
+     * @param argline Input to parse.
+     * @throws ParseException 
+     */
     public Input(Validator intent, Environment env, String argline)
         throws ParseException
     {
@@ -238,6 +285,21 @@ public class Input
                 argumentsStarted = true;
             }
         }
+    }
+    
+    public Collection<String> flags()
+    {
+        return this.flags;
+    }
+    
+    public Map<String,String> options()
+    {
+        return this.options;
+    }
+    
+    public List<String> arguments()
+    {
+        return this.arguments;
     }
     
     private void addFlag(String param, Environment env)

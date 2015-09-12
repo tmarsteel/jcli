@@ -1,5 +1,11 @@
-package com.tmarsteel.jcli;
+package com.tmarsteel.jcli.validator;
 
+import com.tmarsteel.jcli.Argument;
+import com.tmarsteel.jcli.Environment;
+import com.tmarsteel.jcli.Flag;
+import com.tmarsteel.jcli.Input;
+import com.tmarsteel.jcli.Option;
+import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.rule.BaseRule;
 import com.tmarsteel.jcli.rule.Rule;
 import java.util.ArrayList;
@@ -240,7 +246,7 @@ public class Validator
         }
         
         // check for unknown flags
-        Iterator<String> fIt = input.flags.iterator();
+        Iterator<String> fIt = input.flags().iterator();
         while (fIt.hasNext())
         {
             final String flag = fIt.next();
@@ -286,7 +292,7 @@ public class Validator
         }
         
         // check for unknown options
-        Iterator<Entry<String,String>> oIt = input.options.entrySet().iterator();
+        Iterator<Entry<String,String>> oIt = input.options().entrySet().iterator();
         while (oIt.hasNext())
         {
             final Entry<String,String> option = oIt.next();

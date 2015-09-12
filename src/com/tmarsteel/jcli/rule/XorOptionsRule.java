@@ -2,8 +2,8 @@ package com.tmarsteel.jcli.rule;
 
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Identifiable;
-import com.tmarsteel.jcli.Validator;
-import com.tmarsteel.jcli.RuleNotMetException;
+import com.tmarsteel.jcli.validator.Validator;
+import com.tmarsteel.jcli.validator.RuleNotMetException;
 import java.util.ArrayList;
 import java.util.List;
 import org.w3c.dom.Node;
