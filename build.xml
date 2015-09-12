@@ -69,7 +69,16 @@
 		<javac includeantruntime="false" classpathref="test-classpath" srcdir="test" destdir="build/test/classes" />
 	</target>
 	
-	<target name="test" depends="clean,compile-test">
+	<target name="-pre-test">
+		<!-- copy resources to the test directories -->
+		<copy todir="build/test/classes">
+			<fileset dir="test/">
+				<exclude name="**/*.java"></exclude>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="test" depends="clean,compile-test,-pre-test">
 		<mkdir dir="build/test/out" />
 	
 		<junit fork="true" showoutput="on">
