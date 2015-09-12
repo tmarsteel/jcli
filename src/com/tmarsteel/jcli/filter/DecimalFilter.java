@@ -51,4 +51,26 @@ public class DecimalFilter implements Filter
             throw new ValidationException("Decimal value required", ex);
         }
     }
+
+    public double getMinValue()
+    {
+        return minValue;
+    }
+
+    public void setMinValue(double minValue)
+    {
+        this.minValue = minValue;
+    }
+
+    public double getMaxValue()
+    {
+        return maxValue;
+    }
+
+    public void setMaxValue(double maxValue)
+    {
+        this.maxValue = maxValue;
+    }
+    
+    
 }
