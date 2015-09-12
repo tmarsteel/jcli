@@ -1,5 +1,6 @@
 package com.tmarsteel.jcli.filter;
 
+import com.tmarsteel.jcli.XMLTest;
 import com.tmarsteel.jcli.validation.ValidationException;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -16,8 +17,14 @@ import org.xml.sax.SAXException;
 /**
  * @author Tobias Marstaller
  */
-public class BigDecimalFilterTest
+public class BigDecimalFilterTest extends XMLTest
 {
+    public BigDecimalFilterTest()
+    {
+        this.testXML = "BigIntegerFilterTest.xml";
+        this.testNodesName = "filter";
+    }
+    
     @Test
     public void testParseSucceedsWithoutLimit()
         throws ValidationException
@@ -100,26 +107,6 @@ public class BigDecimalFilterTest
         String number = "1.0938209380aaaaa";
         
         Object ret = bdf.parse(number);
-    }
-    
-    // --------------------
-    
-    private NodeList testNodes;
-    
-    @Before
-    public void setUp()
-        throws ParserConfigurationException, SAXException, IOException
-    {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setValidating(false);
-        dbf.setIgnoringComments(true);
-        dbf.setIgnoringElementContentWhitespace(true);
-        
-        DocumentBuilder builder = dbf.newDocumentBuilder();
-        
-        Document testDocument = builder.parse(getClass().getResourceAsStream("BigDecimalFilterTest.xml"));
-        
-        testNodes = testDocument.getElementsByTagName("filter");
     }
     
     @Test

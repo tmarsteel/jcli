@@ -1,24 +1,23 @@
 package com.tmarsteel.jcli.filter;
 
+import com.tmarsteel.jcli.XMLTest;
 import com.tmarsteel.jcli.validation.ValidationException;
-import java.io.IOException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import org.junit.Before;
 import org.junit.Test;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  * @author Tobias Marstaller
  */
-public class DecimalFilterTest
+public class DecimalFilterTest extends XMLTest
 { 
+    public DecimalFilterTest()
+    {
+        this.testXML = "DecimalFilterTest.xml";
+        this.testNodesName = "filter";
+    }
+    
     @Test
     public void testParseSucceedsWithoutLimit()
         throws ValidationException
@@ -101,26 +100,6 @@ public class DecimalFilterTest
         String number = "1.09380aaaaa";
         
         Object ret = bdf.parse(number);
-    }
-    
-    // --------------------
-    
-    private NodeList testNodes;
-    
-    @Before
-    public void setUp()
-        throws ParserConfigurationException, SAXException, IOException
-    {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setValidating(false);
-        dbf.setIgnoringComments(true);
-        dbf.setIgnoringElementContentWhitespace(true);
-        
-        DocumentBuilder builder = dbf.newDocumentBuilder();
-        
-        Document testDocument = builder.parse(getClass().getResourceAsStream("DecimalFilterTest.xml"));
-        
-        testNodes = testDocument.getElementsByTagName("filter");
     }
     
     @Test

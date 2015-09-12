@@ -1,6 +1,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.XMLTest;
 import com.tmarsteel.jcli.validation.ValidationException;
 import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
@@ -16,8 +17,14 @@ import org.xml.sax.SAXException;
 /**
  * @author Tobias Marstaller
  */
-public class IntegerFilterTest
+public class IntegerFilterTest extends XMLTest
 {
+    public IntegerFilterTest()
+    {
+        this.testXML = "DecimalFilterTest.xml";
+        this.testNodesName = "filter";
+    }
+    
     @Test
     public void testParseSucceedsWithoutLimit()
         throws ValidationException
@@ -100,26 +107,6 @@ public class IntegerFilterTest
         String number = "10938209380aaaaa";
         
         Object ret = bdf.parse(number);
-    }
-    
-    // --------------------
-    
-    private NodeList testNodes;
-    
-    @Before
-    public void setUp()
-        throws ParserConfigurationException, SAXException, IOException
-    {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setValidating(false);
-        dbf.setIgnoringComments(true);
-        dbf.setIgnoringElementContentWhitespace(true);
-        
-        DocumentBuilder builder = dbf.newDocumentBuilder();
-        
-        Document testDocument = builder.parse(getClass().getResourceAsStream("IntegerFilterTest.xml"));
-        
-        testNodes = testDocument.getElementsByTagName("filter");
     }
     
     @Test

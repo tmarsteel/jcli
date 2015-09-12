@@ -1,9 +1,17 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.validation.ValidationException;
+import java.io.IOException;
 import java.util.regex.Pattern;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * @author Tobias Marstaller
@@ -47,4 +55,7 @@ public class RegexFilterTest
         
         filter.parse("bc");
     }
+    
+    // -----------------
+
 }
