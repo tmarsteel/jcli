@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -104,7 +104,7 @@ public class BigDecimalFilterTest
     
     // --------------------
     
-    private Document testDocument;
+    private NodeList testNodes;
     
     @Before
     public void setUp()
@@ -117,20 +117,20 @@ public class BigDecimalFilterTest
         
         DocumentBuilder builder = dbf.newDocumentBuilder();
         
-        testDocument = builder.parse(getClass().getResourceAsStream("BigDecimalFilterTest.xml"));
+        Document testDocument = builder.parse(getClass().getResourceAsStream("BigDecimalFilterTest.xml"));
+        
+        testNodes = testDocument.getElementsByTagName("filter");
     }
     
     @Test
     public void testNodeConstructor()
     {
-        if (testDocument == null)
+        if (testNodes == null)
         {
             fail("The test-document could not be loaded. See errors for #setUp()");
         }
         
-        Node testNode = testDocument.getDocumentElement().getElementsByTagName("filter").item(0);
-        
-        BigDecimalFilter filter = new BigDecimalFilter(testNode);
+        BigDecimalFilter filter = new BigDecimalFilter(testNodes.item(0));
         
         assertEquals(filter.getMinValue().toPlainString(), "10.1");
         assertEquals(filter.getMaxValue().toPlainString(), "2000.978765487");
@@ -139,13 +139,11 @@ public class BigDecimalFilterTest
     @Test(expected = NumberFormatException.class)
     public void nodeConstructorShouldFailOnNonNumerical()
     {
-        if (testDocument == null)
+        if (testNodes == null)
         {
             fail("The test-document could not be loaded. See errors for #setUp()");
         }
         
-        Node testNode = testDocument.getDocumentElement().getElementsByTagName("filter").item(1);
-        
-        BigDecimalFilter filter = new BigDecimalFilter(testNode);
+        BigDecimalFilter filter = new BigDecimalFilter(testNodes.item(1));
     }
 }
