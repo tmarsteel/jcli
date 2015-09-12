@@ -728,7 +728,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
         }
 
-        public static Long asLong(String numeric)
+        public static Long asLong(String numeric, int radix)
             throws ValidationException
         {
             if (numeric == null)
@@ -737,7 +737,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
             try
             {
-                return Long.parseLong(numeric);
+                return Long.parseLong(numeric, radix);
             }
             catch (NumberFormatException ex)
             {
