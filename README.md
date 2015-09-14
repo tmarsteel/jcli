@@ -5,7 +5,9 @@ A Java library for parsing and validating CLI arguments (and Strings formatted a
 
 ## Installation
 
-Go to the [releases page](realeses) and download `tmarsteel-jcli-X.X.X.jar` from the latest release. Support for dependency managers is about to come!
+Go to the [releases page](http://github.com/tmarsteel/jcli/releases) and download `tmarsteel-jcli-X.X.X.jar` from the latest release. Support for dependency managers is about to come!
+
+Alternatively, you can check out this repo and build yourself using Ant. JUnit 4.10+ is required if you want to run unit-tests. See `build.xml` for more information.
 
 ## Documentation
 
