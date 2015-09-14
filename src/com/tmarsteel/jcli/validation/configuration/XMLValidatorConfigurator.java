@@ -324,7 +324,10 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
         }
 
-        return new Option(filter, defValue, names.toArray(new String[names.size()]));
+        Option o = new Option(filter, defValue, names.toArray(new String[names.size()]));
+        o.setRequired(attrs.getNamedItem("required") != null);
+        
+        return o;
     }
 
     private Argument parseArgument(Node argNode)
