@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="jCLI" basedir=".">
 
-	<property name="project.version" value="1.0.0-RC1" />
+	<property name="project.version" value="1.0.1-RC2" />
 
 	<fail message="Please build using Ant 1.8.0 or higher.">
         <condition>
