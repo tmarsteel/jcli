@@ -178,9 +178,9 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             throw new NullPointerException("type must not be null");
         }
         
-        if (!cls.isAssignableFrom(Filter.class))
+        if (!Filter.class.isAssignableFrom(cls))
         {
-            throw new IllegalArgumentException("The given class must implement com.tmarsteel.jcli.filter.ValueFilter");
+            throw new IllegalArgumentException("The given class must implement com.tmarsteel.jcli.filter.Filter");
         }
         
         this.filterTypeClass.put(type, cls);
@@ -207,7 +207,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             throw new NullPointerException("type must not be null");
         }
         
-        if (!cls.isAssignableFrom(Rule.class))
+        if (!Rule.class.isAssignableFrom(cls))
         {
             throw new IllegalArgumentException("The given class must implement com.tmarsteel.jcli.filter.Rule");
         }
