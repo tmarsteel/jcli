@@ -142,6 +142,11 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
      */
     public XMLValidatorConfigurator(Document xmlDocument, Environment env)
     {
+        if (env == null)
+        {
+            env = Environment.getEnvironment();
+        }
+        
         this.baseDocument = xmlDocument;
         this.environment = env;
         
