@@ -65,7 +65,7 @@ public class OptionSetRule extends BaseRule
             {
                 if (!params.isFlagSet(name))
                 {
-                    throw new RuleNotMetException("Required falg " + name + " not set!");
+                    throw new RuleNotMetException("Required flag " + name + " not set!");
                 }
             }
             else if (forParser.knowsOption(name))
