@@ -31,6 +31,7 @@ public class Option extends Identifiable
     public Option(Filter filter, Object defaultValue, String... names)
     {
         super(names);
+        this.valueFilter = filter;
         
         if (defaultValue != null && defaultValue instanceof String)
         {
