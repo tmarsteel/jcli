@@ -68,7 +68,21 @@ public class Option extends Identifiable
      */
     public void setDefaultValue(Object defV)
     {
-        this.defaultValue = defV;
+        if (defV instanceof String)
+        {
+            try
+            {
+                this.defaultValue = this.parse((String) defV);
+            }
+            catch (ValidationException ex)
+            {
+                this.defaultValue = defV;
+            }
+        }
+        else
+        {
+            this.defaultValue = defV;
+        }
         
         if (defV != null)
         {

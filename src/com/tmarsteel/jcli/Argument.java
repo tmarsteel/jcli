@@ -70,9 +70,29 @@ public class Argument
     public Argument(String accessName, int index, Object defaultValue,
         Filter filter)
     {
-        this(accessName, index, defaultValue);
+        this.accessName = accessName;
+        this.index = index;
         this.valueFilter = filter;
         this.required = false;
+        
+        if (valueFilter != null)
+        {
+            if (defaultValue instanceof String)
+            {
+                try
+                {
+                    this.defaultValue = filter.parse((String) defaultValue);
+                }
+                catch (ValidationException ex)
+                {
+                    this.defaultValue = defaultValue;
+                }
+            }
+            else
+            {
+                this.defaultValue = defaultValue;
+            }
+        }
     }
     
     /**
