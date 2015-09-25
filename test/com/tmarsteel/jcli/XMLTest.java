@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2015 Tobias Marstaller
  *
  * This program is free software; you can redistribute it and/or
