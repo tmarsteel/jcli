@@ -60,8 +60,8 @@ public class InputTest {
         
         i.add(env, new String[] {"--option1", "value1", "--option2", "value2"});
         
-        assertEquals(i.getOption(option1), "value1");
-        assertEquals(i.getOption(option2), "value2");
+        assertEquals("value1", i.getOption(option1).get(0));
+        assertEquals("value2", i.getOption(option2).get(0));
     }
     
     @Test
@@ -93,8 +93,8 @@ public class InputTest {
         assertTrue(i.containsFlag(flag1));
         assertTrue(i.containsFlag(flag2));
         
-        assertEquals(i.getOption(option1), "value1");
-        assertEquals(i.getOption(option2), "value2");
+        assertEquals("value1", i.getOption(option1).get(0));
+        assertEquals("value2", i.getOption(option2).get(0));
     }
     
     @Test
@@ -113,11 +113,11 @@ public class InputTest {
         assertTrue(i.containsFlag(flag1));
         assertTrue(i.containsFlag(flag2));
         
-        assertEquals(i.getOption(option1), "value1");
-        assertEquals(i.getOption(option2), "value2");
+        assertEquals("value1", i.getOption(option1).get(0));
+        assertEquals("value2", i.getOption(option2).get(0));
         
-        assertEquals(i.getArgument(0), "value1");
-        assertEquals(i.getArgument(1), "value2");
+        assertEquals("value1", i.getArgument(0));
+        assertEquals("value2", i.getArgument(1));
         assertNull(i.getArgument(2));
     }
 }
