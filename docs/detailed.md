@@ -52,10 +52,10 @@ Options MUST be configured using the `<option>`-tag. The `identifier` attribute 
 
 Inside that tag you MAY specify as many aliases (for abbreviation or compatibility) as you wish. The identifier as well as all the aliases will be recognized.
 
-You MAY specify a `<default>` tag. This will be the value used when the option is not set. If a `<default>` tag is not given and the option is given in parsed input the value of the
+One `<default>` tag MAY be given. This will be the value used when the option is not set. If a `<default>` tag is not given and the option is given in parsed input the value of the
 option will be `null`. To enforce an option set `required="true"` on the `<option>` tag.
 
-You MAY specify one `<filter>`-tag that will hint to the validator how to validate input given to that option. See below for filters.
+One `<filter>` tag MAY be given. It hints to the validator how to validate input given to that option. See below for filters.
 
 for example:
 
@@ -63,8 +63,21 @@ for example:
 <option identifier="output">
     <alias>out</alias>
     <alias>o</alias>
+	<default>out.txt</output>
 </option>
 ```
+
+### Multiple values
+
+In case an option can be specified multiple times (e.g. multiple inputs), the option MAY be marked as a collection by setting the `collection` attribute to `true` (defaults to `false`).  
+
+The validator will then pass each single value for that option through the filter and collect the filtered objects.
+
+The type of the value returned from the validator will change.  Let `T` be the return type of the specified filter. E.g. that is `java.lang.Integer` for the `integer` filter or `java.lang.String` if no filter is set. The validator will return a `java.util.List<T>` when asked for the option.
+
+If the parsed input does not contain a value for the collection the returned `List` will be empty.
+
+The order of the parsed objects in the returned `List<T>` reflects the order in which the single values were given in the original input.
 
 ## Arguments
 
