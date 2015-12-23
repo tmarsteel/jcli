@@ -134,25 +134,6 @@ public class ValidatorTest
     }
     
     @Test
-    public void shouldFindOptionAlias()
-        throws ParseException, ValidationException
-    {
-        Input input = new Input(
-            env,
-            new String[]{ "-flag", "--o", "value", "argument" }
-        );
-        
-        Option o = new Option("option", "o");
-        
-        Validator v = new Validator(env);
-        v.add(o);
-        
-        Validator.ValidatedInput vI = v.parse(input);
-        
-        assertEquals(vI.getOption("o"), "value");
-    }
-    
-    @Test
     public void shouldFindArgumentByName()
         throws ParseException, ValidationException
     {
