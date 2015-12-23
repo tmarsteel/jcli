@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.tmarsteel</groupId>
+	<artifactId>jcli</artifactId>
+	<version>2.0.0-RC1</version>
+	<name>com.github.tmarsteel:jCLI</name>
+	<description>A Java library for parsing and validating CLI arguments (and Strings formatted alike).</description>
+	<url>https://github.com/tmarsteel/jcli</url>
+	<packaging>jar</packaging>
+	<licenses>
+		<license>
+			<name>GNU General Public License Version 2</name>
+			<url>https://raw.githubusercontent.com/tmarsteel/jcli/release/LICENSE</url>
+		</license>
+	</licenses>
+	<developers>
+		<developer>
+			<name>Tobias Marstaller</name>
+			<email>tobias.marstaller@gmail.com</email>
+			<organizationUrl>https://github.com/tmarsteel</organizationUrl>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:git@github.com:tmarsteel/jcli.git</connection>
+		<developerConnection>scm:git:git@github.com:tmarsteel/jcli.git</developerConnection>
+		<url>git@github.com:tmarsteel/jcli.git</url>
+	</scm>
+</project>
