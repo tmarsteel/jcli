@@ -277,41 +277,64 @@ public class Validator
         while (optionIt.hasNext())
         {
             final Option option = optionIt.next();
-            final String optValue = input.getOption(option);
+            final List<String> rawOptValues = input.getOption(option);
             
-            if (optValue == null)
+            if (rawOptValues.isEmpty() && option.isRequired())
             {
-                if (option.isRequired())
-                {
-                    throw new ValidationException("Required option " + option.getPrimaryIdentifier() + " not set.");
-                }
-                else
-                {
-                    vinput.optionValues.put(option.getPrimaryIdentifier(), option.getDefaultValue());
-                }
+                throw new ValidationException("Required option " + option.getPrimaryIdentifier() + " not set.");
+            }
+            else if (rawOptValues.size() > 1 && !option.allowsMultipleValues())
+            {
+                throw new ValidationException("Option " + option.getPrimaryIdentifier() + " may only be set once, " + rawOptValues.size() + " values given.");
             }
             else
             {
-                final Object value;
-                
                 try
                 {
-                    value = option.parse(optValue);
+                    Object[] optValues = rawOptValues.stream().map((String str) -> {
+                        try
+                        {
+                            return option.parse(str);
+                        }
+                        catch (ValidationException ex)
+                        {
+                            throw new RuntimeException(ex);
+                        }
+                    }).toArray();
+                    
+                    if (optValues.length == 0)
+                    {
+                        optValues = new Object[]{ option.getDefaultValue() };
+                    }
+                    
+                    if (option.allowsMultipleValues())
+                    {
+                        vinput.optionValues.put(option.getPrimaryIdentifier(), optValues);
+                    }
+                    else
+                    {
+                        vinput.optionValues.put(option.getPrimaryIdentifier(), optValues[0]);
+                    }
                 }
-                catch (ValidationException ex)
+                catch (RuntimeException ex)
                 {
-                    throw new ValidationException("Invalid value for option " +
-                        option.getPrimaryIdentifier() + ": " + ex.getMessage(), ex);
+                    if (ex.getCause() instanceof ValidationException)
+                    {
+                        throw (ValidationException) ex.getCause();
+                    }
+                    else
+                    {
+                        throw ex;
+                    }
                 }
-                vinput.optionValues.put(option.getPrimaryIdentifier(), value);
             }
         }
         
         // check for unknown options
-        Iterator<Entry<String,String>> oIt = input.options().entrySet().iterator();
+        Iterator<Entry<String,List<String>>> oIt = input.options().entrySet().iterator();
         while (oIt.hasNext())
         {
-            final Entry<String,String> option = oIt.next();
+            final Entry<String,List<String>> option = oIt.next();
             if (!vinput.optionValues.containsKey(option.getKey()))
             {
                 vinput.optionValues.put(option.getKey(), option.getValue());

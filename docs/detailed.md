@@ -69,7 +69,7 @@ for example:
 
 ### Multiple values
 
-In case an option can be specified multiple times (e.g. multiple inputs), the option MAY be marked as a collection by setting the `collection` attribute.
+In case an option can be specified multiple times (e.g. multiple inputs), the option MAY be marked as a collection by setting the `collection` attribute [to an arbitrary value].
 
 The validator will then pass each single value for that option through the filter and collect the filtered objects.
 

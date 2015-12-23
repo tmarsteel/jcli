@@ -35,7 +35,7 @@ import java.util.Map.Entry;
 public class Input
 {
     private Collection<String> flags = new HashSet<>();
-    private Map<String,String> options = new HashMap<>();
+    private Map<String,List<String>> options = new HashMap<>();
     private List<String> arguments = new ArrayList<>();
     protected Validator intent;
     
@@ -140,23 +140,23 @@ public class Input
     }
     
     /**
-     * Returns the value of the given option or <code>null</code> if not contained
-     * in the input.
-     * @return the value of the given option or <code>null</code> if not contained
-     * in the input.
+     * Returns the values of the given option. The returned list is empty if
+     * the given option was not contained in the input.
+     * @return the values of the given option.
      */
-    public String getOption(Option option)
+    public List<String> getOption(Option option)
     {
-        final Iterator<Entry<String,String>> it = options.entrySet().iterator();
+        final Iterator<Entry<String,List<String>>> it = options.entrySet().iterator();
         while (it.hasNext())
         {
-            final Entry<String,String> curE = it.next();
+            final Entry<String,List<String>> curE = it.next();
             if (option.isIdentifiedBy(curE.getKey()))
             {
                 return curE.getValue();
             }
         }
-        return null;
+        
+        return new ArrayList<>();
     }
     
     /**
@@ -277,10 +277,19 @@ public class Input
                     throw new IllegalArgumentException(
                         "Flags and options may only be used before the first argument.");
                 }
+                
                 // search for the value
                 if (args.length > i + 1)
                 { // there is another parameter
-                    setOption(args[i], args[++i], env);
+                    
+                    String optionName = args[i].substring(env.getOptionMarker().length());
+                    
+                    // add the value
+                    if (!options.containsKey(optionName))
+                    {
+                        options.put(optionName, new ArrayList<>());
+                    }
+                    options.get(optionName).add(args[++i]);
                 }
                 else
                 { // we have reached the end...
@@ -309,7 +318,7 @@ public class Input
         return this.flags;
     }
     
-    public Map<String,String> options()
+    public Map<String,List<String>> options()
     {
         return this.options;
     }
@@ -326,11 +335,6 @@ public class Input
         {
             flags.add(str);
         }
-    }
-    
-    private void setOption(String optionName, String content, Environment env)
-    {
-        options.put(optionName.substring(env.getOptionMarker().length()), content);
     }
     
     private static boolean isFlag(String param, Environment env)

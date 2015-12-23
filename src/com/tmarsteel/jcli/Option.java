@@ -29,6 +29,7 @@ public class Option extends Identifiable
     private Filter valueFilter;
     private Object defaultValue;
     private boolean isRequired = false;
+    private boolean allowMultiple = false;
     
     /**
      * Constructs a new required option.
@@ -134,6 +135,26 @@ public class Option extends Identifiable
     public boolean isRequired()
     {
         return isRequired;
+    }
+    
+    /**
+     * Returns whether validators should accept more than one value for this
+     * option in an input.
+     * @return Whether validators should accept more than one value for this
+     * option in an input.
+     */
+    public boolean allowsMultipleValues()
+    {
+        return allowMultiple;
+    }
+    
+    /**
+     * Sets the value to be returned from {@link allowsMultipleValues}.
+     * @param should Whether validators should accept multiple values for this option.
+     */
+    public void setAllowsMultipleValues(boolean should)
+    {
+        this.allowMultiple = should;
     }
     
     @Override
