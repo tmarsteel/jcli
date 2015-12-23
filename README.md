@@ -108,6 +108,12 @@ slash (`/`); whether something is a flag or an option is derived from context.
 
 Arguments are interally handled the same way as options - but they have to be configured to be accessed.
 
-## Planned for Version 1.1
+## Roadmap
+
+### Version 1.1 (realease Q1 2016)
+
+* Functionality to pass an option multiple times. The values will be parsed as a java.util.List.
+
+### Version 1.2
 
 * Help-Text generation (via a `<description>` tag)
