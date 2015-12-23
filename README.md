@@ -110,10 +110,11 @@ Arguments are interally handled the same way as options - but they have to be co
 
 ## Roadmap
 
-### Version 1.1 (realease Q1 2016)
+### Version 2.0 (realease Q1 2016)
 
 * Functionality to pass an option multiple times. The values will be parsed as a java.util.List.
+    * This introduces BC breaks -> version 2.0
 
-### Version 1.2
+### Version 2.1
 
 * Help-Text generation (via a `<description>` tag)
