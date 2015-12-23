@@ -1,7 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="jCLI" basedir=".">
+<project name="jCLI" basedir="." xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
-	<property name="project.version" value="1.0.1" />
+	<property name="project.version" value="1.0.1-SNAPSHOT" />
+
+	<!-- maven and ivy porperties -->
+	<property name="project.groupId"    value="com.github.tmarsteel" />
+	<property name="project.artifactId" value="jcli" />
+	
+	<property name="ossrh-snapshots-repository-url" 
+              value="https://oss.sonatype.org/content/repositories/snapshots/" />
+	<property name="ossrh-staging-repository-url" 
+			  value="https://oss.sonatype.org/service/local/staging/deploy/maven2/" />
+	
+	<!-- build properties -->
+	<property name="build.src-dir"          location="src" />
+	<property name="build.dist-dir"         location="dist" />
+	<property name="build.pomfile"          value="pom.xml" />
+	
+	<property name="build.jar.name"         value="${project.artifactId}-${project.version}.jar" />
+	<property name="build.jar"              value="${build.dist-dir}/${build.jar.name}" />
+	
+	<property name="build.sources-jar.name" value="${project.artifactId}-${project.version}-sources.jar" />
+	<property name="build.sources-jar"      value="${build.dist-dir}/${build.sources-jar.name}" />
+	
+	<property name="build.javadoc-jar.name" value="${project.artifactId}-${project.version}-javadoc.jar" />
+	<property name="build.javadoc-jar"      value="${build.dist-dir}/${build.javadoc-jar.name}" />
+	
 
 	<fail message="Please build using Ant 1.8.0 or higher.">
         <condition>
@@ -11,56 +35,144 @@
         </condition>
     </fail>
 	
+	<!-- compiling -->
 	<target name="clean">
         <delete dir="./build" />
-        <delete dir="./dist" followsymlinks="false" includeemptydirs="true"/>
+        <delete dir="${build.dist-dir}" followsymlinks="false" includeemptydirs="true"/>
 	</target>
 	
 	<target name="-pre-compile">
-		<mkdir dir="dist" />
+		<mkdir dir="build" />
 		<mkdir dir="build/classes" />
 		
 		<!-- copy all needed resources -->
 		<copy todir="build/classes">
-			<fileset dir="src/">
+			<fileset dir="${build.src-dir}">
 				<exclude name="**/*.java"></exclude>
 			</fileset>
 		</copy>
 	</target>
 	
 	<target name="compile" depends="-pre-compile">
-		<javac includeantruntime="false" srcdir="src" destdir="build/classes"
+		<javac includeantruntime="false" srcdir="${build.src-dir}" destdir="build/classes"
 			debug="true" debuglevel="lines,vars,source" />
 	</target>
 	
 	<target name="javadoc">
-		<mkdir dir="dist/javadoc" />
-		<javadoc sourcepath="src" destdir="dist/javadoc" />
+		<mkdir dir="${build.dist-dir}/javadoc" />
+		<javadoc sourcepath="${build.src-dir}" destdir="${build.dist-dir}/javadoc" />
 	</target>
 	
 	<target name="jar" depends="clean,compile,javadoc">
 		<!-- the actual jar -->
-		<jar destfile="dist/tmarsteel-jCLI-${project.version}.jar">
+		<jar destfile="${build.jar}">
 			 <fileset dir="build/classes" />
 			 <fileset file="README.md" />
 			 <fileset file="LICENSE" />
 		</jar>
 			
 		<!-- the sources jar -->
-        <jar destfile="dist/tmarsteel-jCLI-${project.version}-sources.jar">
+        <jar destfile="${build.sources-jar}">
 			 <fileset dir="src" />
 			 <fileset file="README.md" />
 			 <fileset file="LICENSE" />
 		</jar>
 			 
 		<!-- the javadoc jar -->
-		<jar destfile="dist/tmarsteel-jCLI-${project.version}-javadoc.jar">
+		<jar destfile="${build.javadoc-jar}">
 			 <fileset dir="dist\javadoc" />
 			 <fileset file="README.md" />
 			 <fileset file="LICENSE" />
 		</jar>
+		
+		<copy file="${build.pomfile}" tofile="${build.dist-dir}/pom.xml" />
 	</target>
 	
+	<!-- signing and deployment -->
+	<target name="sign" depends="jar">
+		<exec executable="gpg">
+			<arg value="-ab" />
+			<arg value="${build.jar}" />
+		</exec>
+		
+		<exec executable="gpg">
+			<arg value="-ab" />
+			<arg value="${build.sources-jar}" />
+		</exec>
+		
+		<exec executable="gpg">
+			<arg value="-ab" />
+			<arg value="${build.javadoc-jar}" />
+		</exec>
+		
+		<exec executable="gpg">
+			<arg value="-ab" />
+			<arg value="${build.dist-dir}/pom.xml" />
+		</exec>
+	
+		<!-- create MD5 and SHA512 checksums for all files and the signatures -->
+		<checksum file="${build.jar}" algorithm="md5" />
+		<checksum file="${build.jar}" algorithm="sha-512" fileext=".sha512" />
+		<checksum file="${build.jar}.asc" algorithm="md5" />
+		<checksum file="${build.jar}.asc" algorithm="sha-512" fileext=".sha512" />
+		
+		<checksum file="${build.sources-jar}" algorithm="md5" />
+		<checksum file="${build.sources-jar}" algorithm="sha-512" fileext=".sha512" />
+		<checksum file="${build.sources-jar}.asc" algorithm="md5" />
+		<checksum file="${build.sources-jar}.asc" algorithm="sha-512" fileext=".sha512" />
+		
+		<checksum file="${build.javadoc-jar}" algorithm="md5" />
+		<checksum file="${build.javadoc-jar}" algorithm="sha-512" fileext=".sha512" />
+		<checksum file="${build.javadoc-jar}.asc" algorithm="md5" />
+		<checksum file="${build.javadoc-jar}.asc" algorithm="sha-512" fileext=".sha512" />
+		
+		<checksum file="${build.dist-dir}/pom.xml" algorithm="md5" />
+		<checksum file="${build.dist-dir}/pom.xml" algorithm="sha-512" fileext=".sha512" />
+		<checksum file="${build.dist-dir}/pom.xml.asc" algorithm="md5" />
+		<checksum file="${build.dist-dir}/pom.xml.asc" algorithm="sha-512" fileext=".sha512" />
+ 	</target>
+	
+	<target name="deploy" depends="jar" description="deploy snapshot version to Maven snapshot repository">
+		<artifact:mvn>
+			<arg value="org.apache.maven.plugins:maven-deploy-plugin:2.6:deploy-file" />
+			<arg value="-Durl=${ossrh-snapshots-repository-url}" />
+			<arg value="-DrepositoryId=ossrh" />
+			<arg value="-DpomFile=pom.xml" />
+			<arg value="-Dfile=${build.jar}" />
+		</artifact:mvn>
+	</target>
+	
+	<!-- before this, update project version (both build.xml and pom.xml) from SNAPSHOT to RELEASE -->
+	<target name="stage" depends="jar,sign" description="deploy release version to Maven staging repository">
+		<!-- deploy the main artifact -->
+		<artifact:mvn>
+			<arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file" />
+			<arg value="-Durl=${ossrh-staging-repository-url}" />
+			<arg value="-DrepositoryId=ossrh" />
+			<arg value="-DpomFile=pom.xml" />
+			<arg value="-Dfile=${build.jar}" />
+		</artifact:mvn>
+
+		<!-- deploy the sources artifact -->
+		<artifact:mvn>
+			<arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file" />
+			<arg value="-Durl=${ossrh-staging-repository-url}" />
+			<arg value="-DrepositoryId=ossrh" />
+			<arg value="-DpomFile=pom.xml" />
+			<arg value="-Dfile=${build.sources-jar}" />
+		</artifact:mvn>
+
+		<!-- deploy the javadoc artifact -->
+		<artifact:mvn>
+			<arg value="org.apache.maven.plugins:maven-gpg-plugin:1.3:sign-and-deploy-file" />
+			<arg value="-Durl=${ossrh-staging-repository-url}" />
+			<arg value="-DrepositoryId=ossrh" />
+			<arg value="-DpomFile=pom.xml" />
+			<arg value="-Dfile=${build.javadoc-jar}" />
+		</artifact:mvn>
+	</target>
+	
+	<!-- unittests -->
 	<path id="test-classpath">
 		<pathelement location="lib/test/junit-4.12.jar" />
 		<pathelement location="lib/test/hamcrest-core-1.3.jar" />
