@@ -73,11 +73,9 @@ In case an option can be specified multiple times (e.g. multiple inputs), the op
 
 The validator will then pass each single value for that option through the filter and collect the filtered objects.
 
-The type of the value returned from the validator will change.  Let `T` be the return type of the specified filter. E.g. that is `java.lang.Integer` for the `integer` filter or `java.lang.String` if no filter is set. The validator will return a `java.util.List<T>` when asked for the option.
+The validated input will return an `Object[]` from `getOption(String)`.
 
-If the parsed input does not contain a value for the collection the returned `List` will be empty.
-
-The order of the parsed objects in the returned `List<T>` reflects the order in which the single values were given in the original input.
+The order of the parsed objects in the returned array reflects the order in which the single values were given in the original input.
 
 ## Arguments
 
