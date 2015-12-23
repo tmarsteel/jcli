@@ -175,6 +175,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         filterTypeClass.put("regex",       com.tmarsteel.jcli.filter.RegexFilter.class);
         filterTypeClass.put("set",         com.tmarsteel.jcli.filter.SetFilter.class);
         filterTypeClass.put("file",        com.tmarsteel.jcli.filter.FileFilter.class);
+        filterTypeClass.put("pattern",     com.tmarsteel.jcli.filter.MetaRegexFilter.class);
         
         ruleTypeClass.put("and",        com.tmarsteel.jcli.rule.AndRule.class);
         ruleTypeClass.put("or",         com.tmarsteel.jcli.rule.OrRule.class);

@@ -228,6 +228,17 @@ The regex filter allows only values matching the given regex. It will return the
 
 Given the input "15KG" this filter will return the string "15".
 
+### Pattern Filter (Meta Regex Filter)
+
+This filter parses the input string as a regular expression. This comes in handy e.g. when offering filter functionality.
+This filter accepts no parameters.  
+It returns the parsed regex as a `java.util.regex.Pattern`.
+
+Example:
+
+```xml
+<filter type="pattern" />
+```
 
 ## Rules
 
