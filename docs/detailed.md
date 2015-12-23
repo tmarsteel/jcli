@@ -69,13 +69,19 @@ for example:
 
 ### Multiple values
 
-In case an option can be specified multiple times (e.g. multiple inputs), the option MAY be marked as a collection by setting the `collection` attribute to `true` (defaults to `false`).  
+In case an option can be specified multiple times (e.g. multiple inputs), the option MAY be marked as a collection by setting the `collection` attribute.
 
 The validator will then pass each single value for that option through the filter and collect the filtered objects.
 
 The validated input will return an `Object[]` from `getOption(String)`.
 
 The order of the parsed objects in the returned array reflects the order in which the single values were given in the original input.
+
+example:
+
+```xml
+<option identifier="input" collection>
+```
 
 ## Arguments
 
