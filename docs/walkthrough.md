@@ -7,14 +7,14 @@ variable.
 
 The environment affects three values:
 
-* the escape character (which is irrelevant if you want to parse `String[]` only).
-    * DOS: `^`, UNIX: `\`
 * the prefix for options
     * DOS: `/`, UNIX: `-`
 * the prefix for flags
     * DOS: `/`, UNIX: `--`
+* the escape character (which is irrelevant if you want to parse `String[]` only).
+    * DOS: `^`, UNIX: `\`
 
-To simply enforce UNIX or DOS syntax, use `com.tmarsteel.jcli.Environment.UNIX` or `com.tmarsteel.jcli.Environment.DOS` constants:
+To simply enforce UNIX or DOS syntax, use the `com.tmarsteel.jcli.Environment.UNIX` or `com.tmarsteel.jcli.Environment.DOS` constants:
 
 ```java
 Validator inputValidator = new Validator(Environment.UNIX);
