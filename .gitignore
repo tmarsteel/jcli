@@ -16,3 +16,5 @@ build/
 dist/javadoc/
 lib/
 /dist/
+.idea
+!.idea/modules.xml
