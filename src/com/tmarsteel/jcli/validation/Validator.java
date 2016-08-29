@@ -218,6 +218,30 @@ public class Validator
             this.arguments.add(arg);
         }
     }
+
+    /**
+     * Returns an {@link Iterator} of all the {@link Option}s knonw to this validator.
+     * @return An {@link Iterator} of all the {@link Option}s knonw to this validator.
+     */
+    public Iterator<? extends Option> options() {
+        return options.iterator();
+    }
+
+    /**
+     * Returns an {@link Iterator} of all the {@link Flag}s knonw to this validator.
+     * @return An {@link Iterator} of all the {@link Flag}s knonw to this validator.
+     */
+    public Iterator<? extends Flag> flags() {
+        return flags.iterator();
+    }
+
+    /**
+     * Returns an {@link Iterator} of all the {@link Argument}s knonw to this validator.
+     * @return An {@link Iterator} of all the {@link Argument}s knonw to this validator.
+     */
+    public Iterator<? extends Argument> arguments() {
+        return arguments.iterator();
+    }
     
     /**
      * Parses and validates the given input.

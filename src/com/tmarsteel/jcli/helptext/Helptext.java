@@ -19,6 +19,7 @@
 package com.tmarsteel.jcli.helptext;
 
 import com.tmarsteel.jcli.Argument;
+import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Option;
 
 import java.util.Arrays;
@@ -48,9 +49,14 @@ public class Helptext
     private String notes;
 
     /**
-     * All options+flags known to this helptext
+     * All options known to this helptext
      */
     private final Set<Option> options = new HashSet<>();
+
+    /**
+     * All flags known to this helptext
+     */
+    private final Set<Flag> flags = new HashSet<>();
 
     /**
      * All the arguments knonw to this helptext
@@ -80,6 +86,10 @@ public class Helptext
     public void setProgramDescription(String programDescription)
     {
         this.programDescription = programDescription;
+    }
+
+    public Set<Flag> flags() {
+        return flags;
     }
 
     public Set<Option> options()

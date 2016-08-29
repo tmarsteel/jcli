@@ -17,6 +17,9 @@
  */
 package com.tmarsteel.jcli.examples;
 
+import com.tmarsteel.jcli.helptext.CLIHelptextFormatter;
+import com.tmarsteel.jcli.helptext.Helptext;
+import com.tmarsteel.jcli.helptext.HelptextFactory;
 import com.tmarsteel.jcli.validation.Validator;
 import com.tmarsteel.jcli.Environment;
 import com.tmarsteel.jcli.ParseException;
@@ -28,6 +31,36 @@ import org.xml.sax.SAXException;
 
 class Examples {
     public static void main(String[] args) {
+        helptext();
+        usage();
+    }
+
+    public static void helptext() {
+        Validator inputValidator = new Validator();
+        try
+        {
+            (XMLValidatorConfigurator.getInstance(
+                    Examples.class.getResourceAsStream("example-config.xml"),
+                    Environment.UNIX
+            )).configure(inputValidator);
+        }
+        catch (SAXException | IOException ex)
+        {
+            System.err.println("Failed to load internal configuration");
+            System.err.println(ex);
+            System.exit(1);
+            return;
+        }
+
+        Helptext helptext = HelptextFactory.getInstance(inputValidator);
+        helptext.setExecutableName("java -jar <jar>");
+        helptext.usageExamples().add("[-verbose] inputFile");
+        helptext.setProgramDescription("This is the program description. It is a short summary of what this program does.");
+        helptext.setNotes("Licensed under the GPL (GNU General Public License) Version 2.0");
+        System.out.println((new CLIHelptextFormatter()).format(helptext));
+    }
+
+    public static void usage() {
         Validator inputValidator = new Validator();
         Validator.ValidatedInput input;
     

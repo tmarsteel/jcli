@@ -18,6 +18,17 @@
 
 package com.tmarsteel.jcli.helptext;
 
+import static java.util.stream.StreamSupport.*;
+
+import com.tmarsteel.jcli.Argument;
+import com.tmarsteel.jcli.Identifiable;
+import com.tmarsteel.jcli.Option;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * A {@link HelptextFormatter} suited for the needs of CLI interfaces.
  */
@@ -26,7 +37,7 @@ public class CLIHelptextFormatter implements HelptextFormatter<String> {
     /**
      * Maximum number of characters in the output lines.
      */
-    private int maxWidth;
+    private int maxWidth = 100;
 
     /**
      * The line separator to use
@@ -80,7 +91,7 @@ public class CLIHelptextFormatter implements HelptextFormatter<String> {
         boolean isFirst = true;
         for (String example : t.usageExamples()) {
             if (t.getExecutableName().length() + 1 + example.length() < maxWidth) {
-                out.append(isFirst? t.getExecutableName() : new String(new char[t.getExecutableName().length()]).replace('\0', ' '));
+                out.append(isFirst? t.getExecutableName() : new String(new char[t.getExecutableName().length() + 7]).replace('\0', ' '));
                 out.append(' ');
                 out.append(example);
                 out.append('\n');
@@ -90,6 +101,34 @@ public class CLIHelptextFormatter implements HelptextFormatter<String> {
 
         // DESCRIPTION
         out.append(wrap(t.getProgramDescription()));
+        out.append(lineSeparator);
+        out.append(lineSeparator);
+
+        // OPTIONS and FLAGS
+        if (t.options().size() > 0) {
+            out.append("Options");
+            out.append(lineSeparator);
+            out.append(toTable(t.options()));
+            out.append(lineSeparator);
+        }
+        if (t.flags().size() > 0) {
+            out.append("Flags");
+            out.append(lineSeparator);
+            out.append(toTable(t.flags()));
+            out.append(lineSeparator);
+        }
+        if (t.arguments().size() > 0) {
+            out.append("Arguments");
+            out.append(lineSeparator);
+            out.append(toTable_Arguments(t.arguments()));
+            out.append(lineSeparator);
+        }
+
+        if (t.getNotes() != null && !t.getNotes().isEmpty())
+        {
+            out.append(wrap(t.getNotes()));
+            out.append(lineSeparator);
+        }
 
         return out.toString();
     }
@@ -115,6 +154,54 @@ public class CLIHelptextFormatter implements HelptextFormatter<String> {
             }
             out.append(lines[i]);
         }
+
+        return out.toString();
+    }
+
+    protected String padLeft(String toBePadded, int nSpaces) {
+        return (new String(new char[nSpaces]).replace('\0', ' ')) + toBePadded;
+    }
+
+    protected String toTable(Collection<? extends Identifiable> identifiables) {
+        int leftColWidth = getLongestNameLength(identifiables);
+        StringBuilder out = new StringBuilder(1000);
+
+        identifiables.forEach(identifiable -> {
+            String[] names = identifiable.names();
+            String description = identifiable.getDescription();
+            if (description == null || description.isEmpty()) {
+                description = "<no description>";
+            }
+            String[] descriptionLines = wrap(description, maxWidth - leftColWidth - 1).split("" + lineSeparator);
+            for (int i = 0;i < Math.max(names.length, descriptionLines.length);i++) {
+                int nPad = leftColWidth + 1;
+                if (i < names.length) {
+                    out.append(names[i]);
+                    out.append(' ');
+                    nPad -= names[i].length();
+                }
+                if (i < descriptionLines.length) {
+                    out.append(padLeft(descriptionLines[i], nPad));
+                }
+                out.append(lineSeparator);
+            }
+            out.append(lineSeparator);
+        });
+
+        return out.toString();
+    }
+
+    protected String toTable_Arguments(Collection<? extends Argument> args) {
+        int leftColWidth = Integer.toString(args.size(), 10).length() + 1;
+        StringBuilder out = new StringBuilder(1000);
+
+        args.stream()
+            .sorted((arg1, arg2) -> arg1.getIdentifier().compareTo(arg2.getIdentifier()))
+            .forEach(arg -> {
+            String label = "#" + arg.getIndex();
+            out.append(label);
+            out.append(padLeft(arg.getIdentifier(), leftColWidth - label.length()));
+        });
 
         return out.toString();
     }
@@ -198,5 +285,17 @@ public class CLIHelptextFormatter implements HelptextFormatter<String> {
 
         finalOut.append(currentLineBuilder);
         return finalOut.toString().trim();
+    }
+
+    protected int getLongestNameLength(Collection<? extends Identifiable> identifiables) {
+        int max = 0;
+        for (Identifiable e : identifiables) {
+            int localMax = Arrays.stream(e.names()).mapToInt(String::length).max().getAsInt();
+            if (localMax > max) {
+                max = localMax;
+            }
+        }
+
+        return max;
     }
 }

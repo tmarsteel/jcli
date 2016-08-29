@@ -67,6 +67,12 @@ public abstract class Identifiable
     }
 
     /**
+     * Returns all the identifiers of this object.
+     * @return All the identifiers of this object.
+     */
+    public String[] names() { return names.toArray(new String[names.size()]); }
+
+    /**
      * Returns the primary identifier for this option.
      * @return The primary identifier for this option.
      */

@@ -2,10 +2,12 @@
 <cli>
     <flag identifier="verbose">
         <alias>v</alias>
+        <description>If set, the programs output will be verbose and allow for easier error tracking.</description>
     </flag>
     
     <option identifier="encoding" required="true">
         <alias>e</alias>
+        <description>The encoding of the inputs. Must be a value supported by Java.</description>
     </option>
     
     <option identifier="input" collection="true">
