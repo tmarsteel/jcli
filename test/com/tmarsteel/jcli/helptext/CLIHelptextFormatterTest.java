@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Tobias Marstaller
+ * Copyright (C) 2016 Tobias Marstaller
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,24 +18,23 @@
 
 package com.tmarsteel.jcli.helptext;
 
-import com.tmarsteel.jcli.validation.Validator;
+import org.junit.Test;
 
-/**
- * A facility class to generate cli help texts.
- * @author Tobias Marstaller
- */
-public abstract class HelptextGenerator
+import static org.junit.Assert.assertEquals;
+
+public class CLIHelptextFormatterTest
 {
-    /**
-     * Returns a {@link HelptextGenerator} that generates texts for the configuration
-     * of the given {@link Validator}.
-     * @param validator The validator for whichs configuration to generate help
-     * texts.
-     * @return A {@link HelptextGenerator} that generates texts for the configuration
-     * of the given {@link Validator}.
-     */
-    public static HelptextGenerator getInstance(Validator validator)
-    {
-        return new ValidatorHelptextGenerator(validator);
+    @Test
+    public void testWrap() {
+        CLIHelptextFormatter formatter = new CLIHelptextFormatter();
+        formatter.setMaxWidth(20);
+        String result = formatter.wrap(
+            "This is a text that exceeds the line limit of this formatter by far."
+        );
+
+        assertEquals(result, "This is a text that\n" +
+                "exceeds the line\n" +
+                "limit of this\n" +
+                "formatter by far.");
     }
 }
