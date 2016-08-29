@@ -18,3 +18,4 @@ lib/
 /dist/
 .idea
 !.idea/modules.xml
+target
