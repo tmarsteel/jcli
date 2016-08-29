@@ -21,26 +21,29 @@ import com.tmarsteel.jcli.validation.Validator;
 import com.tmarsteel.jcli.Environment;
 import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.validation.ValidationException;
-import com.tmarsteel.jcli.validation.configuration.ValidatorConfigurator;
 import com.tmarsteel.jcli.validation.configuration.XMLValidatorConfigurator;
-import java.io.File;
-
 import java.io.IOException;
+import static org.junit.Assert.*;
 import org.xml.sax.SAXException;
 
 class Examples {
     public static void main(String[] args) {
-        Validator inputValidator = new Validator(Environment.UNIX);
+        Validator inputValidator = new Validator();
         Validator.ValidatedInput input;
     
         try
         {
             (XMLValidatorConfigurator.getInstance(
-                Examples.class.getResourceAsStream("cli-config.xml")
+                Examples.class.getResourceAsStream("example-config.xml"),
+                Environment.UNIX
             )).configure(inputValidator);
             
 
-            input = inputValidator.parse(args);
+            input = inputValidator.parse(new String[] {
+                "--e", "enc",
+                "--input", "1",
+                "--input", "2"
+            });
         }
         catch (SAXException | IOException ex)
         {
@@ -57,16 +60,8 @@ class Examples {
             return;
         }
         
-        File inputFile = (File) input.getOption("input");
-        File outputFile = (File) input.getOption("output");
-        String inputEncoding = (String) input.getOption("encoding");
-        boolean verbose = input.isFlagSet("verbose");
-        
-        if (outputFile == null)
-        {
-            // outputFile = new File(/* exchange .csv for .xls in inputFile here */);
-        }
-        
-        // do the conversion!
+        assertFalse(input.isFlagSet("verbose"));
+        assertEquals(input.getOption("encoding"), "enc");
+        assertArrayEquals((Object[]) input.getOption("input"), new Long[]{ 1L, 2L });
     }
 }
