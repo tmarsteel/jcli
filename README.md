@@ -114,8 +114,9 @@ Version 2.0.0-RC1 contains multiple improvements; the RCs have yet to undergo ex
 
 ### 2.0.0-RC2
 
-* Help-Text generation (via a `<description>` tag)
+* Help-Text generation (using a `<description>` tag)
 * Command-Dispatching (including XML configuration)
+* Drop ant, use maven for building
 
 ### 2.0.0-RC3
 
