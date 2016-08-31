@@ -37,7 +37,7 @@ public class CLIHelptextFormatter implements HelptextFormatter<String> {
     /**
      * Maximum number of characters in the output lines.
      */
-    private int maxWidth = 100;
+    private int maxWidth = 80;
 
     /**
      * The line separator to use
