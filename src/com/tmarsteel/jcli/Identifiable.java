@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2015 Tobias Marstaller
  *
  * This program is free software; you can redistribute it and/or
@@ -28,7 +28,8 @@ import java.util.List;
 public abstract class Identifiable
 {
     private List<String> names;
-    
+    private String description;
+
     /**
      * Creates new identifiable; the first element in <code>names</code> becomes
      * the primary identifier (see {@link #getPrimaryIdentifier()}.
@@ -39,7 +40,7 @@ public abstract class Identifiable
     {
         this(Arrays.asList(names));
     }
-    
+
     /**
      * Creates new identifiable; the first element in <code>names</code> becomes
      * the primary identifier (see {@link #getPrimaryIdentifier()}.
@@ -52,10 +53,10 @@ public abstract class Identifiable
         {
             throw new IllegalArgumentException("At least one name must be given.");
         }
-        
+
         this.names = names;
     }
-    
+
     /**
      * Returns whether the given name identifies this flag/option.
      * @return Whether the given name identifies this flag/option.
@@ -64,7 +65,7 @@ public abstract class Identifiable
     {
         return names.contains(name);
     }
-    
+
     /**
      * Returns the primary identifier for this option.
      * @return The primary identifier for this option.
@@ -73,7 +74,7 @@ public abstract class Identifiable
     {
         return names.get(0);
     }
-    
+
     /**
      * Returns whether any of this' identifiers is ambigous with any
      * of the identifiers of the given {@link Identifiable}
@@ -83,7 +84,7 @@ public abstract class Identifiable
     public boolean isAmbigousWith(Identifiable o)
     {
         Iterator<String> myIt = names.iterator();
-        
+
         while (myIt.hasNext())
         {
             if (o.names.contains(myIt.next()))
@@ -91,7 +92,25 @@ public abstract class Identifiable
                 return true;
             }
         }
-        
+
         return false;
+    }
+
+    /**
+     * Sets a string for this {@link Identifiable}.
+     * @param desc A description for this {@link Identifiable}
+     */
+    public void setDescription(String desc)
+    {
+        this.description = desc;
+    }
+
+    /**
+     * Returns a string representing this {@link Identifiable}.
+     * @return A string representing this {@link Identifiable}.
+     */
+    public String getDescription()
+    {
+        return this.description;
     }
 }
