@@ -40,8 +40,8 @@ class Examples {
         try
         {
             (XMLValidatorConfigurator.getInstance(
-                    Examples.class.getResourceAsStream("example-config.xml"),
-                    Environment.UNIX
+                Examples.class.getResourceAsStream("example-config.xml"),
+                Environment.UNIX
             )).configure(inputValidator);
         }
         catch (SAXException | IOException ex)

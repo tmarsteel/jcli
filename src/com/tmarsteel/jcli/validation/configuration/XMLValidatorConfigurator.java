@@ -442,9 +442,10 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
         }
 
-        // look for a filter
+        // filters, description
         Filter filter = null;
         String defValue = null;
+        String description = "";
         NodeList children = argNode.getChildNodes();
         for (int i = 0;i < children.getLength();i++)
         {
@@ -459,6 +460,9 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
                     case "default":
                         defValue = node.getTextContent();
                         break;
+                    case "description":
+                        description = node.getTextContent();
+                        break;
                     default:
                         throw new MisconfigurationException("Unknown tag " + node.getNodeName()
                             + " in argument (index " + index + ")");
@@ -467,6 +471,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         }
         Argument arg = new Argument(primaryIdentifier, index, defValue, filter);
         arg.setRequired(required);
+        arg.setDescription(description);
         return arg;
     }
 

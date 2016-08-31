@@ -30,6 +30,7 @@ public class Argument
     protected Object defaultValue;
     protected final int index;
     protected final String accessName;
+    protected String description = "";
     protected boolean required = false;
     
     /**
@@ -150,6 +151,14 @@ public class Argument
         throws ValidationException
     {
         return valueFilter == null? input : valueFilter.parse(input);
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public boolean isRequired()

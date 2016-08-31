@@ -11,6 +11,12 @@
     </option>
     
     <option identifier="input" collection="true">
-        <filter type="integer" />
+        <filter type="file" />
+        <description>Path to the input file; use this or either the first argument.</description>
     </option>
+
+    <argument identifier="inputArg" index="0">
+        <filter type="file" />
+        <description>Path to the input file; use this or either the input option.</description>
+    </argument>
 </cli>

@@ -106,19 +106,19 @@ public class CLIHelptextFormatter implements HelptextFormatter<String> {
 
         // OPTIONS and FLAGS
         if (t.options().size() > 0) {
-            out.append("Options");
+            out.append("-- Options --");
             out.append(lineSeparator);
             out.append(toTable(t.options()));
             out.append(lineSeparator);
         }
         if (t.flags().size() > 0) {
-            out.append("Flags");
+            out.append("-- Flags --");
             out.append(lineSeparator);
             out.append(toTable(t.flags()));
             out.append(lineSeparator);
         }
         if (t.arguments().size() > 0) {
-            out.append("Arguments");
+            out.append("-- Arguments --");
             out.append(lineSeparator);
             out.append(toTable_Arguments(t.arguments()));
             out.append(lineSeparator);
@@ -126,6 +126,7 @@ public class CLIHelptextFormatter implements HelptextFormatter<String> {
 
         if (t.getNotes() != null && !t.getNotes().isEmpty())
         {
+            out.append(lineSeparator);
             out.append(wrap(t.getNotes()));
             out.append(lineSeparator);
         }
@@ -192,15 +193,21 @@ public class CLIHelptextFormatter implements HelptextFormatter<String> {
     }
 
     protected String toTable_Arguments(Collection<? extends Argument> args) {
-        int leftColWidth = Integer.toString(args.size(), 10).length() + 1;
+        int leftColWidth = Integer.toString(args.size(), 10).length() + 2;
         StringBuilder out = new StringBuilder(1000);
 
         args.stream()
             .sorted((arg1, arg2) -> arg1.getIdentifier().compareTo(arg2.getIdentifier()))
             .forEach(arg -> {
-            String label = "#" + arg.getIndex();
-            out.append(label);
-            out.append(padLeft(arg.getIdentifier(), leftColWidth - label.length()));
+            out.append('#');
+            out.append(arg.getIndex());
+            out.append("  ");
+            out.append(
+                indentFromSecondLine(
+                    wrap(arg.getDescription(), maxWidth - leftColWidth - 1),
+                    leftColWidth + 1
+                )
+            );
         });
 
         return out.toString();
