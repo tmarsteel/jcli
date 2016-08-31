@@ -167,7 +167,10 @@ public class CLIHelptextFormatter implements HelptextFormatter<String> {
         int leftColWidth = getLongestNameLength(identifiables);
         StringBuilder out = new StringBuilder(1000);
 
-        identifiables.forEach(identifiable -> {
+        identifiables
+        .stream()
+        .sorted((a, b) -> a.getPrimaryIdentifier().compareTo(b.getPrimaryIdentifier()))
+        .forEach(identifiable -> {
             String[] names = identifiable.names();
             String description = identifiable.getDescription();
             if (description == null || description.isEmpty()) {

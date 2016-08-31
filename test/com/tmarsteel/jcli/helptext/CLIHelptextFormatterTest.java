@@ -71,38 +71,31 @@ public class CLIHelptextFormatterTest
 
         assertEquals(text,
             "Usage: smapleProgram [-flags] [--options values] arguments...\n" +
-                    "                     --flag -option value argument\n" +
-                    "This is a description of the program. It is intended to exceed the 80 character\n" +
-                    "line mimit in order to test the text wrapping functionality.\n" +
-                    "\n" +
-                    "-- Options --\n" +
-                    "option1  Some tedious, precise description of the option including format,\n" +
-                    "o1       default values and requirements...\n" +
-                    "o \n" +
-                    "\n" +
-                    "option2  Some tedious, precise description of the option including format,\n" +
-                    "o2       default values and requirements...\n" +
-                    "\n" +
-                    "\n" +
-                    "-- Flags --\n" +
-                    "flag2  Some tedious, precise description of the flag including format, default\n" +
-                    "f2     values and requirements...\n" +
-                    "\n" +
-                    "flag1  Some tedious, precise description of the flag including format, default\n" +
-                    "f1     values and requirements...\n" +
-                    "f \n" +
-                    "\n" +
-                    "\n" +
-                    "\n" +
-                    "Some more notes on the program. This, too, should exceed the line length to test\n" +
-                    "wrapping.\n"
+            "                     --flag -option value argument\n" +
+            "This is a description of the program. It is intended to exceed the 80 character\n" +
+            "line mimit in order to test the text wrapping functionality.\n" +
+            "\n" +
+            "-- Options --\n" +
+            "option1  Some tedious, precise description of the option including format,\n" +
+            "o1       default values and requirements...\n" +
+            "o \n" +
+            "\n" +
+            "option2  Some tedious, precise description of the option including format,\n" +
+            "o2       default values and requirements...\n" +
+            "\n" +
+            "\n" +
+            "-- Flags --\n" +
+            "flag1  Some tedious, precise description of the flag including format, default\n" +
+            "f1     values and requirements...\n" +
+            "f \n" +
+            "\n" +
+            "flag2  Some tedious, precise description of the flag including format, default\n" +
+            "f2     values and requirements...\n" +
+            "\n" +
+            "\n" +
+            "\n" +
+            "Some more notes on the program. This, too, should exceed the line length to test\n" +
+            "wrapping.\n"
         );
-    }
-
-    public static void main(String... args) {
-        CLIHelptextFormatterTest x = new CLIHelptextFormatterTest();
-        x.setUpSubject();
-        x.setUpHelptext();
-        x.testA();
     }
 }
