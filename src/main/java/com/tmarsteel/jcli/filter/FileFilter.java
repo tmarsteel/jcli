@@ -38,7 +38,7 @@ public class FileFilter implements java.io.FileFilter, Filter
          * Checks whether the given file fulfills the requirement and throws
          * and exception if that is not the case.
          * @param file The file to test
-         * @throws ParseException If the given file does not fulfill 
+         * @throws ValidationException If the given file does not fulfill
          */
         public void test(File file)
             throws ValidationException
@@ -88,7 +88,7 @@ public class FileFilter implements java.io.FileFilter, Filter
          * Checks whether the given file fulfills the requirement and throws
          * and exception if that is not the case.
          * @param f The file to test
-         * @throws ParseException If the given file does not fulfill 
+         * @throws ValidationException If the given file does not fulfill
          */
         public void test(File f)
             throws ValidationException
@@ -119,7 +119,7 @@ public class FileFilter implements java.io.FileFilter, Filter
          * Checks whether the given file fulfills the requirement and throws
          * and exception if that is not the case.
          * @param file The file to test
-         * @throws ParseException If the given file does not fulfill 
+         * @throws ValidationException If the given file does not fulfill
          */
         public void test(File file)
             throws ValidationException

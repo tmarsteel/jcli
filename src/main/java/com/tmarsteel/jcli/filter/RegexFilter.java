@@ -58,7 +58,7 @@ public class RegexFilter implements Filter
      * The group to return may be specified by the <code>returnGroup</code>
      * attribute in <code>filterNode</code>.
      * @param filterNode
-     * @throws ParseException If the return group attribute is not set to an 
+     * @throws ValidationException If the return group attribute is not set to an
      * integer value or any other tag than &lt;regex&gt; is found within
      * <code>filterNode</code>
      */

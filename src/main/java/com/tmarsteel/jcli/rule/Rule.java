@@ -39,7 +39,7 @@ public interface Rule
     
     /**
      * Sets the error message that is to be included in the {@link RuleNotMetException}
-     * thrown by {@link #validate(com.tmarsteel.jcli.CLIParser, com.tmarsteel.jcli.CLIParser.ValidatedInput)}.
+     * thrown by {@link #validate(Validator, Validator.ValidatedInput)}
      * @param errorMessage The error message to throw on failure.
      * @throws OperationNotSupportedException If this rule does not support error messages.
      */

@@ -89,7 +89,7 @@ public class SetFilter implements Filter
      * The strings this filter should accept must be declared with <code>&lt;value&gt;</code>
      * subtags.
      * @param filterNode
-     * @throws ParseException If any other subtag than &lt;value&gt; is found.
+     * @throws ValidationException If any other subtag than &lt;value&gt; is found.
      */
     public SetFilter(Node filterNode)
         throws ValidationException
