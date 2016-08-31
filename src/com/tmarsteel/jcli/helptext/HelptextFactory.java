@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Tobias Marstaller
+ * Copyright (C) 2016 Tobias Marstaller
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,23 +19,18 @@
 package com.tmarsteel.jcli.helptext;
 
 import com.tmarsteel.jcli.validation.Validator;
+import com.tmarsteel.jcli.validation.configuration.XMLValidatorConfigurator;
 
 /**
- * A facility class to generate cli help texts.
- * @author Tobias Marstaller
+ * Helper methods for {@link Helptext} construction
  */
-public abstract class HelptextGenerator
+public class HelptextFactory
 {
-    /**
-     * Returns a {@link HelptextGenerator} that generates texts for the configuration
-     * of the given {@link Validator}.
-     * @param validator The validator for whichs configuration to generate help
-     * texts.
-     * @return A {@link HelptextGenerator} that generates texts for the configuration
-     * of the given {@link Validator}.
-     */
-    public static HelptextGenerator getInstance(Validator validator)
-    {
-        return new ValidatorHelptextGenerator(validator);
+    public static Helptext getInstance(Validator validator) {
+        Helptext helptext = new Helptext();
+        validator.options().forEachRemaining(helptext.options()::add);
+        validator.flags().forEachRemaining(helptext.flags()::add);
+        validator.arguments().forEachRemaining(helptext.arguments()::add);
+        return helptext;
     }
 }

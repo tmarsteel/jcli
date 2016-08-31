@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Tobias Marstaller
+ * Copyright (C) 2016 Tobias Marstaller
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,10 +19,8 @@
 package com.tmarsteel.jcli.helptext;
 
 /**
- * A facility class to generate cli help texts based on configured {@link Validator}s
- * @author Tobias Marstaller
+ * Takes a {@link Helptext} and outputs it as a formatted document of type {@code T}.
  */
-public class ValidatorHelptextGenerator extends HelptextGenerator
-{
-
+public interface HelptextFormatter<R> {
+    R format(Helptext t);
 }

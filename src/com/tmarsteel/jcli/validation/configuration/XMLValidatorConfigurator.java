@@ -296,9 +296,34 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         // resolve aliases
         ArrayList<String> names = new ArrayList<>();
         names.add(primaryIdentifier);
-        getAliases(flagNode, names);
+        String description = null;
 
-        return new Flag(names.toArray(new String[names.size()]));
+        NodeList childNodes = flagNode.getChildNodes();
+        for (int i = 0;i < childNodes.getLength();i++)
+        {
+            node = childNodes.item(i);
+            switch (node.getNodeName())
+            {
+                case "#text": break;
+                case "alias":
+                    final String alias = node.getTextContent();
+                    if (alias == null || alias.isEmpty())
+                    {
+                        throw new MisconfigurationException("Empty alias for flag " + primaryIdentifier);
+                    }
+                    names.add(alias);
+                    break;
+                case "description":
+                    description = node.getTextContent();
+                    break;
+                default:
+                    throw new MisconfigurationException("Unknown tag " + node.getNodeName());
+            }
+        }
+
+        Flag f = new Flag(names.toArray(new String[names.size()]));
+        f.setDescription(description == null? "" : description);
+        return f;
     }
 
     private Option parseOption(Node optNode)
@@ -321,6 +346,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         names.add(primaryIdentifier);
         Filter filter = null;
         String defValue = null;
+        String description = null;
 
         NodeList childNodes = optNode.getChildNodes();
         for (int i = 0;i < childNodes.getLength();i++)
@@ -334,13 +360,17 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
                     if (alias == null || alias.isEmpty())
                     {
                         throw new MisconfigurationException("Empty alias for option " + primaryIdentifier);
-                    }   names.add(alias);
+                    }
+                    names.add(alias);
                     break;
                 case "filter":
                     filter = parseFilter(node);
                     break;
                 case "default":
                     defValue = node.getTextContent();
+                    break;
+                case "description":
+                    description = node.getTextContent();
                     break;
                 default:
                     throw new MisconfigurationException("Unknown tag " + node.getNodeName());
@@ -350,6 +380,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         Option o = new Option(filter, defValue, names.toArray(new String[names.size()]));
         o.setRequired(attrs.getNamedItem("required") != null);
         o.setAllowsMultipleValues(attrs.getNamedItem("collection") != null);
+        o.setDescription(description == null? "" : description);
         
         return o;
     }
@@ -411,9 +442,10 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
         }
 
-        // look for a filter
+        // filters, description
         Filter filter = null;
         String defValue = null;
+        String description = "";
         NodeList children = argNode.getChildNodes();
         for (int i = 0;i < children.getLength();i++)
         {
@@ -428,6 +460,9 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
                     case "default":
                         defValue = node.getTextContent();
                         break;
+                    case "description":
+                        description = node.getTextContent();
+                        break;
                     default:
                         throw new MisconfigurationException("Unknown tag " + node.getNodeName()
                             + " in argument (index " + index + ")");
@@ -436,6 +471,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         }
         Argument arg = new Argument(primaryIdentifier, index, defValue, filter);
         arg.setRequired(required);
+        arg.setDescription(description);
         return arg;
     }
 
