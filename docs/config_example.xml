@@ -52,7 +52,7 @@ convert --verbose -outtype csv -outfile foo.csv bar.xls
 		For file:
 		 - extension
 		 - type (file, directory or irrelevant)
-		 - existance (possible values: see enum FileFilter.EXISTANCE)
+		 - existence (possible values: see enum FileFilter.EXISTENCE)
 		 - permissions (possible values: see enum FileFilter.PERMISSION)
 		For set:
 		 - value (one for each possible value)
@@ -62,7 +62,7 @@ convert --verbose -outtype csv -outfile foo.csv bar.xls
 		-->
 		<filter type="file">
 			<type>file</type>
-			<existance>IRRELEVANT</existance>
+			<existence>IRRELEVANT</existence>
 			<permissions>WRITE</permission>
 		</filter>
 	</option>

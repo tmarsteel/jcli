@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
  */
 public class FileFilterTest
 {
-    public static class EXISTANCETest
+    public static class EXISTENCETest
     {
         @Test
         public void MUST_EXISTshouldSucceedOnExistingFile()
@@ -38,7 +38,7 @@ public class FileFilterTest
             
             when(f.exists()).thenReturn(true);
             
-            FileFilter.EXISTANCE.MUST_EXIST.test(f);
+            FileFilter.EXISTENCE.MUST_EXIST.test(f);
         }
         
         @Test(expected=ValidationException.class)
@@ -49,7 +49,7 @@ public class FileFilterTest
             
             when(f.exists()).thenReturn(false);
             
-            FileFilter.EXISTANCE.MUST_EXIST.test(f);
+            FileFilter.EXISTENCE.MUST_EXIST.test(f);
         }
     }
     

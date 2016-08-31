@@ -20,7 +20,7 @@ The root-element of the configuration xml MUST be a `<cli>`-Tag. It includes all
     <argument identifier="input" index="0">
         <filter type="file">
             <permissions>READ</permissions>
-            <existance>MUST_EXIST</existance>
+            <existence>MUST_EXIST</existence>
         </filter>
     </argument>
 </cli>
@@ -154,7 +154,7 @@ Example:
 
 The file filter returns an instance of `java.io.File`. Whether or not a file will be accepted can be configured. These criteria are applicable:
 
-* existance: the file has to exist, the file may not exist or existance is irrelevant
+* existence: the file has to exist, the file may not exist or existence is irrelevant
 * permissions: the has to be
   - readable
   - writable
@@ -162,7 +162,7 @@ The file filter returns an instance of `java.io.File`. Whether or not a file wil
 * it has to be a file/directory
 * a specific extension is required
 
-To define the required existance-state use an `<exinstance>` tag. Its content has to be one of `com.wisper.cli.filter.FileFilter.EXISTANCE`s values:
+To define the required existence-state use an `<exinstance>` tag. Its content has to be one of `com.wisper.cli.filter.FileFilter.EXISTENCE`s values:
 
 * MUST_EXIST
 * MUST_NOT_EXIST
@@ -192,7 +192,7 @@ As an example a filter will serve that requires a readable xml file.
 <filter type="file">
     <extension>xml</extension>
     <type>FILE</type>
-    <existance>MUST_EXIST</existance>
+    <existence>MUST_EXIST</existence>
     <permissions>READ</permissions>
 </filter>
 ```

@@ -130,7 +130,7 @@ Additionally, providing non-readable files or directories as input for this conv
     <argument index="0" identifier="input" required="true">
         <filter type="file">
             <permissions>READ</permissions>
-            <existance>MUST_EXIST</existance>
+            <existence>MUST_EXIST</existence>
             <type>FILE</type>
             <extension>csv</extension>
         </filter>

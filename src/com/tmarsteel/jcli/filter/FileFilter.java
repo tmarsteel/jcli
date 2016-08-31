@@ -25,11 +25,10 @@ import org.w3c.dom.NodeList;
 
 /**
  * Accepts values that to a file or directory meeting the specified requirements.
- * @author tmarsteel
  */
 public class FileFilter implements java.io.FileFilter, Filter
 {
-    public enum EXISTANCE
+    public enum EXISTENCE
     {
         MUST_EXIST,
         MUST_NOT_EXIST,
@@ -151,7 +150,7 @@ public class FileFilter implements java.io.FileFilter, Filter
     }
 
     protected java.io.FileFilter filter = null;
-    protected EXISTANCE existanceStatus = EXISTANCE.IRRELEVANT;
+    protected EXISTENCE EXISTENCEStatus = EXISTENCE.IRRELEVANT;
     protected PERMISSION permissionStatus = PERMISSION.IRRELEVANT;
     protected TYPE fileType = TYPE.IRRELEVANT;
     protected String extension = null;
@@ -168,19 +167,20 @@ public class FileFilter implements java.io.FileFilter, Filter
     /**
      * Creates a new filter from the given DOM node. <br>
      * Node structure:
-     * The ENUM values for {@link PERMISSION}, {@link TYPE} and {@link EXISTANCE}
+     * The ENUM values for {@link PERMISSION}, {@link TYPE} and {@link EXISTENCE}
      * may be specified by &lt;permission&gt;, &lt;type&gt; and &lt;existance&gt;
      * subtags respectively.<br>
      * The extension to force may be specified by an &lt;extension&gt; subtag.
      * @param filterNode
-     * @throws ParseException 
+     * @throws ParseException
+     * @deprecated Consider using {@link PathFilter} instead.
      */
     public FileFilter(Node filterNode)
         throws ParseException
     {
         fileType = FileFilter.TYPE.IRRELEVANT;
         permissionStatus = FileFilter.PERMISSION.IRRELEVANT;
-        existanceStatus = FileFilter.EXISTANCE.IRRELEVANT;
+        EXISTENCEStatus = EXISTENCE.IRRELEVANT;
 
         NodeList children = filterNode.getChildNodes();
         for (int i = 0;i < children.getLength();i++)
@@ -217,10 +217,10 @@ public class FileFilter implements java.io.FileFilter, Filter
                         throw new ParseException("Illegal value for permissions of file-filter");
                     }
                     break;
-                case "existance":
+                case "existence":
                     try
                     {
-                        existanceStatus = FileFilter.EXISTANCE.valueOf(cNode.getTextContent());
+                        EXISTENCEStatus = EXISTENCE.valueOf(cNode.getTextContent());
                     }
                     catch (IllegalArgumentException ex)
                     {
@@ -272,7 +272,7 @@ public class FileFilter implements java.io.FileFilter, Filter
     {
         if (filter == null)
         {
-            existanceStatus.test(file);
+            EXISTENCEStatus.test(file);
             fileType.test(file);
             permissionStatus.test(file);
             if (extension != null)
@@ -323,14 +323,14 @@ public class FileFilter implements java.io.FileFilter, Filter
         this.permissionStatus = permissionStatus;
     }
 
-    public EXISTANCE getExistanceStatus()
+    public EXISTENCE getEXISTENCEStatus()
     {
-        return existanceStatus;
+        return EXISTENCEStatus;
     }
 
-    public void setExistanceStatus(EXISTANCE existanceStatus)
+    public void setEXISTENCEStatus(EXISTENCE EXISTENCEStatus)
     {
-        this.existanceStatus = existanceStatus;
+        this.EXISTENCEStatus = EXISTENCEStatus;
     }
 
     public TYPE getFileType()
