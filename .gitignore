@@ -11,10 +11,8 @@
 hs_err_pid*
 
 distVersions/
-nbproject/
-build/
 dist/javadoc/
-lib/
 /dist/
 .idea
 !.idea/modules.xml
+target
