@@ -56,7 +56,6 @@ public class CommandDispatcherTest
 
     @Test
     public void dispatchShouldCallCommandExecute() throws Exception {
-        subject.add("test", testCommand);
         doReturn(null).when(testCommand).execute(any());
 
         subject.dispatch(new String[]{"test"});
@@ -66,7 +65,6 @@ public class CommandDispatcherTest
 
     @Test
     public void dispatchShouldPassCorrectArguments() throws Exception {
-        subject.add("test", testCommand);
         doReturn(null).when(testCommand).execute(any());
 
         subject.dispatch(new String[]{"test", "a", "b", "c"});
@@ -76,7 +74,6 @@ public class CommandDispatcherTest
 
     @Test
     public void dispatchShouldPassReturnValue() throws Exception {
-        subject.add("test", testCommand);
         Object expectedReturn = new Object();
         doReturn(expectedReturn).when(testCommand).execute(any());
 
@@ -87,7 +84,6 @@ public class CommandDispatcherTest
 
     @Test
     public void dispatchShouldPassException() throws Exception {
-        subject.add("test", testCommand);
         Exception expected = new Exception("Fake reason");
         doThrow(expected).when(testCommand).execute(any());
 

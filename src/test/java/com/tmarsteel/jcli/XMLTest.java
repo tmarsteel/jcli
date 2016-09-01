@@ -18,6 +18,7 @@
 package com.tmarsteel.jcli;
 
 import java.io.IOException;
+import java.io.InputStream;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,7 +38,7 @@ public abstract class XMLTest
     
     public String testXML;
     public String testNodesName;
-    
+
     @Before
     public void loadTestXML()
         throws ParserConfigurationException, SAXException, IOException
