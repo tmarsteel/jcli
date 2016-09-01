@@ -9,11 +9,25 @@ Go to the [releases page](http://github.com/tmarsteel/jcli/releases) and downloa
 
 Alternatively, you can check out this repo and build jCLI yourself using Ant. JUnit 4.10+ is required if you want to run unit-tests. See `build.xml` for more information.
 
+## Features
+
+* Flags, Options and Arguments
+* Validation
+  * **entirely** configurable using XML
+  * convert/parse input to data types such as `File`, `BigDecimal` and `Pattern`
+  * Constraints on inputs, e.g: file must exist and be readable, integer ranges, pattern matching (and group extraction!), ...
+* Helptext generation: put `<description>` tags in your XML and the help output is generated for you
+* Multi-Command support in the style of `git commit` and `apt-get install`
+* Environment-Agnostic: accept *NIX style commands on *NIX systems, DOS style commands on DOS systems
+
 ## Documentation
 
-* [Walkthrough](docs/walkthrough.md): an introduction to XML configuration
-* [detailed Documentation](docs/detailed.md) a full explanation of all XML directives and of how to create custom filters and rules
-* [Programmatical Configuration](docs/programmatical.md) documentation of programmatical configuration
+* Input validation
+** [Walkthrough](docs/validation/walkthrough.md): an introduction to XML configuration
+** [detailed Documentation](docs/validation/detailed.md) a full explanation of all XML directives and of how to create custom filters and rules
+** [Programmatical Configuration](docs/validation/programmatical.md) documentation of programmatical configuration
+* [Helptext](docs/helptext.md): How to generate a help text based on validation constraints
+* [Sub-Commands](docs/multicommand.md): How to use the multi-command support
 
 ## Quick Start
 

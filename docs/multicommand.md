@@ -1,17 +1,12 @@
-# Programmatical Configuration
-
-## Sub-Commands
+# Multi-Command support
 
 jCLI offers support for sub-commands of the kind like `git commit`, `apt-get install`, `composer update`, etc. These
 commands can be nested to an arbitrary depth, allowing for constructs like AWSs `aws ec2 allocate-hosts`.
 
 Every command can have a return value in case it does not just write to STDOUT.
+Every command can have a return value in case it does not just write to STDOUT.
 
-This feature requires some extra code, which is why it is listed on this page.
-
-### Simple usage
-
-#### 1. Put your CLI code into `Commands`
+## Simple usage
 
 Create a class implementing `com.tmarsteel.jcli.command.Command` for every command your CLI should offer. The validation
 of input given to that command is now a responsibility of each command:
@@ -24,9 +19,7 @@ class MyCommand implements Command<Void> {
 }
 ```
 
-#### 3. Create a `CommandDispatcher`
-
-Create an instance of `com.tmarsteel.jcli.command.CommandDispatcher` (presumably main() is the correct place for this).
+Instantiate a new `com.tmarsteel.jcli.command.CommandDispatcher` (presumably main() is the correct place for this).
 You can then register your commands with that dispatcher.
 
 ```java
@@ -34,8 +27,6 @@ CommandDispatcher<Void> dispatcher = new CommandDispatcher<>();
 
 dispatcher.add("my", new MyCommand());
 ```
-
-#### 3. Invoke `CommandDispatcher#dispatch` when you're ready
 
 Once all of your commands have been registered, invoke `dispatch` on your dispatcher:
 
@@ -49,9 +40,9 @@ public static void main(String[] args) {
 }
 ```
 
-### Nesting Commands
+## Nesting Commands
 
-`CommandDispatcher`s are `Command`s themselves. Lets look, just as an example, at the `aws ec2 allocate-hosts` command:
+`CommandDispatcher`s are `Command`s themselves. This example of the `aws ec2 allocate-hosts` command should say it all:
 
 ```java
 CommandDispatcher<Void> dispatcher = new CommandDispatcher<>();
