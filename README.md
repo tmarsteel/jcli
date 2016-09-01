@@ -23,9 +23,9 @@ Alternatively, you can check out this repo and build jCLI yourself using Ant. JU
 ## Documentation
 
 * Input validation
-** [Walkthrough](docs/validation/walkthrough.md): an introduction to XML configuration
-** [detailed Documentation](docs/validation/detailed.md) a full explanation of all XML directives and of how to create custom filters and rules
-** [Programmatical Configuration](docs/validation/programmatical.md) documentation of programmatical configuration
+  * [Walkthrough](docs/validation/walkthrough.md): an introduction to XML configuration
+  * [detailed Documentation](docs/validation/detailed.md) a full explanation of all XML directives and of how to create custom filters and rules
+  * [Programmatical Configuration](docs/validation/programmatical.md) documentation of programmatical configuration
 * [Helptext](docs/helptext.md): How to generate a help text based on validation constraints
 * [Sub-Commands](docs/multicommand.md): How to use the multi-command support
 
