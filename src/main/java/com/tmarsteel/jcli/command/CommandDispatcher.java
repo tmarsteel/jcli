@@ -29,9 +29,18 @@ import java.util.Map;
  */
 public class CommandDispatcher<R> implements Command<R> {
 
-    private Map<String,Command<R>> commands = new HashMap<String,Command<R>>();
+    private Map<String,Command<R>> commands = new HashMap<>();
+
+    /**
+     * Aliased commands
+     */
+    private Map<String,String> aliases = new HashMap<>();
 
     public void add(String name, Command<R> command) {
+        if (commands.get(name) != null) {
+            throw new IllegalStateException("A command with the name " + name + " has already been added.");
+        }
+
         commands.put(name, command);
     }
 
@@ -42,20 +51,19 @@ public class CommandDispatcher<R> implements Command<R> {
      * @return Whatever the command returns.
      * @throws Exception Passes every exception that arises during the dispatch and execution
      */
-    public R dispatch(String[] args) throws ParseException, ValidationException, Exception {
+    public R dispatch(String[] args) throws CommandDispatchException, NoSuchCommandException, ParseException, ValidationException, Exception {
         if (args.length == 0 || args[0] == null) {
             throw new CommandDispatchException("No command specified.");
         }
 
-        if (commands.containsKey(args[0])) {
-            String[] newArgs = new String[args.length - 1];
-            if (newArgs.length > 0) {
-                System.arraycopy(args, 1, newArgs, 0, newArgs.length);
-            }
-            return commands.get(args[0]).execute(newArgs);
-        } else {
-            throw new CommandDispatchException("Command " + args[0] + " is unknown");
+        Command<R> command = getCommand(args[0]);
+
+        String[] newArgs = new String[args.length - 1];
+        if (newArgs.length > 0) {
+            System.arraycopy(args, 1, newArgs, 0, newArgs.length);
         }
+
+        return command.execute(newArgs);
     }
 
     public R execute(String[] args) throws ValidationException, Exception {
@@ -63,15 +71,21 @@ public class CommandDispatcher<R> implements Command<R> {
     }
 
     /**
-     * Thrown when an error occurs during command dispatching
+     * Add a command alias
+     * @param command The target command; must have been added previously to the call to this method
+     * @param alias The alias command name
+     * @throws NoSuchCommandException If the given command name is not known
      */
-    public static class CommandDispatchException extends ValidationException {
-        public CommandDispatchException(String message) {
-            this(message, null);
-        }
+    public void alias(String command, String alias) throws NoSuchCommandException
+    {
+        add(alias, getCommand(command));
+    }
 
-        public CommandDispatchException(String message, Throwable cause) {
-            super(message, cause);
+    private Command<R> getCommand(String name) throws NoSuchCommandException {
+        if (commands.containsKey(name)) {
+            return commands.get(name);
+        } else {
+            throw new NoSuchCommandException(name);
         }
     }
 }
