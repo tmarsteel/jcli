@@ -124,7 +124,7 @@ Arguments are interally handled the same way as options - but they have to be co
 
 ## Roadmap
 
-Version 2.0.0-RC1 contains multiple improvements; the RCs have yet to undergo exhaustive tests before a final versioon is released (presumably Q1 2017, but no promises!). RCs **will** introduce BC breaks to previous RCs.
+Version 2.0.0-RC1 contains multiple improvements; the RCs have yet to undergo exhaustive tests before a final version is released (presumably Q1 2017, but no promises!). RCs **will** introduce BC breaks to previous RCs.
 
 ### 2.0.0-RC2
 
