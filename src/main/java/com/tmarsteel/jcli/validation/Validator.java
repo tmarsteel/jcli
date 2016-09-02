@@ -24,12 +24,10 @@ import com.tmarsteel.jcli.Input;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.rule.Rule;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import javafx.collections.transformation.SortedList;
+
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * Parses an argument-array in the given environment
@@ -41,7 +39,12 @@ public class Validator
     private final List<Option> options = new ArrayList<>();
     private final List<Flag> flags = new ArrayList<>();
     private final List<Rule> rules = new ArrayList<>();
+
+    /**
+     * List of all arguments. Must be sorted by index ascending at all times
+     */
     private final List<Argument> arguments = new ArrayList<>();
+
     private final boolean flagsOptionsDistinguishable;
     
     /**
@@ -204,18 +207,29 @@ public class Validator
     {
         if (!this.arguments.contains(arg))
         {
-            final Iterator<Argument> it = this.arguments.iterator();
-            while (it.hasNext())
-            {
-                final Argument carg = it.next();
+            this.arguments.forEach(carg -> {
                 if (carg.getIndex() == arg.getIndex())
                 {
                     throw new IllegalArgumentException("Cannot add argument "
                         + arg.getIdentifier() + ": argument " + carg.getIdentifier()
                         + " already occupies index " + arg.getIndex());
                 }
-            }
+                if (arg.isVariadic() && carg.isVariadic()) {
+                    throw new IllegalArgumentException("Cannot validate using multiple variadic arguments: argument " +
+                        carg.getIdentifier() + " is variadic");
+                }
+                if (arg.isVariadic() && carg.getIndex() > arg.getIndex()) {
+                    throw new IllegalArgumentException("Variadic argument " + arg.getIdentifier() + " must occupy the" +
+                            "greatest index; argument " + carg.getIdentifier() + " has a greater index of " + carg.getIndex());
+                }
+                if (carg.isVariadic() && arg.getIndex() > carg.getIndex()) {
+                    throw new IllegalArgumentException("Cannot add any more arguments after variadic argument " +
+                        carg.getIdentifier() + " at index " + carg.getIndex());
+                }
+            });
+
             this.arguments.add(arg);
+            this.arguments.sort((arg1, arg2) -> arg1.getIndex() - arg2.getIndex());
         }
     }
 
@@ -365,7 +379,7 @@ public class Validator
             }
         }
         
-        // check the arguments
+        // check the arguments; they are sorted by index ascending
         for (Argument arg : arguments)
         {
             final String value = input.getArgument(arg.getIndex());
@@ -376,11 +390,31 @@ public class Validator
                     throw new ValidationException("You must specify at least "
                         + (arg.getIndex() + 1) + " argument(s).");
                 }
-                vinput.optionValues.put(arg.getIdentifier(), arg.getDefaultValue());
+
+                if (arg.isVariadic())
+                {
+                    vinput.optionValues.put(arg.getIdentifier(), Arrays.asList(arg.getDefaultValue()));
+                }
+                else
+                {
+                    vinput.optionValues.put(arg.getIdentifier(), arg.getDefaultValue());
+                }
             }
             else
             {
-                vinput.optionValues.put(arg.getIdentifier(), arg.parse(value));
+                // if variadic: consume all from the index to the end of the input
+                if (arg.isVariadic()) {
+                    // stream API not usable because of the ValidationException thrown by Argument#parse
+                    List<Object> values = new ArrayList<>();
+                    for (int i = arg.getIndex();i < input.arguments().size();i++) {
+                        values.add(arg.parse(input.getArgument(i)));
+                    }
+                    vinput.optionValues.put(arg.getIdentifier(), values);
+                }
+                else
+                {
+                    vinput.optionValues.put(arg.getIdentifier(), arg.parse(value));
+                }
             }
         }
         

@@ -27,6 +27,9 @@ import com.tmarsteel.jcli.rule.Rule;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
+
 import static org.mockito.Mockito.*;
 
 /**
@@ -263,5 +266,67 @@ public class ValidatorTest
         v.reset();
         
         assertFalse(v.knowsOption("flag"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAllowMultipleVariadicArguments()
+    {
+        Validator v = new Validator();
+
+        Argument arg1 = new Argument("arg1", 0);
+        arg1.setVariadic(true);
+        Argument arg2 = new Argument("arg2", 1);
+        arg2.setVariadic(true);
+
+        v.add(arg1);
+        v.add(arg2);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAllowVariadicArgumentAtNonGreatestIndex_NonVariadicAddedLast()
+    {
+        Validator v = new Validator();
+
+        Argument arg1 = new Argument("arg1", 0);
+        arg1.setVariadic(true);
+        Argument arg2 = new Argument("arg2", 1);
+
+        v.add(arg1); // DIFFERENCE TO THE FOLLOWING TEST: add order
+        v.add(arg2);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAllowVariadicArgumentAtNonGreatestIndex_VariadicAddedLast()
+    {
+        Validator v = new Validator();
+
+        Argument arg1 = new Argument("arg1", 0);
+        arg1.setVariadic(true);
+        Argument arg2 = new Argument("arg2", 1);
+
+        v.add(arg2); // DIFFERENCE TO THE PREVIOUS TEST: add order
+        v.add(arg1);
+    }
+
+    @Test
+    public void testVarargs()
+        throws ParseException, ValidationException
+    {
+        Validator v = new Validator();
+
+        Argument arg1 = new Argument("arg1", 0);
+        Argument arg2 = new Argument("arg2", 1);
+        arg2.setVariadic(true);
+
+        v.add(arg1);
+        v.add(arg2);
+
+        Validator.ValidatedInput vi = v.parse(new String[]{"arg1value", "arg2value1", "arg2value2", "arg2value3"});
+        List<Object> arg2Values = (List<Object>) vi.getOption("arg2");
+
+        assertEquals("arg1value", vi.getOption("arg1"));
+        assertEquals("arg2value1", arg2Values.get(0));
+        assertEquals("arg2value2", arg2Values.get(1));
+        assertEquals("arg2value3", arg2Values.get(2));
     }
 }

@@ -26,12 +26,40 @@ import com.tmarsteel.jcli.validation.ValidationException;
  */
 public class Argument
 {
+    /**
+     * Value filter
+     */
     protected Filter valueFilter;
+
+    /**
+     * Default value
+     */
     protected Object defaultValue;
+
+    /**
+     * The index of this argument in the argument list
+     */
     protected final int index;
+
+    /**
+     * Identifier of this argument for index-independent access
+     */
     protected final String accessName;
+
+    /**
+     * A description used for helptexts
+     */
     protected String description = "";
+
+    /**
+     * Whether this argument is required to be specified
+     */
     protected boolean required = false;
+
+    /**
+     * Whether this argument accepts multiple values
+     */
+    protected boolean variadic = false;
     
     /**
      * Constructs a new required argument placed at index <code>index</code> that can be
@@ -169,5 +197,15 @@ public class Argument
     public void setRequired(boolean required)
     {
         this.required = required;
+    }
+
+    public boolean isVariadic()
+    {
+        return variadic;
+    }
+
+    public void setVariadic(boolean variadic)
+    {
+        this.variadic = variadic;
     }
 }

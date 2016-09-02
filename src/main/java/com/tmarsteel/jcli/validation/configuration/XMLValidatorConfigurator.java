@@ -443,6 +443,26 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
         }
 
+        final boolean variadic;
+        node = attrs.getNamedItem("variadic");
+        if (node == null)
+        {
+            variadic = false;
+        }
+        else
+        {
+            switch (node.getTextContent()) {
+                case "true":
+                    variadic = true;
+                    break;
+                case "false":
+                    variadic = false;
+                    break;
+                default:
+                    throw new MisconfigurationException("Illegal value for attribute variadic");
+            }
+        }
+
         // filters, description
         Filter filter = null;
         String defValue = null;
@@ -473,6 +493,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         Argument arg = new Argument(primaryIdentifier, index, defValue, filter);
         arg.setRequired(required);
         arg.setDescription(description);
+        arg.setVariadic(variadic);
         return arg;
     }
 
