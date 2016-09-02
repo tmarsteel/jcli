@@ -120,4 +120,41 @@ public class InputTest {
         assertEquals("value2", i.getArgument(1));
         assertNull(i.getArgument(2));
     }
+
+    @Test
+    public void testAddArgumentValueStartingWithFlagPrefix()
+            throws ParseException
+    {
+        Input i = new Input();
+        i.add(env, new String[] {"-flag1", "argument1", "-argument2"});
+
+        assertTrue(i.flags().contains("flag1"));
+        assertEquals("argument1", i.getArgument(0));
+        assertEquals("-argument2", i.getArgument(1));
+    }
+
+    @Test
+    public void testAddArgumentValueStartingWithOptionPrefix()
+        throws ParseException
+    {
+        Input i = new Input();
+        i.add(env, new String[] {"--option1", "option1value", "argument1", "--argument2"});
+
+        assertEquals("option1value", i.options().get("option1").get(0));
+        assertEquals("argument1", i.getArgument(0));
+        assertEquals("--argument2", i.getArgument(1));
+    }
+
+    @Test
+    public void testColonArgumentSectionIntroduction_Issue2()
+        throws ParseException
+    {
+        Input i = new Input();
+        i.add(env, new String[] {"--option1", "option1value", ":", "--argument1", "-argument2", "argument3"});
+
+        assertEquals("option1value", i.options().get("option1").get(0));
+        assertEquals("--argument1", i.getArgument(0));
+        assertEquals("-argument2", i.getArgument(1));
+        assertEquals("argument3", i.getArgument(2));
+    }
 }

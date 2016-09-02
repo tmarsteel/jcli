@@ -59,7 +59,7 @@ public class Input
      * the <code>args</code> to it. <br>
      * <b>Note:</b> If <code>env.flagMarker</code> equals <code>env.optionMarker</code>
      * a {@link ParseException} will be thrown. To avoid this, use
-     * {@link #Input(com.tmarsteel.jcli.validator.Validator, com.tmarsteel.jcli.Environment, java.lang.String[])}.
+     * {@link #Input(com.tmarsteel.jcli.validation.Validator, com.tmarsteel.jcli.Environment, java.lang.String[])}.
      * @param env The environment to parse <code>args</code> in
      * @param args Input to parse.
      * @throws ParseException 
@@ -93,7 +93,7 @@ public class Input
      * the <code>args</code> to it.
      * <b>Note:</b> If <code>env.flagMarker</code> equals <code>env.optionMarker</code>
      * a {@link ParseException} will be thrown. To avoid this, use
-     * {@link #Input(com.tmarsteel.jcli.validator.Validator, com.tmarsteel.jcli.Environment, java.lang.String)}.
+     * {@link #Input(com.tmarsteel.jcli.validation.Validator, com.tmarsteel.jcli.Environment, java.lang.String)}.
      * @param env The environment to parse <code>args</code> in
      * @param argline Input to parse.
      * @throws ParseException 
@@ -171,8 +171,8 @@ public class Input
     }
     
     /**
-     * Adds the flags and options contained in <code>args</code> to this input
-     * accodring to <code>env</code>.
+     * Adds the flags and options contained in <code>paramStr</code> to this input; tells flags and options apart
+     * according to <code>env</code>.
      * @param env The environment settings to follow when parsing <code>args</code>
      * @param paramStr A string containing the input parameters, e.g.
      *  <code>"-v --input foo.txt"</code>
@@ -182,7 +182,7 @@ public class Input
     public void add(Environment env, String paramStr)
         throws ParseException
     {  
-        List<String> params = new ArrayList<String>();
+        List<String> params = new ArrayList<>();
         
         boolean inString = false;
         boolean escape = false;
@@ -239,8 +239,8 @@ public class Input
     }
     
     /**
-     * Adds the flags and options contained in <code>args</code> to this input
-     * accodring to <code>env</code>.
+     * Adds the flags and options contained in <code>args</code> to this input; tells flags and options apart
+     * according to <code>env</code>.
      * @param env The environment settings to follow when parsing <code>args</code>
      * @param args The input parameters to parse.
      * @throws IllegalArgumentException If there is an odd parameter.
@@ -248,7 +248,7 @@ public class Input
     public void add(Environment env, String[] args)
         throws ParseException
     {
-        // if the recognicion chars for flags are longer than for options, check
+        // if the recognition chars for flags are longer than for options, check
         // for options first
         final boolean flagsOverOptions =
             env.getFlagMarker().length() > env.getOptionMarker().length();
@@ -261,23 +261,20 @@ public class Input
             final byte type = getType(flagsOptionsDistinguishable,
                 intent, args[i], env, flagsOverOptions);
 
-            if (type == 1)
+            // the first parameter that is only a colon serves as a workaround for #1
+            if (args[i].equals(":") && !argumentsStarted) {
+                argumentsStarted = true;
+            }
+            else if (argumentsStarted) {
+                // once an argument has been seen, everything that follows has to be an argument, too
+                arguments.add(args[i]);
+            }
+            else if (type == 1)
             {
-                if (argumentsStarted)
-                {
-                    throw new IllegalArgumentException(
-                        "Flags and options may only be used before the first argument.");
-                }
                 addFlag(args[i], env);
             }
             else if (type == 2)
             {
-                if (argumentsStarted)
-                {
-                    throw new IllegalArgumentException(
-                        "Flags and options may only be used before the first argument.");
-                }
-                
                 // search for the value
                 if (args.length > i + 1)
                 { // there is another parameter
