@@ -86,7 +86,7 @@ public class XorOptionsRule extends BaseRule
         
         for (String o:options)
         {
-            if (params.isFlagSet(o) || params.getOption(o) != null)
+            if ((params.flagValues().containsKey(o) && params.isFlagSet(o)) || (params.optionValues().containsKey(o) && params.getOption(o) != null))
             {
                 anySet = true;
                 

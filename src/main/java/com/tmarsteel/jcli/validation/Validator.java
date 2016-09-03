@@ -336,57 +336,23 @@ public class Validator
             }
             else
             {
-                try
-                {
-                    Object[] optValues = rawOptValues.stream().map((String str) -> {
-                        try
-                        {
-                            return option.parse(str);
-                        }
-                        catch (ValidationException ex)
-                        {
-                            throw new RuntimeException(ex);
-                        }
-                    }).toArray();
-                    
-                    if (optValues.length == 0)
-                    {
-                        optValues = new Object[]{ option.getDefaultValue() };
-                    }
-                    
-                    if (option.allowsMultipleValues())
-                    {
-                        vinput.optionValues.put(option.getPrimaryIdentifier(), optValues);
-                    }
-                    else
-                    {
-                        vinput.optionValues.put(option.getPrimaryIdentifier(), optValues[0]);
-                    }
+                List<Object> values = new ArrayList<>(rawOptValues.size());
+                for (String value : rawOptValues) {
+                    values.add(option.parse(value));
                 }
-                catch (RuntimeException ex)
-                {
-                    if (ex.getCause() instanceof ValidationException)
-                    {
-                        throw (ValidationException) ex.getCause();
-                    }
-                    else
-                    {
-                        throw ex;
-                    }
-                }
+                vinput.optionValues.put(option.getPrimaryIdentifier(), Collections.unmodifiableList(values));
             }
         }
         
         // check for unknown options
-        Iterator<Entry<String,List<String>>> oIt = input.options().entrySet().iterator();
-        while (oIt.hasNext())
-        {
-            final Entry<String,List<String>> option = oIt.next();
-            if (!vinput.optionValues.containsKey(option.getKey()))
+        input.options().forEach((name, values) -> {
+            if (!knowsOption(name))
             {
-                vinput.optionValues.put(option.getKey(), option.getValue());
+                vinput.optionValues.put(name, new ArrayList<>(values.size()));
+                values.forEach(vinput.optionValues.get(name)::add);
+                vinput.optionValues.put(name, Collections.unmodifiableList(vinput.optionValues.get(name)));
             }
-        }
+        });
         
         // check the arguments; they are sorted by index ascending
         for (Argument arg : arguments)
@@ -400,30 +366,24 @@ public class Validator
                         + (arg.getIndex() + 1) + " argument(s).");
                 }
 
-                if (arg.isVariadic())
+                if (arg.getDefaultValue() != null)
                 {
-                    vinput.optionValues.put(arg.getIdentifier(), Arrays.asList(arg.getDefaultValue()));
-                }
-                else
-                {
-                    vinput.optionValues.put(arg.getIdentifier(), arg.getDefaultValue());
+                    vinput.argumentValues.put(arg.getIdentifier(), Collections.unmodifiableList(Arrays.asList(arg.getDefaultValue())));
                 }
             }
             else
             {
+                List<Object> values = new ArrayList<>();
                 // if variadic: consume all from the index to the end of the input
                 if (arg.isVariadic()) {
                     // stream API not usable because of the ValidationException thrown by Argument#parse
-                    List<Object> values = new ArrayList<>();
                     for (int i = arg.getIndex();i < input.arguments().size();i++) {
                         values.add(arg.parse(input.getArgument(i)));
                     }
-                    vinput.optionValues.put(arg.getIdentifier(), values);
+                } else {
+                    values.add(arg.parse(value));
                 }
-                else
-                {
-                    vinput.optionValues.put(arg.getIdentifier(), arg.parse(value));
-                }
+                vinput.argumentValues.put(arg.getIdentifier(), Collections.unmodifiableList(values));
             }
         }
         
@@ -433,7 +393,11 @@ public class Validator
         {
             rIt.next().validate(this, vinput);
         }
-        
+
+        vinput.flagValues = Collections.unmodifiableMap(vinput.flagValues);
+        vinput.optionValues = Collections.unmodifiableMap(vinput.optionValues);
+        vinput.argumentValues = Collections.unmodifiableMap(vinput.argumentValues);
+
         return vinput;
     }
     
@@ -485,7 +449,13 @@ public class Validator
         public Object getOption(String identifier)
                 throws NoSuchElementException
         {
-           // TODO: implement
+            List<Object> values = getOptionValues(identifier);
+
+            if (values.size() == 0) {
+                return null;
+            }
+
+            return values.get(0);
         }
 
         /**
@@ -498,7 +468,7 @@ public class Validator
         public Object getOption(Option option)
                 throws NoSuchElementException
         {
-            // TODO: implement
+            return getOption(option.getPrimaryIdentifier());
         }
 
         /**
@@ -511,7 +481,13 @@ public class Validator
         public List<Object> getOptionValues(String identifier)
             throws NoSuchElementException
         {
-            // TODO: implement
+            List<Object> values = optionValues.get(identifier);
+
+            if (values == null) {
+                throw new NoSuchElementException("Unknown option " + identifier);
+            }
+
+            return values;
         }
 
         /**
@@ -523,7 +499,7 @@ public class Validator
         public List<Object> getOptionValues(Option option)
                 throws NoSuchElementException
         {
-            // TODO: implement
+            return getOptionValues(option.getPrimaryIdentifier());
         }
 
         /**
@@ -532,10 +508,16 @@ public class Validator
          * @return The arguments value. If the argument was not given in the input, null is returned.
          * @throws NoSuchElementException If no known argument is identified by {@code identifier}.
          */
-        public Object getArugment(String identifier)
+        public Object getArgument(String identifier)
                 throws NoSuchElementException
         {
-            // TODO: implement
+            List<Object> values = getArgumentValues(identifier);
+
+            if (values.size() == 0) {
+                return null;
+            }
+
+            return values.get(0);
         }
 
         /**
@@ -547,7 +529,13 @@ public class Validator
         public List<Object> getArgumentValues(String identifier)
             throws NoSuchElementException
         {
-            // TODO: implement
+            List<Object> values = argumentValues.get(identifier);
+
+            if (values == null) {
+                throw new NoSuchElementException("Unknown argument " + identifier);
+            }
+
+            return values;
         }
 
         /**
@@ -556,10 +544,10 @@ public class Validator
          * @return The arguments value. If the argument was not given in the input, null is returned.
          * @throws NoSuchElementException If the given argument was not known at the time the input was parsed.
          */
-        public Object getArugment(Argument argument)
+        public Object getArgument(Argument argument)
                 throws NoSuchElementException
         {
-            // TODO: implement
+            return getArgumentValues(argument.getIdentifier());
         }
 
         /**
@@ -571,7 +559,7 @@ public class Validator
         public List<Object> getArgumentValues(Argument argument)
                 throws NoSuchElementException
         {
-            // TODO: implement
+            return getArgumentValues(argument.getIdentifier());
         }
         
         /**
@@ -605,21 +593,30 @@ public class Validator
         }
         
         /**
-         * Returns an iterator that will iterate over all flags known by this input.
-         * @return An iterator that will iterate over all flags known by this input.
+         * Returns all flags and their values known to this input. The returned map is immutable.
+         * @return An immutable map of the flags and their values known to this input.
          */
-        public Iterator<Entry<String,Boolean>> flagValues()
+        public Map<String,Boolean> flagValues()
         {
-            return flagValues.entrySet().iterator();
+            return flagValues;
         }
-        
+
         /**
-         * Returns an iterator that will iterate over all options known by this input.
-         * @return An iterator that will iterate over all options known by this input.
+         * Returns all options and their values known to this input. The returned map is immutable.
+         * @return An immutable map of the options and their values known to this input.
          */
-        public Iterator<Entry<String,Object>> optionValues()
+        public Map<String,List<Object>> optionValues()
         {
-            return optionValues.entrySet().iterator();
+            return optionValues;
+        }
+
+        /**
+         * Returns all options and their values known to this input. The returned map is immutable.
+         * @return An immutable map of the options and their values known to this input.
+         */
+        public Map<String,List<Object>> argumentValues()
+        {
+            return argumentValues;
         }
         
         /**
