@@ -268,7 +268,7 @@ public class ValidatorTest
         assertFalse(v.knowsOption("flag"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MisconfigurationException.class)
     public void shouldNotAllowMultipleVariadicArguments()
     {
         Validator v = new Validator();
@@ -282,7 +282,7 @@ public class ValidatorTest
         v.add(arg2);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MisconfigurationException.class)
     public void shouldNotAllowVariadicArgumentAtNonGreatestIndex_NonVariadicAddedLast()
     {
         Validator v = new Validator();
@@ -295,7 +295,7 @@ public class ValidatorTest
         v.add(arg2);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = MisconfigurationException.class)
     public void shouldNotAllowVariadicArgumentAtNonGreatestIndex_VariadicAddedLast()
     {
         Validator v = new Validator();
@@ -325,6 +325,7 @@ public class ValidatorTest
         List<Object> arg2Values = (List<Object>) vi.getOption("arg2");
 
         assertEquals("arg1value", vi.getOption("arg1"));
+        assertEquals(3, arg2Values.size());
         assertEquals("arg2value1", arg2Values.get(0));
         assertEquals("arg2value2", arg2Values.get(1));
         assertEquals("arg2value3", arg2Values.get(2));
