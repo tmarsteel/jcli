@@ -28,12 +28,13 @@ Alternatively, you can check out this repo and build jCLI yourself using Ant. JU
   * [Programmatical Configuration](docs/validation/programmatical.md) documentation of programmatical configuration
 * [Helptext](docs/helptext.md): How to generate a help text based on validation constraints
 * [Sub-Commands](docs/multicommand.md): How to use the multi-command support
+* [Gotchas](docs/gotchas.md): Avoid pitfalls by reading this page
 
 ## Quick Start
 
 jCLI can be configured either via XML documents or programmtaically (modifying the parsed XML configuration is possible, but not convenient).  
 
-The library distinguishes three types of input: flags, options and arguments. They are supposed to be arranged in this order: `<executable> [flags and options] arguments...`
+The library distinguishes three types of input: flags, options and arguments. They are supposed to be arranged in this order: `<executable> [flags and options] : arguments...`
 
 Options and arguments can have arbitrary values, falgs are represented as `boolean`, set or not set.
 
@@ -115,7 +116,7 @@ baz: false
 
 On UNIX systems (`File.separatorChar == '/'`) flags are recognised by a single-dash prefix and options by a double-dash prefix:
 
-`program -flag --option optionValue argument`
+`program -flag --option optionValue : argument`
 
 On DOS systems (`File.separatorChar != '/'`) both flags and options are expected to be prefixed with a forward
 slash (`/`); whether something is a flag or an option is derived from context.

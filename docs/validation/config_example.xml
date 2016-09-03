@@ -1,9 +1,9 @@
 <!--
 configures for this input format:
-executalbe [flags] [options] [arguments...]
+executalbe [flags] [options] [ : arguments...]
 e.g.
-convert --verbose -outtype csv -outfile foo.csv bar.xls
-        [FLAGS  ] [OPTIONS      NAME    VALUE ] [ARGUMENTS]
+convert --verbose -outtype csv -outfile foo.csv : bar.xls
+        [FLAGS  ] [OPTIONS      NAME    VALUE ]   [ARGUMENTS]
 -->
 <xml version="1.0">
 <cli>

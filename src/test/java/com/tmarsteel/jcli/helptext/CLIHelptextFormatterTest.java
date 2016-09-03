@@ -70,7 +70,7 @@ public class CLIHelptextFormatterTest
         String text = subject.format(helptext);
 
         assertEquals(text,
-            "Usage: smapleProgram [-flags] [--options values] arguments...\n" +
+            "Usage: smapleProgram [-flags] [--options values] : arguments...\n" +
             "                     --flag -option value argument\n" +
             "This is a description of the program. It is intended to exceed the 80 character\n" +
             "line mimit in order to test the text wrapping functionality.\n" +

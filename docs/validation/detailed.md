@@ -27,9 +27,9 @@ The root-element of the configuration xml MUST be a `<cli>`-Tag. It includes all
 ```
 
 These CLI-Calls are equal:  
-`<executable> -v foo.txt`  
-`<executable> -verbose foo.txt`
-
+`<executable> -v : foo.txt`  
+`<executable> -verbose : foo.txt`  
+*Note: the colon between the flag and the argument is optional here. See [Ambiguous Arguments](../gotchas.md)*.
 
 ## Flags
 
@@ -89,6 +89,11 @@ Arguments MUST be configured using the `<argument>`-tag. Both the `identifier` a
 
 You MAY set the `required`-attribute to true. This will cause the parser to throw an error if no input could be mapped to this argument.
 
+You MAY set the `variadic`-attribute to true. This will cause that all arguments from the index of this argument on are
+treated as values to this argument. `Input#getOption` will then behave like a multivalue option.
+There MUST NOT be more than one variadic argument in the same validator configuration. If there is a variadic
+argument in the configuration, its index MUST be the greatest among all defined arguments.
+
 The content of the `identifier`-attribute is the string that is used to identify the argument within the configuration and when accessing its value after parsing input.
 
 The content of the `index`-attriute MUST be an integer number greater or equal to 0. It defines what argument should be parsed as defined in the `<argument>` tag.
@@ -100,10 +105,17 @@ You MAY specify one `<filter>`-tag that will hint to the validator how to valida
 Example:
 
 ```xml
-<argument identifier="format" index="1" />
+<argument identifier="format" index="0" />
 ```
 
-`<executable> -v foo.txt someFormat`
+`<executable> -v : someFormat`  
+
+```xml
+<argument identifier="inputs" index="0" variadic="true" />
+```
+`<executable> -v : input1.txt input2.txt input3.txt`
+
+*Note: the colon between the flag and the argument is optional here. See [Ambiguous Arguments](../gotchas.md)*.
 
 
 ## Filters
@@ -162,7 +174,7 @@ The file filter returns an instance of `java.io.File`. Whether or not a file wil
 * it has to be a file/directory
 * a specific extension is required
 
-To define the required existence-state use an `<exinstance>` tag. Its content has to be one of `com.wisper.cli.filter.FileFilter.EXISTENCE`s values:
+To define the required existence-state use an `<existence>` tag. Its content has to be one of `com.wisper.cli.filter.FileFilter.EXISTENCE`s values:
 
 * MUST_EXIST
 * MUST_NOT_EXIST
@@ -204,7 +216,7 @@ The set filter allows only values from a given set; case-sensitivity is off by d
 Specify the different possibilities with <value> tags. The set filter will always return values from the configuration and never the actual values. For Example:
 
 ```xml
-<filter type="set">
+<filter type="set" caseSensitive="false">
     <value>AES128</value>
     <value>AES192</value>
     <value>AES256</value>

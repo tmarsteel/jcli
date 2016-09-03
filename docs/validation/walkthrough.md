@@ -136,7 +136,7 @@ Additionally, providing non-readable files or directories as input for this conv
         </filter>
     </argument>
     
-    <argument index="1" identifier"output">
+    <argument index="1" identifier="output">
         <filter type="file">
             <permissions>WRITE</permissions>
             <extension>xls</extension>
@@ -148,9 +148,10 @@ Additionally, providing non-readable files or directories as input for this conv
 And we are done. Now, users can call our program like this:
 
 ```
-> csv2xls --v myFile.csv
-> csv2xls -encoding UTF16 myFile.csv out.xls
+> csv2xls --v : myFile.csv
+> csv2xls -encoding UTF16 : myFile.csv out.xls
 ```
+*Note: the colon between the flag and the argument is optional here. See [Ambiguous Arguments](../gotchas.md)*.
 
 And this is the java-sourceode (except for the conversion, of course) that *could* make use of that XML configuration:
 

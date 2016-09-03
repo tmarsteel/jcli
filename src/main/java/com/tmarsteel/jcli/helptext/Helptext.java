@@ -36,7 +36,7 @@ public class Helptext
     /**
      * general usage examples, omitting the &lt;executable&gt; part
      */
-    private final Set<String> usageExamples = new HashSet<>(Arrays.asList("[-flags] [--options values] arguments..."));
+    private final Set<String> usageExamples = new HashSet<>(Arrays.asList("[-flags] [--options values] : arguments..."));
 
     /**
      * Program description, displayed along the {@link #usageExamples} (as in e.g. {@code ls --help}).
