@@ -128,8 +128,11 @@ public class Validator
     /**
      * Adds the given option to the list of known options.
      * @param o The option to add.
+     * @throws MisconfigurationException If the given option has duplicate names with other options configured in this
+     *                                   validator.
      */
     public synchronized void add(Option o)
+        throws MisconfigurationException
     {
         if (flagsOptionsDistinguishable)
         {
@@ -148,8 +151,8 @@ public class Validator
                 Flag cur = it.next();
                 if (cur.isAmbigousWith(o))
                 {
-                    throw new IllegalArgumentException("Flag "
-                        + cur + " is ambigous with " + o);
+                    throw new MisconfigurationException("Flag "
+                        + cur + " is ambiguous with " + o);
                 }
             }
             
@@ -160,8 +163,11 @@ public class Validator
     /**
      * Adds the given flag to the list of known flags.
      * @param f The flag to add.
+     * @throws MisconfigurationException If the given flag has duplicate names with other flags configured in this
+     *                                   validator.
      */
     public synchronized void add(Flag f)
+        throws MisconfigurationException
     {
         if (flagsOptionsDistinguishable)
         {
@@ -180,7 +186,7 @@ public class Validator
                 Option cur = it.next();
                 if (cur.isAmbigousWith(f))
                 {
-                    throw new IllegalArgumentException(cur + " is ambigous with " + f);
+                    throw new MisconfigurationException(cur + " is ambiguous with " + f);
                 }
             }
             
@@ -202,28 +208,35 @@ public class Validator
     
     /**
      * Adds the given argument to the set of arguments to parse on input.
+     * @throws MisconfigurationException If an argument already configured targets the same index as the given argument<br>
+     *                                   If the given argument is variadic and a variadic argument is already configured<br>
+     *                                   If the given argument is variadic and an other configured argument targets a
+     *                                   greater index as the given argument.<br>
+     *                                   If a variadic argument targeting a lower index than the given argument is already
+     *                                   configured.
      */
     public synchronized void add(Argument arg)
+        throws MisconfigurationException
     {
         if (!this.arguments.contains(arg))
         {
             this.arguments.forEach(carg -> {
                 if (carg.getIndex() == arg.getIndex())
                 {
-                    throw new IllegalArgumentException("Cannot add argument "
+                    throw new MisconfigurationException("Cannot add argument "
                         + arg.getIdentifier() + ": argument " + carg.getIdentifier()
                         + " already occupies index " + arg.getIndex());
                 }
                 if (arg.isVariadic() && carg.isVariadic()) {
-                    throw new IllegalArgumentException("Cannot validate using multiple variadic arguments: argument " +
+                    throw new MisconfigurationException("Cannot validate using multiple variadic arguments: argument " +
                         carg.getIdentifier() + " is variadic");
                 }
                 if (arg.isVariadic() && carg.getIndex() > arg.getIndex()) {
-                    throw new IllegalArgumentException("Variadic argument " + arg.getIdentifier() + " must occupy the" +
+                    throw new MisconfigurationException("Variadic argument " + arg.getIdentifier() + " must occupy the" +
                             "greatest index; argument " + carg.getIdentifier() + " has a greater index of " + carg.getIndex());
                 }
                 if (carg.isVariadic() && arg.getIndex() > carg.getIndex()) {
-                    throw new IllegalArgumentException("Cannot add any more arguments after variadic argument " +
+                    throw new MisconfigurationException("Cannot add any more arguments after variadic argument " +
                         carg.getIdentifier() + " at index " + carg.getIndex());
                 }
             });
