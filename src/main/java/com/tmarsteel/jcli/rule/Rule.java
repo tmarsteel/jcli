@@ -50,7 +50,7 @@ public interface Rule
     }
     
     public static final Rule ONLY_KNOWN_FLAGS = (Validator intent, Validator.ValidatedInput params) -> {
-        final Iterator<Map.Entry<String,Boolean>> flagIt = params.getFlagIterator();
+        final Iterator<Map.Entry<String,Boolean>> flagIt = params.flagValues();
         String flagName;
 
         while (flagIt.hasNext())
@@ -64,7 +64,7 @@ public interface Rule
     };
     
     public static final Rule ONLY_KNOWN_OPTIONS = (Validator intent, Validator.ValidatedInput params) -> {
-        Iterator<Map.Entry<String,Object>> optIt = params.getOptionIterator();
+        Iterator<Map.Entry<String,Object>> optIt = params.optionValues();
         String optName;
 
         while (optIt.hasNext())
