@@ -97,9 +97,9 @@ public class Validator
     }
     
     /**
-     * Returns whether this validator is sensible for the given option or argument.
-     * @param name The name of the option or argument to check for.
-     * @return Whether this validator is sensible for the given option or argument.
+     * Returns whether this validator is sensible for the given option.
+     * @param name The name of the option to check for.
+     * @return Whether this validator is sensible for the given option.
      */
     public boolean knowsOption(String name)
     {
@@ -110,7 +110,15 @@ public class Validator
                 return true;
             }
         }
-        
+        return false;
+    }
+
+    /**
+     * Returns whether this validator is sensible for the given argument.
+     * @param name The name of the argument to check for.
+     * @return Whether this validator is sensible for the given argument.
+     */
+    public boolean knowsArgument(String name) {
         for (Argument a:arguments)
         {
             if (a.getIdentifier().equals(name))
@@ -366,7 +374,10 @@ public class Validator
                         + (arg.getIndex() + 1) + " argument(s).");
                 }
 
-                if (arg.getDefaultValue() != null)
+                if (arg.getDefaultValue() == null) {
+                    vinput.argumentValues.put(arg.getIdentifier(), Collections.unmodifiableList(Arrays.asList()));
+                }
+                else
                 {
                     vinput.argumentValues.put(arg.getIdentifier(), Collections.unmodifiableList(Arrays.asList(arg.getDefaultValue())));
                 }

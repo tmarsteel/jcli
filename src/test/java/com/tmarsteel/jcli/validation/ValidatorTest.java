@@ -76,7 +76,7 @@ public class ValidatorTest
         
         v.add(a);
         
-        assertTrue(v.knowsOption("arg"));
+        assertTrue(v.knowsArgument("arg"));
     }
     
     @Test

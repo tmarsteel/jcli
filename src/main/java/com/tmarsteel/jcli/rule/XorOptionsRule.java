@@ -86,8 +86,10 @@ public class XorOptionsRule extends BaseRule
         
         for (String o:options)
         {
-            if ((params.flagValues().containsKey(o) && params.isFlagSet(o)) || (params.optionValues().containsKey(o) && params.getOption(o) != null))
-            {
+            if ((intent.knowsFlag(o) && params.isFlagSet(o))
+             || (intent.knowsOption(o) && params.getOption(o) != null)
+             || (intent.knowsArgument(o) && params.getArgument(o) != null)
+            ) {
                 anySet = true;
                 
                 if (prevSet)
