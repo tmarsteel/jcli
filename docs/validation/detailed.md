@@ -74,7 +74,7 @@ setting the `collection` attribute to true.
 
 The validator will then pass each single value for that option through the filter and collect the filtered objects.
 
-The validated input will return an `Object[]` from `getOption(String)`.
+To access all of the values, use `Validator.ValidatedInput#getOptionValues`
 
 The order of the parsed objects in the returned array reflects the order in which the single values were given in the original input.
 
@@ -117,7 +117,6 @@ Example:
 `<executable> -v : input1.txt input2.txt input3.txt`
 
 *Note: the colon between the flag and the argument is optional here. See [Ambiguous Arguments](../gotchas.md)*.
-
 
 ## Filters
 
