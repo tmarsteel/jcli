@@ -17,11 +17,7 @@
  */
 package com.tmarsteel.jcli.rule;
 
-import com.tmarsteel.jcli.Environment;
-import com.tmarsteel.jcli.Flag;
-import com.tmarsteel.jcli.Input;
-import com.tmarsteel.jcli.Option;
-import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.*;
 import com.tmarsteel.jcli.validation.ValidationException;
 import com.tmarsteel.jcli.validation.Validator;
 import org.junit.Before;
@@ -36,6 +32,9 @@ public class OptionSetRuleTest
     
     private Option optionSet;
     private Flag flagNotSet;
+    private Argument argumentSet;
+    private Argument argumentNotSet;
+    private Validator subject;
     
     @Before
     public void setUp()
@@ -43,40 +42,56 @@ public class OptionSetRuleTest
     {
         dummyInput = new Input(
             new Environment('\\', "-", "--"),
-            new String[] { "--option", "value" }
+            new String[] { "--option", "value", "argumentSet" }
         );
         
         optionSet = new Option("option");
         flagNotSet = new Flag("flag");
+        argumentSet = new Argument("argumentSet", 0);
+        argumentNotSet = new Argument("argumentNotSet", 1);
+        argumentNotSet.setRequired(false);
+
+        subject = new Validator();
+
+        subject.add(optionSet);
+        subject.add(flagNotSet);
+        subject.add(argumentSet);
+        subject.add(argumentNotSet);
     }
-    
-    private Validator newValidator()
-    {
-        Validator v = new Validator();
-        
-        v.add(optionSet);
-        v.add(flagNotSet);
-        
-        return v;
-    }
-    
+
     @Test
     public void testValidateSucceedsWithOptionSet()
         throws ValidationException
     {
-        Validator v = newValidator();
-        v.add(new OptionSetRule(optionSet.getPrimaryIdentifier()));
+        subject.add(new OptionSetRule(optionSet.getPrimaryIdentifier()));
         
-        v.parse(dummyInput);
+        subject.parse(dummyInput);
     }
-    
+
+    @Test
+    public void validateShouldSucceedWithArgumentSet()
+        throws ValidationException
+    {
+        subject.add(new OptionSetRule(argumentSet.getIdentifier()));
+
+        subject.parse(dummyInput);
+    }
+
+    @Test(expected = ValidationException.class)
+    public void validateShouldFailWithArgumentNotSet()
+        throws ValidationException
+    {
+        subject.add(new OptionSetRule(argumentNotSet.getIdentifier()));
+
+        subject.parse(dummyInput);
+    }
+
     @Test(expected=ValidationException.class)
     public void testValidateFailsWithOptionNotSet()
         throws ValidationException
     {
-        Validator v = newValidator();
-        v.add(new OptionSetRule(flagNotSet.getPrimaryIdentifier()));
+        subject.add(new OptionSetRule(flagNotSet.getPrimaryIdentifier()));
         
-        v.parse(dummyInput);
+        subject.parse(dummyInput);
     }
 }

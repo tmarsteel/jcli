@@ -17,17 +17,13 @@
  */
 package com.tmarsteel.jcli.validation;
 
-import com.tmarsteel.jcli.Argument;
-import com.tmarsteel.jcli.Environment;
-import com.tmarsteel.jcli.Flag;
-import com.tmarsteel.jcli.Input;
-import com.tmarsteel.jcli.Option;
-import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.*;
 import com.tmarsteel.jcli.rule.Rule;
 import javafx.collections.transformation.SortedList;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 
 /**
  * Parses an argument-array in the given environment
@@ -101,9 +97,9 @@ public class Validator
     }
     
     /**
-     * Returns whether this validator is sensible for the given option or argument.
-     * @param name The name of the option or argument to check for.
-     * @return Whether this validator is sensible for the given option or argument.
+     * Returns whether this validator is sensible for the given option.
+     * @param name The name of the option to check for.
+     * @return Whether this validator is sensible for the given option.
      */
     public boolean knowsOption(String name)
     {
@@ -114,7 +110,15 @@ public class Validator
                 return true;
             }
         }
-        
+        return false;
+    }
+
+    /**
+     * Returns whether this validator is sensible for the given argument.
+     * @param name The name of the argument to check for.
+     * @return Whether this validator is sensible for the given argument.
+     */
+    public boolean knowsArgument(String name) {
         for (Argument a:arguments)
         {
             if (a.getIdentifier().equals(name))
@@ -340,57 +344,23 @@ public class Validator
             }
             else
             {
-                try
-                {
-                    Object[] optValues = rawOptValues.stream().map((String str) -> {
-                        try
-                        {
-                            return option.parse(str);
-                        }
-                        catch (ValidationException ex)
-                        {
-                            throw new RuntimeException(ex);
-                        }
-                    }).toArray();
-                    
-                    if (optValues.length == 0)
-                    {
-                        optValues = new Object[]{ option.getDefaultValue() };
-                    }
-                    
-                    if (option.allowsMultipleValues())
-                    {
-                        vinput.optionValues.put(option.getPrimaryIdentifier(), optValues);
-                    }
-                    else
-                    {
-                        vinput.optionValues.put(option.getPrimaryIdentifier(), optValues[0]);
-                    }
+                List<Object> values = new ArrayList<>(rawOptValues.size());
+                for (String value : rawOptValues) {
+                    values.add(option.parse(value));
                 }
-                catch (RuntimeException ex)
-                {
-                    if (ex.getCause() instanceof ValidationException)
-                    {
-                        throw (ValidationException) ex.getCause();
-                    }
-                    else
-                    {
-                        throw ex;
-                    }
-                }
+                vinput.optionValues.put(option.getPrimaryIdentifier(), Collections.unmodifiableList(values));
             }
         }
         
         // check for unknown options
-        Iterator<Entry<String,List<String>>> oIt = input.options().entrySet().iterator();
-        while (oIt.hasNext())
-        {
-            final Entry<String,List<String>> option = oIt.next();
-            if (!vinput.optionValues.containsKey(option.getKey()))
+        input.options().forEach((name, values) -> {
+            if (!knowsOption(name))
             {
-                vinput.optionValues.put(option.getKey(), option.getValue());
+                vinput.optionValues.put(name, new ArrayList<>(values.size()));
+                values.forEach(vinput.optionValues.get(name)::add);
+                vinput.optionValues.put(name, Collections.unmodifiableList(vinput.optionValues.get(name)));
             }
-        }
+        });
         
         // check the arguments; they are sorted by index ascending
         for (Argument arg : arguments)
@@ -404,30 +374,27 @@ public class Validator
                         + (arg.getIndex() + 1) + " argument(s).");
                 }
 
-                if (arg.isVariadic())
-                {
-                    vinput.optionValues.put(arg.getIdentifier(), Arrays.asList(arg.getDefaultValue()));
+                if (arg.getDefaultValue() == null) {
+                    vinput.argumentValues.put(arg.getIdentifier(), Collections.unmodifiableList(Arrays.asList()));
                 }
                 else
                 {
-                    vinput.optionValues.put(arg.getIdentifier(), arg.getDefaultValue());
+                    vinput.argumentValues.put(arg.getIdentifier(), Collections.unmodifiableList(Arrays.asList(arg.getDefaultValue())));
                 }
             }
             else
             {
+                List<Object> values = new ArrayList<>();
                 // if variadic: consume all from the index to the end of the input
                 if (arg.isVariadic()) {
                     // stream API not usable because of the ValidationException thrown by Argument#parse
-                    List<Object> values = new ArrayList<>();
                     for (int i = arg.getIndex();i < input.arguments().size();i++) {
                         values.add(arg.parse(input.getArgument(i)));
                     }
-                    vinput.optionValues.put(arg.getIdentifier(), values);
+                } else {
+                    values.add(arg.parse(value));
                 }
-                else
-                {
-                    vinput.optionValues.put(arg.getIdentifier(), arg.parse(value));
-                }
+                vinput.argumentValues.put(arg.getIdentifier(), Collections.unmodifiableList(values));
             }
         }
         
@@ -437,7 +404,11 @@ public class Validator
         {
             rIt.next().validate(this, vinput);
         }
-        
+
+        vinput.flagValues = Collections.unmodifiableMap(vinput.flagValues);
+        vinput.optionValues = Collections.unmodifiableMap(vinput.optionValues);
+        vinput.argumentValues = Collections.unmodifiableMap(vinput.argumentValues);
+
         return vinput;
     }
     
@@ -458,65 +429,205 @@ public class Validator
      */
     public static class ValidatedInput
     {
-        protected HashMap<String,Boolean> flagValues = new HashMap<>();
-        protected HashMap<String,Object> optionValues = new HashMap<>();
-        
         /**
-         * Returns the value of the given option or argument.
-         * @param option The primary identifier of the option or argument to
-         *  obtain the value from.
-         * @return The value of the given option or argument.
+         * Flag values. Contains a key for each flag known at the time of parsing the input. Whether a flag was actually
+         * present in the input is denoted by the map value.
          */
-        public Object getOption(String option)
-        {
-            return optionValues.get(option);
-        }
+        protected Map<String,Boolean> flagValues = new HashMap<>();
+
+        /**
+         * Option values. Contains a key for each option known at the time parsing the input. Options which cannot hold
+         * multiple values have only one entry in the list. If an option has a default value and was not specified in the
+         * parsed input its default value is in the list.
+         */
+        protected Map<String,List<Object>> optionValues = new HashMap<>();
+
+        /**
+         * Argument values. Contains a key for each argument known at the time parsing the input. Variadic arguments have
+         * multiple entries in the list. If an argument has a default value and was not specified in the parsed input its
+         * default value is in the list.
+         */
+        protected Map<String,List<Object>> argumentValues = new HashMap<>();
         
         /**
-         * Returns the value of the given option.
-         * @return The value of the given option.
+         * Returns the value of the given option. If the option has multiple values, the first value is returned.
+         * @param identifier The options primary identifier (see {@link Option#getPrimaryIdentifier()}) whose value
+         *                   to retrieve
+         * @return The value of the given option. Actual data type depends on the filter. Returns null if
+         * this option was not specified in the input and has no default value.
+         * @throws NoSuchElementException If no known option is primarily identified by {@code identifier}.
+         */
+        public Object getOption(String identifier)
+                throws NoSuchElementException
+        {
+            List<Object> values = getOptionValues(identifier);
+
+            if (values.size() == 0) {
+                return null;
+            }
+
+            return values.get(0);
+        }
+
+        /**
+         * Returns the value of the given option. If the option has multiple values, the first value is returned.
+         * @param option The option whose value to retrieve.
+         * @return The value of the given option. Actual data type depends on the filter. Returns null if
+         * this option was not specified in the input and has no default value.
+         * @throws NoSuchElementException If the given option was not known at the time the input was parsed.
          */
         public Object getOption(Option option)
+                throws NoSuchElementException
         {
             return getOption(option.getPrimaryIdentifier());
+        }
+
+        /**
+         * Returns all values of the given option.
+         * @param identifier The options primary identifier (see {@link Option#getPrimaryIdentifier()}) whose values
+         *                   to retrieve
+         * @return The values of the given option. If the option was not specified in the input, an empty list is returned.
+         * @throws NoSuchElementException If no known option is primarily identified by {@code identifier}.
+         */
+        public List<Object> getOptionValues(String identifier)
+            throws NoSuchElementException
+        {
+            List<Object> values = optionValues.get(identifier);
+
+            if (values == null) {
+                throw new NoSuchElementException("Unknown option " + identifier);
+            }
+
+            return values;
+        }
+
+        /**
+         * Returns all values of the given option.
+         * @param option The options whose values to retrieve
+         * @return The values of the given option. If the option was not specified in the input, an empty list is returned.
+         * @throws NoSuchElementException If the given option was not known at the time the input was parsed.
+         */
+        public List<Object> getOptionValues(Option option)
+                throws NoSuchElementException
+        {
+            return getOptionValues(option.getPrimaryIdentifier());
+        }
+
+        /**
+         * Returns the value of the given argument. If the argument is variadic, the first value is returned.
+         * @param identifier The arguments identifier (see {@link Argument#getIndex()}) whose value to retrieve.
+         * @return The arguments value. If the argument was not given in the input, null is returned.
+         * @throws NoSuchElementException If no known argument is identified by {@code identifier}.
+         */
+        public Object getArgument(String identifier)
+                throws NoSuchElementException
+        {
+            List<Object> values = getArgumentValues(identifier);
+
+            if (values.size() == 0) {
+                return null;
+            }
+
+            return values.get(0);
+        }
+
+        /**
+         * Returns the values of the given argument.
+         * @param identifier The arguments identifier (see {@link Argument#getIdentifier()}) whose values to retrieve.
+         * @return The argument values. If the argument was not given in the input, an empty list is returned.
+         * @throws NoSuchElementException If no known argument is identified by {@code identifier}.
+         */
+        public List<Object> getArgumentValues(String identifier)
+            throws NoSuchElementException
+        {
+            List<Object> values = argumentValues.get(identifier);
+
+            if (values == null) {
+                throw new NoSuchElementException("Unknown argument " + identifier);
+            }
+
+            return values;
+        }
+
+        /**
+         * Returns the value of the given argument. If the argument is variadic, the first value is returned.
+         * @param argument The argument whose value to retrieve.
+         * @return The arguments value. If the argument was not given in the input, null is returned.
+         * @throws NoSuchElementException If the given argument was not known at the time the input was parsed.
+         */
+        public Object getArgument(Argument argument)
+                throws NoSuchElementException
+        {
+            return getArgumentValues(argument.getIdentifier());
+        }
+
+        /**
+         * Returns the values of the given argument.
+         * @param argument The arguments whose values to retrieve.
+         * @return The argument values. If the argument was not given in the input, an empty list is returned.
+         * @throws NoSuchElementException If the given argument was not known at the time the input was parsed.
+         */
+        public List<Object> getArgumentValues(Argument argument)
+                throws NoSuchElementException
+        {
+            return getArgumentValues(argument.getIdentifier());
         }
         
         /**
          * Returns whether the given flag was set.
-         * @param flag The primary identifier to obtain the status from.
+         * @param flag The flags primary identifier (see {@link Flag#getPrimaryIdentifier()}) whose value to retrieve.
          * @return Whether the given flag was set.
+         * @throws NoSuchElementException If a flag with the given primary identifier was not known at the time the input
+         * was parsed.
          */
         public boolean isFlagSet(String flag)
+            throws NoSuchElementException
         {
             Boolean is = flagValues.get(flag);
-            return is == null? false : is;
+
+            if (is == null) {
+                throw new NoSuchElementException("Unknown flag " + flag);
+            }
+
+            return is;
         }
 
         /**
          * Returns whether the given flag was set.
          * @return Whether the given flag was set.
+         * @throws NoSuchElementException If the given flag was not known at the time the input was parsed.
          */
         public boolean isFlagSet(Flag flag)
+            throws NoSuchElementException
         {
             return isFlagSet(flag.getPrimaryIdentifier());
         }
         
         /**
-         * Returns an iterator that will rotate over all flags known by this input.
-         * @return An iterator that will rotate over all flags known by this input.
+         * Returns all flags and their values known to this input. The returned map is immutable.
+         * @return An immutable map of the flags and their values known to this input.
          */
-        public Iterator<Entry<String,Boolean>> getFlagIterator()
+        public Map<String,Boolean> flagValues()
         {
-            return flagValues.entrySet().iterator();
+            return flagValues;
         }
-        
+
         /**
-         * Returns an iterator that will rotate over all options known by this input.
-         * @return An iterator that will rotate over all options known by this input.
+         * Returns all options and their values known to this input. The returned map is immutable.
+         * @return An immutable map of the options and their values known to this input.
          */
-        public Iterator<Entry<String,Object>> getOptionIterator()
+        public Map<String,List<Object>> optionValues()
         {
-            return optionValues.entrySet().iterator();
+            return optionValues;
+        }
+
+        /**
+         * Returns all options and their values known to this input. The returned map is immutable.
+         * @return An immutable map of the options and their values known to this input.
+         */
+        public Map<String,List<Object>> argumentValues()
+        {
+            return argumentValues;
         }
         
         /**

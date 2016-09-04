@@ -17,9 +17,11 @@
  */
 package com.tmarsteel.jcli.rule;
 
+import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.validation.Validator;
 import com.tmarsteel.jcli.validation.RuleNotMetException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import javax.naming.OperationNotSupportedException;
 
@@ -50,29 +52,17 @@ public interface Rule
     }
     
     public static final Rule ONLY_KNOWN_FLAGS = (Validator intent, Validator.ValidatedInput params) -> {
-        final Iterator<Map.Entry<String,Boolean>> flagIt = params.getFlagIterator();
-        String flagName;
-
-        while (flagIt.hasNext())
-        {
-            flagName = flagIt.next().getKey();
-            if (!intent.knowsFlag(flagName))
-            {
-                throw new RuleNotMetException("Unknown flag: " + flagName);
+        for (Map.Entry<String,Boolean> entry : params.flagValues().entrySet()) {
+            if (!intent.knowsFlag(entry.getKey())) {
+                throw new RuleNotMetException("Unknown flag: " + entry.getKey());
             }
         }
     };
     
     public static final Rule ONLY_KNOWN_OPTIONS = (Validator intent, Validator.ValidatedInput params) -> {
-        Iterator<Map.Entry<String,Object>> optIt = params.getOptionIterator();
-        String optName;
-
-        while (optIt.hasNext())
-        {
-            optName = optIt.next().getKey();
-            if (!intent.knowsOption(optName))
-            {
-                throw new RuleNotMetException("Unknown option: " + optName);
+        for (Map.Entry<String,List<Object>> entry : params.optionValues().entrySet()) {
+            if (!intent.knowsFlag(entry.getKey())) {
+                throw new RuleNotMetException("Unknown option: " + entry.getKey());
             }
         }
     };

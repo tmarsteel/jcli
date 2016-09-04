@@ -92,6 +92,12 @@ public class OptionSetRule extends BaseRule
                     throw new RuleNotMetException("Required option " + name + " not set!");
                 }
             }
+            else if (forParser.knowsArgument(name)) {
+                if (params.getArgument(name) == null)
+                {
+                    throw new RuleNotMetException("Required argument " + name + " not set!");
+                }
+            }
             else if (!params.isFlagSet(name) && params.getOption(name) == null)
             {
                 throw new RuleNotMetException("Required flag or option " + name + " not set!");

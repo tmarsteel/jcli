@@ -76,7 +76,7 @@ public class ValidatorTest
         
         v.add(a);
         
-        assertTrue(v.knowsOption("arg"));
+        assertTrue(v.knowsArgument("arg"));
     }
     
     @Test
@@ -152,7 +152,7 @@ public class ValidatorTest
         
         Validator.ValidatedInput vI = v.parse(input);
         
-        assertEquals(vI.getOption("someArg"), "argument");
+        assertEquals(vI.getArgument("someArg"), "argument");
     }
     
     @Test
@@ -322,9 +322,9 @@ public class ValidatorTest
         v.add(arg2);
 
         Validator.ValidatedInput vi = v.parse(new String[]{"arg1value", "arg2value1", "arg2value2", "arg2value3"});
-        List<Object> arg2Values = (List<Object>) vi.getOption("arg2");
+        List<Object> arg2Values = vi.getArgumentValues("arg2");
 
-        assertEquals("arg1value", vi.getOption("arg1"));
+        assertEquals("arg1value", vi.getArgument("arg1"));
         assertEquals(3, arg2Values.size());
         assertEquals("arg2value1", arg2Values.get(0));
         assertEquals("arg2value2", arg2Values.get(1));

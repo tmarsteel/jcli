@@ -93,6 +93,7 @@ class SampleProgram
             input = inputValidator.parse(args);
             System.out.println("foo: " + input.getOption("foo"));
             System.out.println("baz: " + input.isFlagSet("baz"));
+            System.out.println("arg: " + input.getArgument("sampleArgument"));
         }
         catch (ParseException ex)
         {
@@ -109,9 +110,10 @@ class SampleProgram
 ```
 
 ```
-> java SampleProgram -foo "Hello World!"
+> java SampleProgram -foo "Hello World!" : sampleArgument
 foo: Hello World!
 baz: false
+arg: sampleArgument
 ```
 
 On UNIX systems (`File.separatorChar == '/'`) flags are recognised by a single-dash prefix and options by a double-dash prefix:
@@ -121,7 +123,7 @@ On UNIX systems (`File.separatorChar == '/'`) flags are recognised by a single-d
 On DOS systems (`File.separatorChar != '/'`) both flags and options are expected to be prefixed with a forward
 slash (`/`); whether something is a flag or an option is derived from context.
 
-Arguments are interally handled the same way as options - but they have to be configured to be accessed.
+When using arguments with a `Validator`, these arguments have to be configured in order to be accessed.
 
 ## Roadmap
 
