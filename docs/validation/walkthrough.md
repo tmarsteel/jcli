@@ -58,6 +58,10 @@ could also be abbreviated as `--v`:
 
 **Note:** `v` is an alias but when querying the `Validator.ValidatedInput` for flags and options, the `identifier` must be used.
 
+```java
+boolean verbose = inputValidator.parse(args).isFlagSet("verbose");
+```
+
 #### Options
 
 Because .csv files can have various encodings and might lack a BOM, we need an optional option to specify the input encoding but the converter will default to UTF-8:
@@ -103,6 +107,10 @@ Lets add some limitation:
 
 **Note:** When using filters, always make sure the default value validates, too. There will be more on filters, later.
 
+```java
+String encoding = (String) inputValidator.parse(args).getOption("encoding");
+```
+
 ### Arguments
 
 The input and output files should be specified as arguments of the program. However, only the input file is mandatory;
@@ -144,6 +152,11 @@ Additionally, providing non-readable files or directories as input for this conv
         </filter>
     </argument>
 </cli>
+```
+
+```java
+File inputFile = (File) inputValidator.parse(args).getArgument("input");
+File outputFile = (File) inputValidator.parse(args).getArgument("output");
 ```
 
 And we are done. Now, users can call our program like this:
@@ -199,8 +212,8 @@ class CSV2XLSStarter {
             return;
         }
         
-        File inputFile = (File) input.getOption("input");
-        File outputFile = (File) input.getOption("output");
+        File inputFile = (File) input.getArgument("input");
+        File outputFile = (File) input.getArgument("output");
         String inputEncoding = (String) input.getOption("encoding");
         boolean verbose = input.isFlagSet("verbose");
         
@@ -212,4 +225,30 @@ class CSV2XLSStarter {
         // do the conversion!
     }
 }
+```
+
+### Options with multiple values and varargs
+
+You can have options with multiple values and varargs. Specify `multiple="true"` for options, `variadic="true"` for
+arguments:
+
+```xml
+<cli>
+    <option identifier="multiOption" collection="true" />
+    <argument identifier="inputFiles" index="0" variadic="true">
+        <filter type="file" />
+    </argument>
+</cli>
+```
+
+You can then access all the values in the order as given in the input using the `getOptionValues` and
+`getArgumentValues` of `ValidatedInput`:
+
+```java
+Validator.ValidatedInput input = validator.parse(args);
+
+List<Object> mutliOptionValues = input.getOptionValues("multiOption");
+String multiOptionValue = (String) multiOptionValues.get(0);
+List<Object> inputFileList = input.getArgumentValues("inputFiles");
+File firstInputFile = (File) inputFileList.get(0);
 ```

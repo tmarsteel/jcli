@@ -69,7 +69,8 @@ for example:
 
 ### Multiple values
 
-In case an option can be specified multiple times (e.g. multiple inputs), the option MAY be marked as a collection by setting the `collection` attribute [to an arbitrary value].
+In case an option can be specified multiple times (e.g. multiple inputs), the option MAY be marked as a collection by
+setting the `collection` attribute to true.
 
 The validator will then pass each single value for that option through the filter and collect the filtered objects.
 
@@ -80,7 +81,7 @@ The order of the parsed objects in the returned array reflects the order in whic
 example:
 
 ```xml
-<option identifier="input" collection>
+<option identifier="input" collection="true">
 ```
 
 ## Arguments
