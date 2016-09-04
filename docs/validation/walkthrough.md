@@ -12,9 +12,9 @@ The environment affects three values:
 * the prefix for flags
     * DOS: `/`, UNIX: `--`
 * the escape character (which is irrelevant if you want to parse `String[]` only).
-    * DOS: `^`, UNIX: `\`
+    * DOS: `^`, UNIX: `\ `
 
-To simply enforce UNIX or DOS syntax, use the `com.tmarsteel.jcli.Environment.UNIX` or `com.tmarsteel.jcli.Environment.DOS` constants:
+To simply enforce UNIX or DOS syntax, use the `UNIX` or `DOS` constants:
 
 ```java
 Validator inputValidator = new Validator(Environment.UNIX);
@@ -44,7 +44,8 @@ First of all, create the `cli` root-node:
 
 #### Flags
 
-We want our converter to be optionally verbose about anything it does. To allow this, we use a `--verbose` flag that could also be abbreviated as `-v`:
+We want our converter to be optionally verbose about anything it does. To allow this, we use a `--verbose` flag that
+could also be abbreviated as `--v`:
 
 ```xml
 <xml version="1.0">
