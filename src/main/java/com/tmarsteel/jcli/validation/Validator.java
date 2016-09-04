@@ -32,14 +32,14 @@ import java.util.NoSuchElementException;
 public class Validator
 {
     private Environment env;
-    private final List<Option> options = new ArrayList<>();
-    private final List<Flag> flags = new ArrayList<>();
-    private final List<Rule> rules = new ArrayList<>();
+    private final Set<Option> options = new HashSet<>();
+    private final Set<Flag> flags = new HashSet<>();
+    private final Set<Rule> rules = new HashSet<>();
 
     /**
-     * List of all arguments. Must be sorted by index ascending at all times
+     * List of all arguments. Is sorted index ascending
      */
-    private final List<Argument> arguments = new ArrayList<>();
+    private final SortedSet<Argument> arguments = new TreeSet<>((arg1, arg2) -> arg1.getIndex() - arg2.getIndex());
 
     private final boolean flagsOptionsDistinguishable;
     
@@ -246,7 +246,6 @@ public class Validator
             });
 
             this.arguments.add(arg);
-            this.arguments.sort((arg1, arg2) -> arg1.getIndex() - arg2.getIndex());
         }
     }
 
