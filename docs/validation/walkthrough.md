@@ -177,7 +177,7 @@ import com.tmarsteel.jcli.Environment;
 import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.validation.ValidationException;
 import com.tmarsteel.jcli.validation.configuration.ValidatorConfigurator;
-import com.tmarsteel.jcli.validation.configuration.XMLValidatorConfigurator;
+import com.tmarsteel.jcli.validation.configuration.xml.XMLValidatorConfigurator;
 import java.io.File;
 
 import java.io.IOException;

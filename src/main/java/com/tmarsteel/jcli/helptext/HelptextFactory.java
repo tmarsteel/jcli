@@ -19,7 +19,6 @@
 package com.tmarsteel.jcli.helptext;
 
 import com.tmarsteel.jcli.validation.Validator;
-import com.tmarsteel.jcli.validation.configuration.XMLValidatorConfigurator;
 
 /**
  * Helper methods for {@link Helptext} construction

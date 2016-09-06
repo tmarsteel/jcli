@@ -19,7 +19,7 @@ package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.validation.ValidationException;
-import com.tmarsteel.jcli.validation.configuration.XMLValidatorConfigurator;
+import com.tmarsteel.jcli.validation.configuration.xml.XMLValidatorConfigurator;
 import java.math.BigInteger;
 import org.w3c.dom.Node;
 

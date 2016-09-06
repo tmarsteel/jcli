@@ -15,12 +15,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package com.tmarsteel.jcli.validation.configuration;
+package com.tmarsteel.jcli.validation.configuration.xml;
 
-import com.tmarsteel.jcli.Argument;
-import com.tmarsteel.jcli.Environment;
-import com.tmarsteel.jcli.Flag;
-import com.tmarsteel.jcli.Option;
+import com.tmarsteel.jcli.*;
 import com.tmarsteel.jcli.filter.Filter;
 import com.tmarsteel.jcli.rule.Rule;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
@@ -32,14 +29,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.naming.OperationNotSupportedException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+
+import com.tmarsteel.jcli.validation.configuration.ValidatorConfigurator;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -55,8 +51,8 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
     private Document baseDocument;
     private Environment environment;
     
-    private final Map<String,Class> filterTypeClass = new HashMap<>();
-    private final Map<String,Class> ruleTypeClass   = new HashMap<>();
+    private final Map<String,NodeParser<? extends Filter>> filterParsers = new HashMap<>();
+    private final Map<String,NodeParser<? extends Rule>>   ruleParsers   = new HashMap<>();
     
     /**
      * Parses the input from <code>configInputStream</code> as XML and creates a
@@ -168,75 +164,53 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         this.environment = env;
         
         // default filter and rule types
-        filterTypeClass.put("big-decimal", com.tmarsteel.jcli.filter.BigDecimalFilter.class);
-        filterTypeClass.put("big-integer", com.tmarsteel.jcli.filter.BigIntegerFilter.class);
-        filterTypeClass.put("decimal",     com.tmarsteel.jcli.filter.DecimalFilter.class);
-        filterTypeClass.put("integer",     com.tmarsteel.jcli.filter.IntegerFilter.class);
-        filterTypeClass.put("regex",       com.tmarsteel.jcli.filter.RegexFilter.class);
-        filterTypeClass.put("set",         com.tmarsteel.jcli.filter.SetFilter.class);
-        filterTypeClass.put("file",        com.tmarsteel.jcli.filter.FileFilter.class);
-        filterTypeClass.put("path",        com.tmarsteel.jcli.filter.PathFilter.class);
-        filterTypeClass.put("pattern",     com.tmarsteel.jcli.filter.MetaRegexFilter.class);
+        filterParsers.put("big-decimal", com.tmarsteel.jcli.filter.BigDecimalFilter.class);
+        filterParsers.put("big-integer", com.tmarsteel.jcli.filter.BigIntegerFilter.class);
+        filterParsers.put("decimal",     com.tmarsteel.jcli.filter.DecimalFilter.class);
+        filterParsers.put("integer",     com.tmarsteel.jcli.filter.IntegerFilter.class);
+        filterParsers.put("regex",       com.tmarsteel.jcli.filter.RegexFilter.class);
+        filterParsers.put("set",         com.tmarsteel.jcli.filter.SetFilter.class);
+        filterParsers.put("file",        com.tmarsteel.jcli.filter.FileFilter.class);
+        filterParsers.put("path",        com.tmarsteel.jcli.filter.PathFilter.class);
+        filterParsers.put("pattern",     com.tmarsteel.jcli.filter.MetaRegexFilter.class);
         
-        ruleTypeClass.put("and",        com.tmarsteel.jcli.rule.AndRule.class);
-        ruleTypeClass.put("or",         com.tmarsteel.jcli.rule.OrRule.class);
-        ruleTypeClass.put("xor",        com.tmarsteel.jcli.rule.XorRule.class);
-        ruleTypeClass.put("not",        com.tmarsteel.jcli.rule.NotRule.class);
-        ruleTypeClass.put("option-xor", com.tmarsteel.jcli.rule.XorOptionsRule.class);
-        ruleTypeClass.put("option-set", com.tmarsteel.jcli.rule.OptionSetRule.class);
+        ruleParsers.put("and",        com.tmarsteel.jcli.rule.AndRule.class);
+        ruleParsers.put("or",         com.tmarsteel.jcli.rule.OrRule.class);
+        ruleParsers.put("xor",        com.tmarsteel.jcli.rule.XorRule.class);
+        ruleParsers.put("not",        com.tmarsteel.jcli.rule.NotRule.class);
+        ruleParsers.put("option-xor", com.tmarsteel.jcli.rule.XorOptionsRule.class);
+        ruleParsers.put("option-set", com.tmarsteel.jcli.rule.OptionSetRule.class);
     }
-    
+
     /**
-     * Registers the given filter type with the given class. If this builder
-     * finds a &lt;filter&gt; of type <code>type</code> it will attempt to
-     * instantiate a new instance of <code>cls</code>.
+     * Registers the given filter type with the given parser. If {@link #configure(Validator)} encounters a
+     * &lt;filter&gt; with the {@code type} attribute set to {@code type} it will delegate the parsing to the given
+     * {@link NodeParser}.
      * @param type The type string to register.
-     * @param cls The class to register; must implement {@link Filter}.
-     * @throws IllegalArgumentException If <code>cls</code> does not implement {@link Filter}
-     * @throws NullPointerException If <code>type</code> is null.
+     * @param parser The parser to use for filters of type {@code type}.
+     * @throws NullPointerException If {@code type} or {@code parser} is null.
      */
-    public void setFilterType(String type, Class cls)
+    public void setFilterType(String type, NodeParser<? extends Filter> parser)
     {
-        if (type == null)
-        {
-            throw new NullPointerException("type must not be null");
-        }
-        
-        if (!Filter.class.isAssignableFrom(cls))
-        {
-            throw new IllegalArgumentException("The given class must implement com.tmarsteel.jcli.filter.Filter");
-        }
-        
-        this.filterTypeClass.put(type, cls);
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(parser);
+
+        this.filterParsers.put(type, parser);
     }
-    
+
     /**
-     * Registers the given rule type with the given class. If this builder
-     * finds a &lt;rule&gt; of type <code>type</code> it will attempt to
-     * instantiate a new instance of <code>cls</code>.
-     * <code>cls</code> must implement {@link Rule} and have one of these
-     * constructor signatures: <code>(org.w3c.dom.Node)</code>,
-     * <code>(com.tmarsteel.jcli.Rule[])</code>, <code>()</code>.
-     * The signatures will be attempted in this order.
+     * Registers the given rule type with the given parser. If {@link #configure(Validator)} encounters a &lt;rule&gt;
+     * with the {@code type} attribute set to {@code type} it will delegate the parsing to the given {@link NodeParser}.
      * @param type The type string to register.
-     * @param cls The class to register; must implement {@link Rule} and have
-     * one of these constructor signatures: <code>()</code>, <code>(org.w3c.dom.Node)</code>
-     * @throws IllegalArgumentException If <code>cls</code> does not implement {@link Filter}
-     * @throws NullPointerException If <code>type</code> is null.
+     * @param parser The parser to use for rules of type {@code type}.
+     * @throws NullPointerException If {@code type} or {@code parser} is null.
      */
-    public void setRuleType(String type, Class cls)
+    public void setRuleType(String type, NodeParser<? extends Rule> parser)
     {
-        if (type == null)
-        {
-            throw new NullPointerException("type must not be null");
-        }
-        
-        if (!Rule.class.isAssignableFrom(cls))
-        {
-            throw new IllegalArgumentException("The given class must implement com.tmarsteel.jcli.filter.Rule");
-        }
-        
-        this.ruleTypeClass.put(type, cls);
+        Objects.requireNonNull(type);
+        Objects.requireNonNull(parser);
+
+        this.ruleParsers.put(type, parser);
     }
     
     /**
@@ -521,214 +495,62 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
     {
         // look for type and class attributes
         NamedNodeMap attrs = filterNode.getAttributes();
-        Node node = attrs.getNamedItem("class");
-
-        Class filterClass;
-
+        Node node = attrs.getNamedItem("type");
         if (node == null)
         {
-            // class attribute not set
-            node = attrs.getNamedItem("type");
-            if (node == null)
-            {
-                throw new MisconfigurationException("No type and no class attribute specified for filter");
-            }
-
-            filterClass = this.filterTypeClass.get(node.getTextContent());
-            
-            if (filterClass == null)
-            {
-                throw new MisconfigurationException("Unknown filter type " + node.getTextContent());
-            }
-            
-            // classes in this.filterTypeClass are checked to implement Filter
-            // by setFilterType
+            throw new MisconfigurationException("No type attribute specified for filter");
         }
-        else
+
+        final String filterType = node.getTextContent();
+        NodeParser<? extends Filter> filterParser = this.filterParsers.get(filterType);
+
+        if (filterParser == null)
         {
-            String classname = node.getTextContent();
-            
-            try
-            {
-                filterClass = getClass().getClassLoader().loadClass(classname);
-                
-                if (!Filter.class.isAssignableFrom(filterClass))
-                {
-                    throw new MisconfigurationException("Class " + classname + " does not implement com.wisper.cli.filter.ValueFilter");
-                }
-            }
-            catch (ClassNotFoundException ex)
-            {
-                throw new MisconfigurationException("Filter-Class " + classname
-                    + " could not be loaded", ex);
-            }
+            throw new MisconfigurationException("Unknown filter type " + filterType);
         }
 
         try
         {
-            try
-            {
-                Constructor constr = filterClass.getConstructor(Node.class);
-                return (Filter) constr.newInstance(filterNode);
-            }
-            catch (NoSuchMethodException ex)
-            {
-                try
-                {
-                    Constructor constr = filterClass.getConstructor();
-                    return (Filter) constr.newInstance();
-                }
-                catch (NoSuchMethodException ex2)
-                {
-                    throw new MisconfigurationException("Filter-Class " + filterClass.getCanonicalName() +
-                        " could not be instantiated: Needs to declare at least "+
-                        "one of these constructors: () or (org.w3c.dom.Node)");
-                }
-            }
+            return Objects.requireNonNull(filterParser.parse(this, node), "Filter parser returned null");
         }
-        catch (InstantiationException | IllegalAccessException
-            | IllegalArgumentException | InvocationTargetException ex)
-        {
-            throw new RuntimeException("Falied to instantiate filter of class "
-                + filterClass.getCanonicalName(), ex);
+        catch(ParseException ex) {
+            throw new MisconfigurationException(
+                "Failed to parse filter of type " + filterType,
+                ex
+            );
         }
     }
     
     private Rule parseRule(Node ruleNode)
         throws MisconfigurationException
     {
-        NodeList ruleNodeChildren = ruleNode.getChildNodes();
         NamedNodeMap attrs = ruleNode.getAttributes();
-        Node node = attrs.getNamedItem("class");
-        
-        Class ruleClass;
-        
+        Node node = attrs.getNamedItem("type");
+            
         if (node == null)
         {
-            node = attrs.getNamedItem("type");
-            
-            if (node == null)
-            {
-                throw new MisconfigurationException("Invalid rule-tag: missing class or type attribute");
-            }
-            
-            ruleClass = ruleTypeClass.get(node.getTextContent());
-            
-            if (ruleClass == null)
-            {
-                throw new MisconfigurationException("Rule-Type " + node.getTextContent() +
-                    " unknown/not defined");
-            }
-            
-            // classes in ruleTypeClass are checked to implement Rule by
-            // setRuleType
+            throw new MisconfigurationException("No type attribute specified for rule");
         }
-        else
+            
+        final String ruleType = node.getTextContent();
+        NodeParser<? extends Rule> ruleParser = this.ruleParsers.get(ruleType);
+
+        if (ruleParser == null)
         {
-            try
-            {
-                ruleClass = getClass().getClassLoader().loadClass(node.getTextContent());
-                
-                if (!ruleClass.isAssignableFrom(Rule.class))
-                {
-                    throw new MisconfigurationException("Class " + ruleClass.getCanonicalName() +
-                        " does not implement com.tmarsteel.jcli.rule.Rule");
-                }
-            }
-            catch (ClassNotFoundException ex)
-            {
-                throw new MisconfigurationException("Rule-Class " +
-                    node.getTextContent() + " could not be loaded", ex);
-            }
+            throw new MisconfigurationException("Unknown rule type " + ruleType);
         }
-        
-        Rule ruleInstance = null;
-        String errorMessage = null;
-        
-        // choose the appropriate constructor and create an instance
+
         try
         {
-            try
-            {
-                ruleInstance = (Rule) ruleClass.getConstructor(Node.class).newInstance(ruleNode);
-            }
-            catch (NoSuchMethodException ex)
-            {
-                try
-                {
-                    Constructor constr = ruleClass.getConstructor(Rule[].class);
-
-                    // look for rule subtags
-                    
-                    List<Rule> subRules = new ArrayList<>();
-                    for (int i = 0;i < ruleNodeChildren.getLength();i++)
-                    {
-                        node = ruleNodeChildren.item(i);
-                        if (node.getNodeName().equals("rule"))
-                        {
-                            subRules.add(parseRule(node));
-                        }
-                        else if (node.getNodeName().equals("error"))
-                        {
-                            errorMessage = node.getTextContent();
-                        }
-                        else if (!node.getNodeName().equals("#text"))
-                        {
-                            throw new MisconfigurationException("Error while parsing rule of class "
-                                + ruleClass.getCanonicalName() + ": constructor (Rule[]) allows only for <rule> and <error> subtags.");
-                        }
-                    }
-
-                    ruleInstance = (Rule) constr.newInstance((Object) subRules.toArray(new Rule[subRules.size()]));
-                }
-                catch (NoSuchMethodException ex2)
-                {
-                    try
-                    {
-                        ruleInstance = (Rule) ruleClass.getConstructor().newInstance();
-                    }
-                    catch (NoSuchMethodException ex3)
-                    {
-                        throw new RuntimeException("Rule-Class " + ruleClass.getCanonicalName()
-                            + " does not implement one of these constructors: (org.w3c.dom.Node), (com.tmarsteel.jcli.rule.Rule[]), ()");
-                    }
-                }
-            }
+            return Objects.requireNonNull(ruleParser.parse(this, node), "Rule parser returned null");
         }
-        catch (InstantiationException | IllegalAccessException | InvocationTargetException ex)
+        catch (ParseException ex)
         {
-            throw new RuntimeException("Failed to instantiate rule of class " 
-                + ruleClass.getCanonicalName(), ex);
+            throw new MisconfigurationException(
+                "Failed to parse rule of type " + ruleType,
+                ex
+            );
         }
-        
-        // look for a error tag
-        if (errorMessage != null)
-        {
-            for (int i = 0;i < ruleNodeChildren.getLength();i++)
-            {
-                node = ruleNodeChildren.item(i);
-                if (node.getNodeName().equals("error"))
-                {
-                    errorMessage = node.getTextContent();
-                }
-            }
-        }
-        
-        // try to set the error message
-        if (errorMessage != null)
-        {
-            try
-            {
-                ruleInstance.setErrorMessage(errorMessage);
-            }
-            catch (OperationNotSupportedException ex)
-            {
-                throw new MisconfigurationException("Rule of class "
-                    + ruleClass.getCanonicalName() + " does not support custom error messages", ex);
-            }
-        }
-        
-        return ruleInstance;
     }
     
     public static class XMLUtils
@@ -814,7 +636,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         }
 
         public static Long asLong(String numeric, int radix)
-            throws ValidationException
+            throws ParseException
         {
             if (numeric == null)
             {
@@ -826,7 +648,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
             catch (NumberFormatException ex)
             {
-                throw new ValidationException("Invalid integer number: " + numeric, ex);
+                throw new ParseException("Invalid integer number: " + numeric, ex);
             }
         }
     }

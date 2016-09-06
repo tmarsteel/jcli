@@ -17,9 +17,8 @@
  */
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.validation.ValidationException;
-import com.tmarsteel.jcli.validation.configuration.XMLValidatorConfigurator;
+import com.tmarsteel.jcli.validation.configuration.xml.XMLValidatorConfigurator;
 import org.w3c.dom.Node;
 
 /**
@@ -33,40 +32,6 @@ public class IntegerFilter implements Filter
     protected int radix = 10;
 
     public IntegerFilter() {}
-
-    /**
-     * Creates a new filter from a DOM node. <br>
-     * Node structure:
-     * Minimum, maximum and radix may be specified by &lt;min&gt;, &lt;max&gt;
-     * and &lt;radix&gt; subtags respectively.
-     * @param filterNode
-     * @throws ValidationException If any of the given subtags (min, max, radix) does
-     * not contain an integer number.
-     */
-    public IntegerFilter(Node filterNode)
-        throws ValidationException
-    {
-        String[] minMaxRadix = XMLValidatorConfigurator.XMLUtils.getMinMaxRadix(filterNode);
-
-        try
-        {
-            if (minMaxRadix[2] == null)
-            {
-                radix = 10;
-            }
-            else
-            {
-                radix = Integer.parseInt(minMaxRadix[2]);
-            }
-        }
-        catch (NumberFormatException ex)
-        {
-            throw new ValidationException("Invalid radix: " + minMaxRadix[2]);
-        }
-
-       this.minValue = minMaxRadix[0] == null? Long.MIN_VALUE : XMLValidatorConfigurator.XMLUtils.asLong(minMaxRadix[0], radix);
-       this.maxValue = minMaxRadix[1] == null? Long.MAX_VALUE : XMLValidatorConfigurator.XMLUtils.asLong(minMaxRadix[1], radix);
-    }
 
     public IntegerFilter(int radix)
     {
