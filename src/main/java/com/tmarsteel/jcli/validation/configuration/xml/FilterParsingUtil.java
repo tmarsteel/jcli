@@ -3,8 +3,10 @@ package com.tmarsteel.jcli.validation.configuration.xml;
 import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.filter.BigDecimalFilter;
 import com.tmarsteel.jcli.filter.BigIntegerFilter;
+import com.tmarsteel.jcli.filter.DecimalFilter;
 import com.tmarsteel.jcli.filter.IntegerFilter;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
+import com.tmarsteel.jcli.validation.ValidationException;
 import org.w3c.dom.Node;
 
 import java.math.BigDecimal;
@@ -46,12 +48,13 @@ abstract class FilterParsingUtil
         return new IntegerFilter(min, max, radix);
     }
 
-    public static BigDecimalFilter parseBigDecimalFilter(Node filterNode)
+    public static DecimalFilter parseDecimalFilter(Node filterNode)
+        throws ValidationException
     {
         String[] minMax = XMLValidatorConfigurator.XMLUtils.getMinMax(filterNode);
-        BigDecimal minValue = minMax[0] == null? null : new BigDecimal(minMax[0]);
-        BigDecimal maxValue = minMax[1] == null? null : new BigDecimal(minMax[1]);
-        return new BigDecimalFilter(minValue, maxValue);
+        double minValue = XMLValidatorConfigurator.XMLUtils.asDouble(minMax[0]);
+        double maxValue = XMLValidatorConfigurator.XMLUtils.asDouble(minMax[1]);
+        return new DecimalFilter(minValue, maxValue);
     }
 
     public BigIntegerFilter parseBigInteger(Node filterNode)
@@ -80,4 +83,14 @@ abstract class FilterParsingUtil
         BigInteger maxValue = minMaxRadix[1] == null? null : new BigInteger(minMaxRadix[1], radix);
         return new BigIntegerFilter(minValue, maxValue, radix);
     }
+
+    public static BigDecimalFilter parseBigDecimalFilter(Node filterNode)
+    {
+        String[] minMax = XMLValidatorConfigurator.XMLUtils.getMinMax(filterNode);
+        BigDecimal minValue = minMax[0] == null? null : new BigDecimal(minMax[0]);
+        BigDecimal maxValue = minMax[1] == null? null : new BigDecimal(minMax[1]);
+        return new BigDecimalFilter(minValue, maxValue);
+    }
+
+
 }

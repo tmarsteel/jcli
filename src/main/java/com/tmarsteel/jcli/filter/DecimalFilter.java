@@ -18,8 +18,6 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.validation.ValidationException;
-import com.tmarsteel.jcli.validation.configuration.xml.XMLValidatorConfigurator;
-import org.w3c.dom.Node;
 
 /**
  * Filters input as an integer number.
@@ -31,14 +29,6 @@ public class DecimalFilter implements Filter
     protected double maxValue = Long.MAX_VALUE;
 
     public DecimalFilter() {}
-
-    public DecimalFilter(Node filterNode)
-        throws ValidationException
-    {
-        String[] minMax = XMLValidatorConfigurator.XMLUtils.getMinMax(filterNode);
-        this.minValue = XMLValidatorConfigurator.XMLUtils.asDouble(minMax[0]);
-        this.maxValue = XMLValidatorConfigurator.XMLUtils.asDouble(minMax[1]);
-    }
 
     public DecimalFilter(double minValue, double maxValue)
     {
