@@ -17,12 +17,9 @@
  */
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.validation.ValidationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
 
 /**
  * Accepts only Strings matching the given regex.
@@ -49,54 +46,6 @@ public class RegexFilter implements Filter
     public RegexFilter(String regex)
     {
         this(Pattern.compile(regex));
-    }
-
-    /**
-     * Creates a new filter from a DOM node. <br>
-     * Node structure: The regex itself must be contained in a &lt;regex&gt;
-     * subtag.
-     * The group to return may be specified by the <code>returnGroup</code>
-     * attribute in <code>filterNode</code>.
-     * @param filterNode
-     * @throws ValidationException If the return group attribute is not set to an
-     * integer value or any other tag than &lt;regex&gt; is found within
-     * <code>filterNode</code>
-     */
-    public RegexFilter(Node filterNode)
-        throws ValidationException
-    {
-        NamedNodeMap attrs = filterNode.getAttributes();
-        // look for the return-group attribute
-        Node node = attrs.getNamedItem("returnGroup");
-        if (node == null)
-        {
-            returnGroup = 0;
-        }
-        else
-        {
-            try
-            {
-                returnGroup = Integer.parseInt(node.getTextContent());
-            }
-            catch (NumberFormatException ex)
-            {
-                throw new ValidationException("Value of returnGroup attribute needs to be an integer");
-            }
-        }
-
-        // look for the regex tag, has to be the only one
-        Node regexNode = filterNode.getFirstChild();
-        while (regexNode.getNodeName().equals("#text"))
-            regexNode = regexNode.getNextSibling();
-
-        if (regexNode.getNodeName().equals("regex"))
-        {
-            this.pattern = Pattern.compile(regexNode.getTextContent());
-        }
-        else
-        {
-            throw new ValidationException("regex-filters only allow regex tags");
-        }
     }
 
     @Override

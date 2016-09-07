@@ -4,11 +4,14 @@ import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.filter.*;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
 import com.tmarsteel.jcli.validation.ValidationException;
+import com.tmarsteel.jcli.validation.Validator;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.regex.Pattern;
 
 /**
  * Utility methods used to parse the XML configurations of filters provided by the library
@@ -146,6 +149,51 @@ abstract class FilterParsingUtil
             }
         }
 
+        return filter;
+    }
+
+    public static RegexFilter parseRegexFilter(Node filterNode)
+        throws MisconfigurationException
+    {
+        NamedNodeMap attrs = filterNode.getAttributes();
+        // look for the return-group attribute
+        Node node = attrs.getNamedItem("returnGroup");
+
+        final int returnGroup;
+        final Pattern pattern;
+
+        if (node == null)
+        {
+            returnGroup = 0;
+        }
+        else
+        {
+            try
+            {
+                returnGroup = Integer.parseInt(node.getTextContent());
+            }
+            catch (NumberFormatException ex)
+            {
+                throw new MisconfigurationException("Value of returnGroup attribute needs to be an integer");
+            }
+        }
+
+        // look for the regex tag, has to be the only one
+        Node regexNode = filterNode.getFirstChild();
+        while (regexNode.getNodeName().equals("#text"))
+            regexNode = regexNode.getNextSibling();
+
+        if (regexNode.getNodeName().equals("regex"))
+        {
+            pattern = Pattern.compile(regexNode.getTextContent());
+        }
+        else
+        {
+            throw new MisconfigurationException("Unknown tag " + regexNode.getNodeName() + "in regex filter");
+        }
+
+        RegexFilter filter = new RegexFilter(pattern);
+        filter.setReturnGroup(returnGroup);
         return filter;
     }
 }
