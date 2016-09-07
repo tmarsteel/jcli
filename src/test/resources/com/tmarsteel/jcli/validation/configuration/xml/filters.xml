@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cli>
+    <!-- big decimal -->
+    <!-- filter 0: should succeed -->
+    <filter type="big-decimal">
+        <min>10.1</min>
+        <max>2000.978765487</max>
+    </filter>
+
+    <!-- filter 1: should fail -->
+    <filter type="big-decimal">
+        <min>10.1a</min>
+    </filter>
+
+    <!-- big integer -->
+    <!-- filter 0: should succeed -->
+    <filter type="big-integer">
+        <min>10</min>
+        <max>2000</max>
+    </filter>
+
+    <!-- filter 1: should succeed -->
+    <filter type="big-integer">
+        <min>A</min>
+        <max>7D0</max>
+        <radix>16</radix>
+    </filter>
+
+    <!-- filter 2: should fail -->
+    <filter type="big-integer">
+        <min>10a</min>
+    </filter>
+
+    <!-- decimal -->
+    <!-- filter 0: should succeed -->
+    <filter type="decimal">
+        <min>10.1</min>
+        <max>2000.978765487</max>
+    </filter>
+
+    <!-- filter 1: should fail -->
+    <filter type="decimal">
+        <min>10.1a</min>
+    </filter>
+
+    <!-- integer -->
+    <!-- filter 0: should succeed -->
+    <filter type="big-integer">
+        <min>10</min>
+        <max>2000</max>
+    </filter>
+
+    <!-- filter 1: should succeed -->
+    <filter type="big-integer">
+        <min>A</min>
+        <max>7D0</max>
+        <radix>16</radix>
+    </filter>
+
+    <!-- filter 2: should fail -->
+    <filter type="big-integer">
+        <min>10a</min>
+    </filter>
+
+    <!-- regex -->
+    <!-- filter 0: should succeed -->
+    <filter type="regex" returnGroup="1">
+        <regex>^a(.+)f$</regex>
+    </filter>
+
+    <!-- filter 1: should fail -->
+    <filter type="regex" returnGroup="f">
+        <regex>^a(.+)f$</regex>
+    </filter>
+
+    <!-- set -->
+    <!-- filter 0: should succeed -->
+    <filter type="set">
+        <value>foo</value>
+        <value>bar</value>
+    </filter>
+
+    <!-- filter 1: should succeed -->
+    <filter type="set" caseSensitive="true">
+        <value>foo</value>
+        <value>bar</value>
+    </filter>
+
+    <!-- filter 2: should fail -->
+    <filter type="set" />
+</cli>

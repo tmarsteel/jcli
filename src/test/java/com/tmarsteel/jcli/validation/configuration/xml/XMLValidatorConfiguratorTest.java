@@ -15,9 +15,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package com.tmarsteel.jcli.validation.configuration;
+package com.tmarsteel.jcli.validation.configuration.xml;
 
-import com.tmarsteel.jcli.XMLTest;
 import com.tmarsteel.jcli.validation.Validator;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -28,7 +27,7 @@ import static org.mockito.Mockito.*;
  * @author Tobias Marstaller
  */
 @Ignore
-public class XMLValidatorConfiguratorTest extends XMLTest
+public class XMLValidatorConfiguratorTest
 {
     private Validator mockValidator;
 

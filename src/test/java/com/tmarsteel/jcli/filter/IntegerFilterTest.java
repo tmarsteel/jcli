@@ -17,23 +17,17 @@
  */
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.XMLTest;
 import com.tmarsteel.jcli.validation.ValidationException;
-import static org.junit.Assert.*;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Tobias Marstaller
  */
-public class IntegerFilterTest extends XMLTest
+public class IntegerFilterTest
 {
-    public IntegerFilterTest()
-    {
-        this.testXML = "IntegerFilterTest.xml";
-        this.testNodesName = "filter";
-    }
-    
     @Test
     public void testParseSucceedsWithoutLimit()
         throws ValidationException
@@ -116,33 +110,5 @@ public class IntegerFilterTest extends XMLTest
         String number = "10938209380aaaaa";
         
         Object ret = bdf.parse(number);
-    }
-    
-    @Test
-    public void testNodeConstructor()
-        throws ParseException, ValidationException
-    {
-        IntegerFilter filter = new IntegerFilter(testNodes.item(0));
-        
-        assertEquals(filter.getMinValue(), 10);
-        assertEquals(filter.getMaxValue(), 2000);
-    }
-    
-    @Test
-    public void testNodeConstructorWithRadix()
-        throws ParseException, ValidationException
-    {
-        IntegerFilter filter = new IntegerFilter(testNodes.item(1));
-        
-        assertEquals(filter.getMinValue(), 10);
-        assertEquals(filter.getMaxValue(), 2000);
-        assertEquals(filter.getRadix(), 16);
-    }
-    
-    @Test(expected = ValidationException.class)
-    public void nodeConstructorShouldFailOnNonNumerical()
-        throws ParseException, ValidationException
-    {
-        IntegerFilter filter = new IntegerFilter(testNodes.item(2));
     }
 }

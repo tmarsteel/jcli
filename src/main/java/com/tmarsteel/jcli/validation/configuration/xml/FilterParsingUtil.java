@@ -203,13 +203,9 @@ abstract class FilterParsingUtil
         // look for caseSensitive attribute
         Node cNode = attrs.getNamedItem("caseSensitive");
 
-        boolean caseSensitive;
+        boolean caseSensitive = false;
 
-        if (cNode == null)
-        {
-            caseSensitive = false;
-        }
-        else
+        if (cNode != null)
         {
             caseSensitive = true;
 
@@ -231,7 +227,7 @@ abstract class FilterParsingUtil
             }
             else if (!cNode.getNodeName().equals("#text"))
             {
-                throw new ParseException("set-filters only allow value tags");
+                throw new ParseException("Unknown tag " + cNode.getNodeName() + " in set filter.");
             }
         }
 
@@ -240,6 +236,9 @@ abstract class FilterParsingUtil
             throw new MisconfigurationException("No value specified for set filter");
         }
 
-        return new SetFilter(options);
+        SetFilter filter = new SetFilter(options);
+        filter.setCaseSensitive(caseSensitive);
+
+        return filter;
     }
 }
