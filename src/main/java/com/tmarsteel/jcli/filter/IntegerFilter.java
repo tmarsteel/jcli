@@ -18,8 +18,6 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.validation.ValidationException;
-import com.tmarsteel.jcli.validation.configuration.xml.XMLValidatorConfigurator;
-import org.w3c.dom.Node;
 
 /**
  * Filters input as an integer number.

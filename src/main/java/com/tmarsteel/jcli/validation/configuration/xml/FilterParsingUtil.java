@@ -5,10 +5,13 @@ import com.tmarsteel.jcli.filter.IntegerFilter;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
 import org.w3c.dom.Node;
 
-public class IntegerFilterParser implements NodeParser<IntegerFilter>
+/**
+ * Utility methods used to parse the XML configurations of filters provided by the library
+ * @see com.tmarsteel.jcli.filter
+ */
+abstract class FilterParsingUtil
 {
-    @Override
-    public IntegerFilter parse(XMLValidatorConfigurator context, Node node)
+    public static IntegerFilter parseIntegerFilter(XMLValidatorConfigurator context, Node node)
             throws MisconfigurationException, ParseException
     {
         String[] minMaxRadix = XMLValidatorConfigurator.XMLUtils.getMinMaxRadix(node);
