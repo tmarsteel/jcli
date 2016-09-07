@@ -4,11 +4,9 @@ import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.filter.*;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
 import com.tmarsteel.jcli.validation.ValidationException;
-import com.tmarsteel.jcli.validation.Validator;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;

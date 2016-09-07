@@ -34,31 +34,6 @@ public class OptionSetRule extends BaseRule
 {
     protected String[] optionNames = null;
     
-    public OptionSetRule(Node ruleNode)
-    {
-        NodeList children = ruleNode.getChildNodes();
-        List<String> optionNames = new ArrayList<>();
-        for (int i = 0;i < children.getLength();i++)
-        {
-            Node node = children.item(i);
-            if (node.getNodeName().equals("option"))
-            {
-                optionNames.add(node.getTextContent());
-            }
-            else if (node.getNodeName().equals("error"))
-            {
-                this.errorMessage = node.getTextContent();
-            }
-            else if (!node.getNodeName().equals("#text"))
-            {
-                throw new MisconfigurationException("The option-set rule allows only <option> subtags");
-            }
-        }
-        
-        this.optionNames = new String[optionNames.size()];
-        optionNames.toArray(this.optionNames);
-    }
-    
     /**
      * @param optionNames The options to require.
      */
