@@ -19,7 +19,9 @@ package com.tmarsteel.jcli.validation.configuration.xml;
 
 import com.tmarsteel.jcli.*;
 import com.tmarsteel.jcli.filter.Filter;
-import com.tmarsteel.jcli.rule.Rule;
+import com.tmarsteel.jcli.filter.MetaRegexFilter;
+import com.tmarsteel.jcli.filter.PathFilter;
+import com.tmarsteel.jcli.rule.*;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
 import com.tmarsteel.jcli.validation.ValidationException;
 import com.tmarsteel.jcli.validation.Validator;
@@ -27,10 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
-import javax.naming.OperationNotSupportedException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -51,8 +50,8 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
     private Document baseDocument;
     private Environment environment;
     
-    private final Map<String,NodeParser<? extends Filter>> filterParsers = new HashMap<>();
-    private final Map<String,NodeParser<? extends Rule>>   ruleParsers   = new HashMap<>();
+    private final Map<String,FilterParser<? extends Filter>> filterParsers = new HashMap<>();
+    private final Map<String,RuleParser<? extends Rule>>     ruleParsers   = new HashMap<>();
     
     /**
      * Parses the input from <code>configInputStream</code> as XML and creates a
@@ -164,33 +163,33 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         this.environment = env;
         
         // default filter and rule types
-        filterParsers.put("big-decimal", com.tmarsteel.jcli.filter.BigDecimalFilter.class);
-        filterParsers.put("big-integer", com.tmarsteel.jcli.filter.BigIntegerFilter.class);
-        filterParsers.put("decimal",     com.tmarsteel.jcli.filter.DecimalFilter.class);
-        filterParsers.put("integer",     com.tmarsteel.jcli.filter.IntegerFilter.class);
-        filterParsers.put("regex",       com.tmarsteel.jcli.filter.RegexFilter.class);
-        filterParsers.put("set",         com.tmarsteel.jcli.filter.SetFilter.class);
-        filterParsers.put("file",        com.tmarsteel.jcli.filter.FileFilter.class);
-        filterParsers.put("path",        com.tmarsteel.jcli.filter.PathFilter.class);
-        filterParsers.put("pattern",     com.tmarsteel.jcli.filter.MetaRegexFilter.class);
+        filterParsers.put("big-decimal", FilterParsingUtil::parseBigDecimalFilter);
+        filterParsers.put("big-integer", FilterParsingUtil::parseBigInteger);
+        filterParsers.put("decimal",     FilterParsingUtil::parseDecimalFilter);
+        filterParsers.put("integer",     FilterParsingUtil::parseIntegerFilter);
+        filterParsers.put("regex",       FilterParsingUtil::parseRegexFilter);
+        filterParsers.put("set",         FilterParsingUtil::parseSetFilter);
+        filterParsers.put("file",        FilterParsingUtil::parseFileFilter);
+        filterParsers.put("path",        (context, node) -> new PathFilter(FilterParsingUtil.parseFileFilter(context, node)));
+        filterParsers.put("pattern",     (context, node) -> new MetaRegexFilter());
         
-        ruleParsers.put("and",        com.tmarsteel.jcli.rule.AndRule.class);
-        ruleParsers.put("or",         com.tmarsteel.jcli.rule.OrRule.class);
-        ruleParsers.put("xor",        com.tmarsteel.jcli.rule.XorRule.class);
-        ruleParsers.put("not",        com.tmarsteel.jcli.rule.NotRule.class);
-        ruleParsers.put("option-xor", com.tmarsteel.jcli.rule.XorOptionsRule.class);
-        ruleParsers.put("option-set", com.tmarsteel.jcli.rule.OptionSetRule.class);
+        ruleParsers.put("and",        RuleParsingUtil.combinedRuleParser(AndRule.class));
+        ruleParsers.put("or",         RuleParsingUtil.combinedRuleParser(OrRule.class));
+        ruleParsers.put("xor",        RuleParsingUtil.combinedRuleParser(XorRule.class));
+        ruleParsers.put("not",        RuleParsingUtil.combinedRuleParser(NotRule.class));
+        ruleParsers.put("option-xor", RuleParsingUtil::parseXorOptionsRule);
+        ruleParsers.put("option-set", RuleParsingUtil::parseOptionSetRule);
     }
 
     /**
      * Registers the given filter type with the given parser. If {@link #configure(Validator)} encounters a
      * &lt;filter&gt; with the {@code type} attribute set to {@code type} it will delegate the parsing to the given
-     * {@link NodeParser}.
+     * {@link FilterParser}.
      * @param type The type string to register.
      * @param parser The parser to use for filters of type {@code type}.
      * @throws NullPointerException If {@code type} or {@code parser} is null.
      */
-    public void setFilterType(String type, NodeParser<? extends Filter> parser)
+    public void setFilterType(String type, FilterParser<? extends Filter> parser)
     {
         Objects.requireNonNull(type);
         Objects.requireNonNull(parser);
@@ -200,12 +199,12 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
 
     /**
      * Registers the given rule type with the given parser. If {@link #configure(Validator)} encounters a &lt;rule&gt;
-     * with the {@code type} attribute set to {@code type} it will delegate the parsing to the given {@link NodeParser}.
+     * with the {@code type} attribute set to {@code type} it will delegate the parsing to the given {@link RuleParser}.
      * @param type The type string to register.
      * @param parser The parser to use for rules of type {@code type}.
      * @throws NullPointerException If {@code type} or {@code parser} is null.
      */
-    public void setRuleType(String type, NodeParser<? extends Rule> parser)
+    public void setRuleType(String type, RuleParser<? extends Rule> parser)
     {
         Objects.requireNonNull(type);
         Objects.requireNonNull(parser);
@@ -502,7 +501,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         }
 
         final String filterType = node.getTextContent();
-        NodeParser<? extends Filter> filterParser = this.filterParsers.get(filterType);
+        FilterParser<? extends Filter> filterParser = this.filterParsers.get(filterType);
 
         if (filterParser == null)
         {
@@ -533,7 +532,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         }
             
         final String ruleType = node.getTextContent();
-        NodeParser<? extends Rule> ruleParser = this.ruleParsers.get(ruleType);
+        RuleParser<? extends Rule> ruleParser = this.ruleParsers.get(ruleType);
 
         if (ruleParser == null)
         {
@@ -542,7 +541,14 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
 
         try
         {
-            return Objects.requireNonNull(ruleParser.parse(this, node), "Rule parser returned null");
+            return Objects.requireNonNull(
+                ruleParser.parse(
+                    this,
+                    node,
+                    (context, _node, subParser) -> this.parseRule(node)
+                ),
+                "Rule parser returned null"
+            );
         }
         catch (ParseException ex)
         {
@@ -619,7 +625,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         }
 
         public static Double asDouble(String numeric)
-            throws ValidationException
+            throws ParseException
         {
             if (numeric == null)
             {
@@ -631,7 +637,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             }
             catch (NumberFormatException ex)
             {
-                throw new ValidationException("Invalid decimal number: " + numeric, ex);
+                throw new ParseException("Invalid decimal number: " + numeric, ex);
             }
         }
 

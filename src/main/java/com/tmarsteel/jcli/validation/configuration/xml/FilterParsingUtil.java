@@ -3,7 +3,6 @@ package com.tmarsteel.jcli.validation.configuration.xml;
 import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.filter.*;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
-import com.tmarsteel.jcli.validation.ValidationException;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -49,8 +48,8 @@ abstract class FilterParsingUtil
         return new IntegerFilter(min, max, radix);
     }
 
-    public static DecimalFilter parseDecimalFilter(Node filterNode)
-        throws ValidationException
+    public static DecimalFilter parseDecimalFilter(XMLValidatorConfigurator context, Node filterNode)
+        throws ParseException
     {
         String[] minMax = XMLValidatorConfigurator.XMLUtils.getMinMax(filterNode);
         double minValue = XMLValidatorConfigurator.XMLUtils.asDouble(minMax[0]);
@@ -58,7 +57,7 @@ abstract class FilterParsingUtil
         return new DecimalFilter(minValue, maxValue);
     }
 
-    public BigIntegerFilter parseBigInteger(Node filterNode)
+    public static BigIntegerFilter parseBigInteger(XMLValidatorConfigurator context, Node filterNode)
         throws ParseException
     {
         final String[] minMaxRadix = XMLValidatorConfigurator.XMLUtils.getMinMaxRadix(filterNode);
@@ -85,7 +84,7 @@ abstract class FilterParsingUtil
         return new BigIntegerFilter(minValue, maxValue, radix);
     }
 
-    public static BigDecimalFilter parseBigDecimalFilter(Node filterNode)
+    public static BigDecimalFilter parseBigDecimalFilter(XMLValidatorConfigurator context, Node filterNode)
     {
         String[] minMax = XMLValidatorConfigurator.XMLUtils.getMinMax(filterNode);
         BigDecimal minValue = minMax[0] == null? null : new BigDecimal(minMax[0]);
@@ -93,7 +92,7 @@ abstract class FilterParsingUtil
         return new BigDecimalFilter(minValue, maxValue);
     }
 
-    public static FileFilter parseFileFilter(Node filterNode)
+    public static FileFilter parseFileFilter(XMLValidatorConfigurator context, Node filterNode)
             throws ParseException
     {
         FileFilter filter = new FileFilter();
@@ -152,7 +151,7 @@ abstract class FilterParsingUtil
         return filter;
     }
 
-    public static RegexFilter parseRegexFilter(Node filterNode)
+    public static RegexFilter parseRegexFilter(XMLValidatorConfigurator context, Node filterNode)
         throws MisconfigurationException
     {
         NamedNodeMap attrs = filterNode.getAttributes();
@@ -197,7 +196,7 @@ abstract class FilterParsingUtil
         return filter;
     }
 
-    public static SetFilter parseSetFilter(Node filterNode)
+    public static SetFilter parseSetFilter(XMLValidatorConfigurator context, Node filterNode)
         throws ParseException, MisconfigurationException
     {
         NamedNodeMap attrs = filterNode.getAttributes();

@@ -25,11 +25,18 @@ import java.io.File;
  * Accepts values and maps it to a {@link java.nio.file.Path}. Optionally,
  * validates (non-)existence and access permissions against the local filesystem.
  */
-public class PathFilter extends FileFilter {
+public class PathFilter implements Filter {
+
+    private FileFilter delegate;
+
+    public PathFilter(FileFilter delegate) {
+        this.delegate = delegate;
+    }
+
     @Override
     public Object parse(String value)
             throws ValidationException
     {
-        return ((File) super.parse(value)).toPath();
+        return ((File) delegate.parse(value)).toPath();
     }
 }
