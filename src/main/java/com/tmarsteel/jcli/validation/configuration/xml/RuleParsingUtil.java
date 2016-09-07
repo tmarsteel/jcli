@@ -1,14 +1,11 @@
 package com.tmarsteel.jcli.validation.configuration.xml;
 
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.filter.*;
 import com.tmarsteel.jcli.rule.CombinedRule;
 import com.tmarsteel.jcli.rule.OptionSetRule;
 import com.tmarsteel.jcli.rule.Rule;
 import com.tmarsteel.jcli.rule.XorOptionsRule;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
-import com.tmarsteel.jcli.validation.ValidationException;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -77,8 +74,9 @@ public class RuleParsingUtil
      * Returns a {@link RuleParser} parsing the given nodes to combined rules of the given type.
      * @param cls The type of the resulting rule. Must have a {@code (Rule[]) }constructor
      * @return A parser parsing the given nodes to combined rules.
+     * @throws IllegalArgumentException If the given class does not have a {@code (com.tmarsteel.jcli.rule.Rule[])} constructor
      */
-    public static <T extends CombinedRule> RuleParser<CombinedRule> combinedRuleParser(Class<T> cls)
+    public static <T extends CombinedRule> RuleParser<T> combinedRuleParser(Class<T> cls)
         throws MisconfigurationException
     {
         try {
@@ -102,9 +100,9 @@ public class RuleParsingUtil
                     }
                 }
 
-                CombinedRule rule;
+                T rule;
                 try {
-                    rule = ctor.newInstance(rules.toArray());
+                    rule = ctor.newInstance((Object) rules.toArray(new Rule[rules.size()]));
                 }
                 catch (InvocationTargetException ex) {
                     Throwable actualEx = ex.getTargetException();

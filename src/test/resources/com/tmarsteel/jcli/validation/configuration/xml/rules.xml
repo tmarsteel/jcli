@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cli>
+    <!-- combined -->
+    <rule type="combined">
+        <rule type="sub1" />
+        <rule type="sub2" />
+    </rule>
+</cli>
