@@ -1,19 +1,20 @@
 package com.tmarsteel.jcli.validation.configuration.xml;
 
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.filter.Filter;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
 import org.w3c.dom.Node;
 
 /**
- * Parses {@link Node} objects to R objects. Intended use: abstract the XML parsing done by XMLValidatorConfigurator;
- * R will be a {@link com.tmarsteel.jcli.filter.Filter} or a {@link com.tmarsteel.jcli.rule.Rule}.
+ * Parses {@link Node} objects to {@link Filter} objects. Intended use: abstract the XML parsing done by
+ * XMLValidatorConfigurator
  */
-public interface NodeParser<R> {
+public interface FilterParser<R extends Filter> {
 
     /**
-     * Parses the given {@link Node} in the {@code context} of the given {@link XMLValidatorConfigurator} to an
-     * object of type R.
-     * @param context The context in which the resulting object is to be used.
+     * Parses the given {@link Node} in the {@code context} of the given {@link XMLValidatorConfigurator} to
+     * a {@link Filter}
+     * @param context The context in which the resulting filter is to be used.
      * @param node The XML node to be parsed.
      * @return The parsed object.
      * @throws ParseException If the node is syntactically incorrect.

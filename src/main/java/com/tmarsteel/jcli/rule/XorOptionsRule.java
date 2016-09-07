@@ -17,11 +17,13 @@
  */
 package com.tmarsteel.jcli.rule;
 
+import com.sun.javafx.geom.AreaOp;
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Identifiable;
 import com.tmarsteel.jcli.validation.Validator;
 import com.tmarsteel.jcli.validation.RuleNotMetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -36,7 +38,7 @@ public class XorOptionsRule extends BaseRule
     protected String[] options;
     
     /**
-     * @param options The options/flags to connect.
+     * @param options The options/flags/arguments to connect.
      */
     public XorOptionsRule(Identifiable... options)
     {
@@ -47,34 +49,12 @@ public class XorOptionsRule extends BaseRule
             this.options[i] = options[i].getPrimaryIdentifier();
         }
     }
-    
+
     /**
-     * Node structure: <br>
-     * List all the identifiable flags, options and arguments in &lt;option&gt;
-     * subtags.
-     * @param node 
+     * @param identifiers The options/flags/arguments to connect
      */
-    public XorOptionsRule(Node node)
-    {
-        NodeList children = node.getChildNodes();
-        
-        List<String> parsedOptions = new ArrayList<>();
-        
-        for (int i = 0;i < children.getLength();i++)
-        {
-            Node cNode = children.item(i);
-            
-            switch (cNode.getNodeName())
-            {
-                case "#text":
-                    continue;
-                case "option":
-                    parsedOptions.add(cNode.getTextContent().trim());
-                    break;
-            }
-        }
-        
-        parsedOptions.toArray(this.options = new String[parsedOptions.size()]);
+    public XorOptionsRule(String... identifiers) {
+        this.options = Arrays.copyOf(identifiers, identifiers.length);
     }
     
     @Override

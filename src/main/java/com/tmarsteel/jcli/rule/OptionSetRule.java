@@ -27,7 +27,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Requires that the given option(s) is/are set.
+ * Requires that the given option(s)/flag(s)/argument(s) is/are set.
  * @author tmarsteel
  */
 public class OptionSetRule extends BaseRule
@@ -35,7 +35,7 @@ public class OptionSetRule extends BaseRule
     protected String[] optionNames = null;
     
     /**
-     * @param optionNames The options to require.
+     * @param optionNames The options/flags/arguments to require.
      */
     public OptionSetRule(String... optionNames)
     {
