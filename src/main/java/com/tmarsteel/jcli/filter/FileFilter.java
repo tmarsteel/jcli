@@ -17,11 +17,8 @@
  */
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.validation.ValidationException;
 import java.io.File;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * Accepts values that to a file or directory meeting the specified requirements.
@@ -150,8 +147,8 @@ public class FileFilter implements java.io.FileFilter, Filter
     }
 
     protected java.io.FileFilter filter = null;
-    protected EXISTENCE EXISTENCEStatus = EXISTENCE.IRRELEVANT;
-    protected PERMISSION permissionStatus = PERMISSION.IRRELEVANT;
+    protected EXISTENCE existenceState = EXISTENCE.IRRELEVANT;
+    protected PERMISSION permissionState = PERMISSION.IRRELEVANT;
     protected TYPE fileType = TYPE.IRRELEVANT;
     protected String extension = null;
 
@@ -162,76 +159,6 @@ public class FileFilter implements java.io.FileFilter, Filter
     public FileFilter(java.io.FileFilter filter)
     {
         this.filter = filter;
-    }
-
-    /**
-     * Creates a new filter from the given DOM node. <br>
-     * Node structure:
-     * The ENUM values for {@link PERMISSION}, {@link TYPE} and {@link EXISTENCE}
-     * may be specified by &lt;permission&gt;, &lt;type&gt; and &lt;existance&gt;
-     * subtags respectively.<br>
-     * The extension to force may be specified by an &lt;extension&gt; subtag.
-     * @param filterNode
-     * @throws ParseException
-     * @deprecated Consider using {@link PathFilter} instead.
-     */
-    public FileFilter(Node filterNode)
-        throws ParseException
-    {
-        fileType = FileFilter.TYPE.IRRELEVANT;
-        permissionStatus = FileFilter.PERMISSION.IRRELEVANT;
-        EXISTENCEStatus = EXISTENCE.IRRELEVANT;
-
-        NodeList children = filterNode.getChildNodes();
-        for (int i = 0;i < children.getLength();i++)
-        {
-            Node cNode = children.item(i);
-
-            if (cNode.getNodeName().equals("#text"))
-            {
-                continue;
-            }
-
-            switch (cNode.getNodeName())
-            {
-                case "extension":
-                    extension = cNode.getTextContent();
-                    break;
-                case "type":
-                    try
-                    {
-                        fileType = FileFilter.TYPE.valueOf(cNode.getTextContent());
-                    }
-                    catch (IllegalArgumentException ex)
-                    {
-                        throw new ParseException("Illegal value for type of file-filter");
-                    }
-                    break;
-                case "permissions":
-                    try
-                    {
-                        permissionStatus = FileFilter.PERMISSION.valueOf(cNode.getTextContent());
-                    }
-                    catch (IllegalArgumentException ex)
-                    {
-                        throw new ParseException("Illegal value for permissions of file-filter");
-                    }
-                    break;
-                case "existence":
-                    try
-                    {
-                        EXISTENCEStatus = EXISTENCE.valueOf(cNode.getTextContent());
-                    }
-                    catch (IllegalArgumentException ex)
-                    {
-                        throw new ParseException("Illegal value for existance of file-filter");
-                    }
-                    break;
-                default:
-                    throw new ParseException("Unknown tag " + cNode.getNodeName()
-                            + " in file-filter");
-            }
-        }
     }
 
     public FileFilter() {}
@@ -272,9 +199,9 @@ public class FileFilter implements java.io.FileFilter, Filter
     {
         if (filter == null)
         {
-            EXISTENCEStatus.test(file);
+            existenceState.test(file);
             fileType.test(file);
-            permissionStatus.test(file);
+            permissionState.test(file);
             if (extension != null)
             {
                 String fName = file.getName();
@@ -315,22 +242,22 @@ public class FileFilter implements java.io.FileFilter, Filter
 
     public PERMISSION getPermissions()
     {
-        return permissionStatus;
+        return permissionState;
     }
 
     public void setPermissions(PERMISSION permissionStatus)
     {
-        this.permissionStatus = permissionStatus;
+        this.permissionState = permissionStatus;
     }
 
-    public EXISTENCE getEXISTENCEStatus()
+    public EXISTENCE getExistenceState()
     {
-        return EXISTENCEStatus;
+        return existenceState;
     }
 
-    public void setEXISTENCEStatus(EXISTENCE EXISTENCEStatus)
+    public void setExistenceState(EXISTENCE EXISTENCEStatus)
     {
-        this.EXISTENCEStatus = EXISTENCEStatus;
+        this.existenceState = EXISTENCEStatus;
     }
 
     public TYPE getFileType()

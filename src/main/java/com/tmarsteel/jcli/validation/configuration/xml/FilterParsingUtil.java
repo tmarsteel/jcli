@@ -1,13 +1,11 @@
 package com.tmarsteel.jcli.validation.configuration.xml;
 
 import com.tmarsteel.jcli.ParseException;
-import com.tmarsteel.jcli.filter.BigDecimalFilter;
-import com.tmarsteel.jcli.filter.BigIntegerFilter;
-import com.tmarsteel.jcli.filter.DecimalFilter;
-import com.tmarsteel.jcli.filter.IntegerFilter;
+import com.tmarsteel.jcli.filter.*;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
 import com.tmarsteel.jcli.validation.ValidationException;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -92,5 +90,62 @@ abstract class FilterParsingUtil
         return new BigDecimalFilter(minValue, maxValue);
     }
 
+    public static FileFilter parseFileFilter(Node filterNode)
+            throws ParseException
+    {
+        FileFilter filter = new FileFilter();
 
+        NodeList children = filterNode.getChildNodes();
+        for (int i = 0;i < children.getLength();i++)
+        {
+            Node cNode = children.item(i);
+
+            if (cNode.getNodeName().equals("#text"))
+            {
+                continue;
+            }
+
+            switch (cNode.getNodeName())
+            {
+                case "extension":
+                    filter.setExtension(cNode.getTextContent());
+                    break;
+                case "type":
+                    try
+                    {
+                        filter.setFileType(FileFilter.TYPE.valueOf(cNode.getTextContent()));
+                    }
+                    catch (IllegalArgumentException ex)
+                    {
+                        throw new ParseException("Unknown file type " + cNode.getTextContent());
+                    }
+                    break;
+                case "permissions":
+                    try
+                    {
+                        filter.setPermissions(FileFilter.PERMISSION.valueOf(cNode.getTextContent()));
+                    }
+                    catch (IllegalArgumentException ex)
+                    {
+                        throw new ParseException("Unknown permissions combination " + cNode.getTextContent());
+                    }
+                    break;
+                case "existence":
+                    try
+                    {
+                        filter.setExistenceState(FileFilter.EXISTENCE.valueOf(cNode.getTextContent()));
+                    }
+                    catch (IllegalArgumentException ex)
+                    {
+                        throw new ParseException("Unknown existence state " + cNode.getTextContent());
+                    }
+                    break;
+                default:
+                    throw new ParseException("Unknown tag " + cNode.getNodeName()
+                            + " in file-filter");
+            }
+        }
+
+        return filter;
+    }
 }
