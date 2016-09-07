@@ -17,11 +17,8 @@
  */
 package com.tmarsteel.jcli.filter;
 
-import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.validation.ValidationException;
-import com.tmarsteel.jcli.validation.configuration.xml.XMLValidatorConfigurator;
 import java.math.BigInteger;
-import org.w3c.dom.Node;
 
 /**
  * Filters input as an integer number.
@@ -34,31 +31,6 @@ public class BigIntegerFilter implements Filter
     protected int radix = 10;
 
     public BigIntegerFilter() {}
-
-    public BigIntegerFilter(Node filterNode)
-        throws ParseException
-    {
-        String[] minMaxRadix = XMLValidatorConfigurator.XMLUtils.getMinMaxRadix(filterNode);
-
-        try
-        {
-            if (minMaxRadix[2] == null)
-            {
-                radix = 10;
-            }
-            else
-            {
-                radix = Integer.parseInt(minMaxRadix[2]);
-            }
-        }
-        catch (NumberFormatException ex)
-        {
-            throw new ParseException("Invalid radix: " + minMaxRadix[2]);
-        }
-        
-        this.minValue = minMaxRadix[0] == null? null : new BigInteger(minMaxRadix[0], radix);
-        this.maxValue = minMaxRadix[1] == null? null : new BigInteger(minMaxRadix[1], radix);
-    }
 
     public BigIntegerFilter(int radix)
     {

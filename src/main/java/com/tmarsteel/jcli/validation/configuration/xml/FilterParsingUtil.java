@@ -2,11 +2,13 @@ package com.tmarsteel.jcli.validation.configuration.xml;
 
 import com.tmarsteel.jcli.ParseException;
 import com.tmarsteel.jcli.filter.BigDecimalFilter;
+import com.tmarsteel.jcli.filter.BigIntegerFilter;
 import com.tmarsteel.jcli.filter.IntegerFilter;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
 import org.w3c.dom.Node;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * Utility methods used to parse the XML configurations of filters provided by the library
@@ -52,5 +54,30 @@ abstract class FilterParsingUtil
         return new BigDecimalFilter(minValue, maxValue);
     }
 
+    public BigIntegerFilter parseBigInteger(Node filterNode)
+        throws ParseException
+    {
+        final String[] minMaxRadix = XMLValidatorConfigurator.XMLUtils.getMinMaxRadix(filterNode);
+        final int radix;
 
+        try
+        {
+            if (minMaxRadix[2] == null)
+            {
+                radix = 10;
+            }
+            else
+            {
+                radix = Integer.parseInt(minMaxRadix[2]);
+            }
+        }
+        catch (NumberFormatException ex)
+        {
+            throw new ParseException("Invalid radix: " + minMaxRadix[2]);
+        }
+
+        BigInteger minValue = minMaxRadix[0] == null? null : new BigInteger(minMaxRadix[0], radix);
+        BigInteger maxValue = minMaxRadix[1] == null? null : new BigInteger(minMaxRadix[1], radix);
+        return new BigIntegerFilter(minValue, maxValue, radix);
+    }
 }
