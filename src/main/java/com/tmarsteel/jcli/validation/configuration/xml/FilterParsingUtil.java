@@ -11,6 +11,8 @@ import org.w3c.dom.NodeList;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -195,5 +197,52 @@ abstract class FilterParsingUtil
         RegexFilter filter = new RegexFilter(pattern);
         filter.setReturnGroup(returnGroup);
         return filter;
+    }
+
+    public static SetFilter parseSetFilter(Node filterNode)
+        throws ParseException, MisconfigurationException
+    {
+        NamedNodeMap attrs = filterNode.getAttributes();
+        // look for caseSensitive attribute
+        Node cNode = attrs.getNamedItem("caseSensitive");
+
+        boolean caseSensitive;
+
+        if (cNode == null)
+        {
+            caseSensitive = false;
+        }
+        else
+        {
+            caseSensitive = true;
+
+            if (cNode.getTextContent().equals("false"))
+            {
+                caseSensitive = false;
+            }
+        }
+
+        // look for all possible values
+        List<String> options = new ArrayList<>();
+        NodeList children = filterNode.getChildNodes();
+        for (int i = 0;i < children.getLength();i++)
+        {
+            cNode = children.item(i);
+            if (cNode.getNodeName().equals("value"))
+            {
+                options.add(cNode.getTextContent());
+            }
+            else if (!cNode.getNodeName().equals("#text"))
+            {
+                throw new ParseException("set-filters only allow value tags");
+            }
+        }
+
+        if (options.isEmpty())
+        {
+            throw new MisconfigurationException("No value specified for set filter");
+        }
+
+        return new SetFilter(options);
     }
 }

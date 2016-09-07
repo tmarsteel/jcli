@@ -80,60 +80,6 @@ public class SetFilter implements Filter
         this.caseSensitive = caseSensitive;
     }
 
-    /**
-     * Creates a new filter from a DOM node. <br>
-     * Node format: the node itself may have a <code>caseSensitive</code> attribute.
-     * If this attribute is not present or its value is <code>false</code> the
-     * filter will be case insensitive. On any other value the filter will be
-     * case sensitive.<br>
-     * The strings this filter should accept must be declared with <code>&lt;value&gt;</code>
-     * subtags.
-     * @param filterNode
-     * @throws ValidationException If any other subtag than &lt;value&gt; is found.
-     */
-    public SetFilter(Node filterNode)
-        throws ValidationException
-    {
-        NamedNodeMap attrs = filterNode.getAttributes();
-        // look for caseSensitive attribute
-        Node cNode = attrs.getNamedItem("caseSensitive");
-
-        if (cNode == null)
-        {
-            caseSensitive = false;
-        }
-        else
-        {
-            caseSensitive = true;
-            
-            if (cNode.getTextContent().equals("false"))
-            {
-                caseSensitive = false;
-            }
-        }
-
-        // look for all possible values
-        this.options = new ArrayList<String>();
-        NodeList children = filterNode.getChildNodes();
-        for (int i = 0;i < children.getLength();i++)
-        {
-            cNode = children.item(i);
-            if (cNode.getNodeName().equals("value"))
-            {
-                options.add(cNode.getTextContent());
-            }
-            else if (!cNode.getNodeName().equals("#text"))
-            {
-                throw new ValidationException("set-filters only allow value tags");
-            }
-        }
-        
-        if (this.options.isEmpty())
-        {
-            throw new IllegalArgumentException("Need to specify at least one value");
-        }
-    }
-
     @Override
     public Object parse(String value)
         throws ValidationException
