@@ -1,9 +1,12 @@
 package com.tmarsteel.jcli.validation.configuration.xml;
 
 import com.tmarsteel.jcli.ParseException;
+import com.tmarsteel.jcli.filter.BigDecimalFilter;
 import com.tmarsteel.jcli.filter.IntegerFilter;
 import com.tmarsteel.jcli.validation.MisconfigurationException;
 import org.w3c.dom.Node;
+
+import java.math.BigDecimal;
 
 /**
  * Utility methods used to parse the XML configurations of filters provided by the library
@@ -40,4 +43,14 @@ abstract class FilterParsingUtil
 
         return new IntegerFilter(min, max, radix);
     }
+
+    public static BigDecimalFilter parseBigDecimalFilter(Node filterNode)
+    {
+        String[] minMax = XMLValidatorConfigurator.XMLUtils.getMinMax(filterNode);
+        BigDecimal minValue = minMax[0] == null? null : new BigDecimal(minMax[0]);
+        BigDecimal maxValue = minMax[1] == null? null : new BigDecimal(minMax[1]);
+        return new BigDecimalFilter(minValue, maxValue);
+    }
+
+
 }

@@ -18,9 +18,7 @@
 package com.tmarsteel.jcli.filter;
 
 import com.tmarsteel.jcli.validation.ValidationException;
-import com.tmarsteel.jcli.validation.configuration.xml.XMLValidatorConfigurator;
 import java.math.BigDecimal;
-import org.w3c.dom.Node;
 
 /**
  * Filters input as an integer number.
@@ -32,13 +30,6 @@ public class BigDecimalFilter implements Filter
     private BigDecimal maxValue = null;
 
     public BigDecimalFilter() {}
-
-    public BigDecimalFilter(Node filterNode)
-    {
-        String[] minMax = XMLValidatorConfigurator.XMLUtils.getMinMax(filterNode);
-        this.minValue = minMax[0] == null? null : new BigDecimal(minMax[0]);
-        this.maxValue = minMax[1] == null? null : new BigDecimal(minMax[1]);
-    }
 
     public BigDecimalFilter(BigDecimal minValue, BigDecimal maxValue)
     {
