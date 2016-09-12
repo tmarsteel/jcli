@@ -4,7 +4,6 @@ jCLI offers support for sub-commands of the kind like `git commit`, `apt-get ins
 commands can be nested to an arbitrary depth, allowing for constructs like AWSs `aws ec2 allocate-hosts`.
 
 Every command can have a return value in case it does not just write to STDOUT.
-Every command can have a return value in case it does not just write to STDOUT.
 
 ## Simple usage
 
