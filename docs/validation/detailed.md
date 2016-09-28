@@ -353,70 +353,118 @@ These 4 rules connect other rules with the respective logical operator. For exam
 
 ## Custom Filters
 
-Custom filter can be implemented; First, you will have to create a class that extends `com.tmarsteel.jcli.filter.Filter`. It MUST have at least one of these constructor signatures:
+First, create a class implementing `com.tmarsteel.jcli.filter.Filter`.
 
-* `(org.w3c.dom.Node)`
-* `()`
+If your filter requires additional configuration, you can add an interface to the XML configuration by
+implementing a `com.tmarsteel.jcli.validation.configuration.xml.FilterParser`; it is perfectly fine to
+implement that using a static method of your filter class.
 
-The `(org.w3c.dom.Node)` constructor will be preferred. The argument is the `<filter>` tag found by the parser.
-
-To use that class, either specify the **full classname** in the class attribute:
-
-```xml
-<filter class="com.mypackage.cli.filter.CustomFilterXY" />
-```
-
-or add your own `type` to the `XMLValidatorConfigurator`:
+Once that is done, you need to register that parser with the `XMLValidatorConfigurator` you are using
+to allow it to create instances of your filter:
 
 ```java
-XMLValidatorConfigurator configurator = ... ;
-configurator.setFilterType("custom", com.mypackage.cli.filter.CustomFilterXY.class);
+class MyFilter implements com.tmarsteel.jcli.filter.Filter {
+    @Override
+    public Object parse(String value) {
+        return value + "_foobar";
+    }
+}
+
+xmlValidatorConfigurator.setFilterType("myfilter", (node, context) -> new MyFilter());
 ```
+
+With custom parsing logic:
+
+```java
+class MyFilter implements com.tmarsteel.jcli.filter.Filter {
+    
+    /**
+     * This method will be called to turn the given Node into a filter.  
+     */
+    public static MyFilter parse(Node filterNode, XMLValidatorConfigurator context) {
+        MyFilter f = new MyFilter(filterNode.getTextContent());
+        f.extraValue = node.getTextContent();
+        return f;
+    }
+    
+    private String extraValue;
+    
+    @Override
+    public Object parse(String value) {
+        return value + "_" + this.extraValue;
+    }
+}
+
+xmlValidatorConfigurator.setFilterType("myfilter", MyFilter::parse);
+```
+
+Then use it in your XML configuration:
 
 ```xml
-<filter type="custom" />
+<filter type="myfilter" />
+<filter type="myfilter">this will be extraValue</filter>
 ```
-
-Every filter can implement its own XML settings via the `(org.w3c.dom.Node)` constructor:
-
-```xml
-<filter class="com.mypackage.cli.filter.CustomFilterXY" ignoreSth="true">
-	<option>value</option>
-</filter>
-```
-
-**Note when using custom filters:** make sure the specified class is in the classpath at
-runtime!
 
 ## Custom Rules
 
-You can implement your own rules by creating a class that implements `com.tmarsteel.jcli.rule.Rule`. It MUST have at least one of these constructor signatures:
+Custom rules work the same way as custom filters do. The rule class must implement
+`com.tmarsteel.jcli.rule.Rule`. The parser for integration with the XML configuration
+ must implement `com.tmarsteel.jcli.validation.configuration.xml.RuleParser`.
 
-* (com.tmarsteel.jcli.rule.Rule[]) (Nested `<rule>` tags will be passed to the constructor)
-* (org.w3c.com.Node) (The `<rule>` tag will be passed to the constructor)
-* ()
+The rule must then be added to the `XMLValidatorConfigurator`:
 
-To use the custom rule you can either specify the `class` attribute on the `<rule>` tag:
-
-```xml
-<rule class="com.mypackage.cli.rule.CustomRule" />
 ```
+xmlValidatorConfigurator.setRuleType("myrule", (node, contet) -> new MyRule());
+xmlValidatorConfigurator.setRuleType("myrule", MyRule::parse);
+```
+  
+There is one more feature with custom rules that filters do not have: rules can be combined,
+just like the built in `and` and `or` rules. If you want to create such a rule yourself you
+will have to parse the nested rules which, of course, can be quite tricky to get right. In
+that case you can take advantage of the built-in code the `and`, `or`, `xor` and `not` rules
+use:
 
-or add your own `type` to the `XMLValidatorConfigurator`:
+The method that helps you is `com.tmarsteel.jcli.validation.configuration.xml.RuleParsingUtil#combinedRuleParser(java.lang.Class)`.
+Your rule class MUST have a `(Rule[])` constructor. The utility code will parse all the rules
+within the `<rule>` tag in question and passes them to this constructor:
 
 ```java
-XMLValidatorConfigurator configurator = ... ;
-configurator.setRuleType("custom", com.mypackage.cli.rule.CustomRule.class);
+class MyCombinedRule implements com.tmarsteel.jcli.rule.CombinedRule {
+    public MyCombinedRule(Rule[] nestedRules) {
+        super(nestedRules);
+    }
+    
+    @Override
+    public void validate(Validator intent, Validator.ValidatedInput params)
+        throws RuleNotMetException
+    {
+        // at least two of the rules must be met
+        int valid = 0;
+        for (Rule r:rules)
+        {
+            try {
+                r.validate(intent, params);
+                valid++;
+                if (valid >= 2) {
+                    return;
+                }
+            }
+            catch (RuleNotMetException ex) {}
+        }
+        
+        if (valid < 2) {
+            throw new RuleNotMetException();
+        }
+    }
+}
+
+xmlValidatorConfigurator.setRuleType("mycombinedrule", RuleParsingUtil.combinedRuleParser(MyCombinedRule.class));
 ```
 
 ```xml
-<rule type="custom" />
-```
-
-Every rule can implement its own XML settings via the `(org.w3c.dom.Node)` constructor:
-
-```xml
-<rule class="com.mypackage.cli.rule.CustomRule" ignoreSth="true">
-	<option>value</option>
+<rule type="mycombinedrule">
+    <rule>...</rule>
+    <rule>...</rule>
+    <rule>...</rule>
 </rule>
 ```
