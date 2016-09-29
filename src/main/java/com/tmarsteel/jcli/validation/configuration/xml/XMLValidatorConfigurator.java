@@ -510,7 +510,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
 
         try
         {
-            return Objects.requireNonNull(filterParser.parse(this, node), "Filter parser returned null");
+            return Objects.requireNonNull(filterParser.parse(this, filterNode), "Filter parser returned null");
         }
         catch(ParseException ex) {
             throw new MisconfigurationException(

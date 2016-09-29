@@ -201,7 +201,7 @@ abstract class FilterParsingUtil
     {
         NamedNodeMap attrs = filterNode.getAttributes();
         // look for caseSensitive attribute
-        Node cNode = attrs.getNamedItem("caseSensitive");
+        Node cNode = attrs == null? null : attrs.getNamedItem("caseSensitive");
 
         boolean caseSensitive = false;
 
@@ -209,7 +209,7 @@ abstract class FilterParsingUtil
         {
             caseSensitive = true;
 
-            if (cNode.getTextContent().equals("false"))
+            if (cNode == null || cNode.getTextContent().equals("false"))
             {
                 caseSensitive = false;
             }

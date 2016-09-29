@@ -18,6 +18,7 @@
 package com.tmarsteel.jcli.validation.configuration.xml;
 
 import com.tmarsteel.jcli.Flag;
+import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.validation.Validator;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -25,8 +26,8 @@ import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.function.Predicate;
-import java.util.stream.StreamSupport;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -35,12 +36,12 @@ import static org.mockito.Mockito.*;
 @Ignore
 public class XMLValidatorConfiguratorTest
 {
-    private Validator mockValidator;
+    private Validator spyValidator;
     private XMLValidatorConfigurator subject;
 
     @Before
     public void setUp() throws Exception {
-        mockValidator = spy(new Validator());
+        spyValidator = spy(new Validator());
         subject = XMLValidatorConfigurator.getInstance(
             getClass().getResourceAsStream("testconfig.xml")
         );
@@ -49,30 +50,69 @@ public class XMLValidatorConfiguratorTest
     @Test
     public void shouldFindFlags() {
         // ACT
-        subject.configure(mockValidator);
+        subject.configure(spyValidator);
 
         // ASSERT
-        verify(mockValidator, times(2)).add(any(Flag.class));
+        verify(spyValidator, times(2)).add(notNull(Flag.class));
     }
 
     @Test
     public void validateParsedFlag() {
         // ACT
-        subject.configure(mockValidator);
+        subject.configure(spyValidator);
 
         // ASSERT
-        assert(containsMatching(mockValidator.flags(), flag -> flag.isIdentifiedBy("flag1")));
-        assert(containsMatching(mockValidator.flags(), flag -> flag.isIdentifiedBy("flag2") && flag.isIdentifiedBy("f2")));
+        assertTrue(
+            "flag1 missing",
+            containsMatching(spyValidator.flags(), f -> f.getPrimaryIdentifier().equals("flag1"))
+        );
+        assertTrue(
+            "flag2 missing or incorrect",
+            containsMatching(spyValidator.flags(), f -> f.getPrimaryIdentifier().equals("flag2") && f.isIdentifiedBy("f2"))
+        );
     }
 
     @Test
     public void shouldFindOptions() {
-        // TODO: implement
+        // ACT
+        subject.configure(spyValidator);
+
+        // ASSERT
+        verify(spyValidator, times(3)).add(notNull(Option.class));
     }
 
     @Test
     public void validateParsedOption() {
-        // TODO: implement
+        // ACT
+        subject.configure(spyValidator);
+
+        // ASSERT
+        // option 1
+        assertTrue(
+            "option1 missing",
+            containsMatching(spyValidator.options(), o -> o.getPrimaryIdentifier().equals("option1"))
+        );
+        // option 2
+        assertTrue(
+            "option2 missing or incorrect",
+            containsMatching(spyValidator.options(), o -> o.getPrimaryIdentifier().equals("option2") && o.isIdentifiedBy("o2"))
+        );
+        // option 3
+        assertTrue(
+            "option3 missing or incorrect",
+            containsMatching(spyValidator.options(), o ->
+                o.getPrimaryIdentifier().equals("option3") &&
+                o.allowsMultipleValues() &&
+                !o.isRequired()
+        ));
+        // option 4
+        assertTrue(
+            "option4 is missing or incorrect",
+            containsMatching(spyValidator.options(), o ->
+                o.getPrimaryIdentifier().equals("option4") &&
+                o.isIdentifiedBy("o4")
+            )
+        );
     }
 
     @Test
