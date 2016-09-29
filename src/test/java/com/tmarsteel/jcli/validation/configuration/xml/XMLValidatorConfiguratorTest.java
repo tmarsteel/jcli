@@ -17,6 +17,7 @@
  */
 package com.tmarsteel.jcli.validation.configuration.xml;
 
+import com.tmarsteel.jcli.Argument;
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.validation.Validator;
@@ -116,18 +117,36 @@ public class XMLValidatorConfiguratorTest
     }
 
     @Test
-    public void shouldFindOptionFilter() {
-        // TODO: implement
-    }
-
-    @Test
     public void shouldFindArguments() {
-        // TODO: implement
+        // ACT
+        subject.configure(spyValidator);
+
+        // ASSERT
+        verify(spyValidator, times(2)).add(notNull(Argument.class));
     }
 
     @Test
     public void validateParsedArgument() {
-        // TODO: implement
+        // ACT
+        subject.configure(spyValidator);
+
+        // ASSERT
+        assertTrue(
+            "arg1 missing or invalid",
+            containsMatching(spyValidator.arguments(), a ->
+                a.getIdentifier().equals("arg1") &&
+                a.getIndex() == 0 &&
+                a.isRequired()
+            )
+        );
+        assertTrue(
+            "arg2 missing or invalid",
+            containsMatching(spyValidator.arguments(), a ->
+                a.getIdentifier().equals("arg2") &&
+                a.getIndex() == 1 &&
+                a.isVariadic()
+            )
+        );
     }
 
     @Test
