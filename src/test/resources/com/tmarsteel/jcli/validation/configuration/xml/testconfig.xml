@@ -7,11 +7,11 @@
         <alias>f2</alias>
     </flag>
 
-    <option identifier="option1" />
+    <option identifier="option1" required="true" />
     <option identifier="option2">
         <alias>o2</alias>
     </option>
-    <option identifier="option3" multiple="true" required="false" />
+    <option identifier="option3" collection="true" required="false" />
     <option identifier="option4">
         <alias>o4</alias>
         <filter type="set">

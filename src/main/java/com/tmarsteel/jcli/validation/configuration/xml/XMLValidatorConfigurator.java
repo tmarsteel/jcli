@@ -352,7 +352,7 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
         }
 
         Option o = new Option(filter, defValue, names.toArray(new String[names.size()]));
-        o.setRequired(attrs.getNamedItem("required") != null);
+        o.setRequired(attrs.getNamedItem("required") != null && attrs.getNamedItem("required").getTextContent().equals("true"));
         o.setAllowsMultipleValues(attrs.getNamedItem("collection") != null);
         o.setDescription(description == null? "" : description);
         

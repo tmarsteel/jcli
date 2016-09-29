@@ -78,7 +78,7 @@ public class XMLValidatorConfiguratorTest
         subject.configure(spyValidator);
 
         // ASSERT
-        verify(spyValidator, times(3)).add(notNull(Option.class));
+        verify(spyValidator, times(4)).add(notNull(Option.class));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class XMLValidatorConfiguratorTest
         // option 1
         assertTrue(
             "option1 missing",
-            containsMatching(spyValidator.options(), o -> o.getPrimaryIdentifier().equals("option1"))
+            containsMatching(spyValidator.options(), o -> o.getPrimaryIdentifier().equals("option1") && o.isRequired())
         );
         // option 2
         assertTrue(
