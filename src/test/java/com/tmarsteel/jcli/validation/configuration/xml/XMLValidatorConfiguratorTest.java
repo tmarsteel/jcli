@@ -35,7 +35,6 @@ import static org.mockito.Mockito.*;
 /**
  * @author Tobias Marstaller
  */
-@Ignore
 public class XMLValidatorConfiguratorTest
 {
     private Validator spyValidator;
