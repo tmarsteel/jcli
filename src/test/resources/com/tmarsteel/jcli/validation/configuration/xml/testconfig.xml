@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cli>
+    <!-- configuration used in XMLValidatorConfiguratorTest -->
+
+    <flag identifier="flag1" />
+    <flag identifier="flag2">
+        <alias>f2</alias>
+    </flag>
+
+
+</cli>

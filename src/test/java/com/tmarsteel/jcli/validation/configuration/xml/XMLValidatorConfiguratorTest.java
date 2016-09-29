@@ -17,10 +17,16 @@
  */
 package com.tmarsteel.jcli.validation.configuration.xml;
 
+import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.validation.Validator;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.util.Iterator;
+import java.util.function.Predicate;
+import java.util.stream.StreamSupport;
+
 import static org.mockito.Mockito.*;
 
 /**
@@ -30,20 +36,33 @@ import static org.mockito.Mockito.*;
 public class XMLValidatorConfiguratorTest
 {
     private Validator mockValidator;
+    private XMLValidatorConfigurator subject;
 
     @Before
-    public void setUp() {
-        mockValidator = mock(Validator.class);
+    public void setUp() throws Exception {
+        mockValidator = spy(new Validator());
+        subject = XMLValidatorConfigurator.getInstance(
+            getClass().getResourceAsStream("testconfig.xml")
+        );
     }
 
     @Test
     public void shouldFindFlags() {
-        // TODO: implement
+        // ACT
+        subject.configure(mockValidator);
+
+        // ASSERT
+        verify(mockValidator, times(2)).add(any(Flag.class));
     }
 
     @Test
     public void validateParsedFlag() {
-        // TODO: implement
+        // ACT
+        subject.configure(mockValidator);
+
+        // ASSERT
+        assert(containsMatching(mockValidator.flags(), flag -> flag.isIdentifiedBy("flag1")));
+        assert(containsMatching(mockValidator.flags(), flag -> flag.isIdentifiedBy("flag2") && flag.isIdentifiedBy("f2")));
     }
 
     @Test
@@ -79,5 +98,15 @@ public class XMLValidatorConfiguratorTest
     @Test
     public void shouldFindRules() {
         // TODO: implement
+    }
+
+    private <E> boolean containsMatching(Iterator<E> it, Predicate<? super E> predicate) {
+        while (it.hasNext()) {
+            if (predicate.test(it.next())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
