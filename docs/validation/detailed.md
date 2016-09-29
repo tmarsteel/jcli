@@ -4,11 +4,14 @@
 This document uses the phrases MUST, MUST NOT, SHOULD, SHOULD NOT and MAY in the same way they are used in RFC documents.
 
 
-The XML configuration is parsed by the class `com.tmarsteel.jcli.validator.configuration.XMLValidatorConfigurator`. Before actually parsing and applying a configuration to an instance of `com.tmarsteel.jcli.validation.Validator` several options can be set to extend the functionality.
+The XML configuration is parsed by the class `com.tmarsteel.jcli.validator.configuration.XMLValidatorConfigurator`.
+Before actually parsing and applying a configuration to an instance of `com.tmarsteel.jcli.validation.Validator` several
+options can be set to extend the functionality.
 
 ---
 
-The root-element of the configuration xml MUST be a `<cli>`-Tag. It includes all definitions of flags, options and arguments and their possible values and validation information. A quick example:
+The root-element of the configuration xml MUST be a `<cli>`-Tag. It includes all definitions of flags, options,
+arguments and their value constraints. A quick example:
 
 ```xml
 <xml version="1.0">
@@ -27,16 +30,18 @@ The root-element of the configuration xml MUST be a `<cli>`-Tag. It includes all
 ```
 
 These CLI-Calls are equal:  
-`<executable> -v : foo.txt`  
-`<executable> -verbose : foo.txt`  
+`program -v : foo.txt`
+`program -verbose : foo.txt`
 *Note: the colon between the flag and the argument is optional here. See [Ambiguous Arguments](../gotchas.md)*.
 
 ## Flags
 
 Flags MUST be configured using the `<flag>`-tag. The `identifier` attribute MUST be set.  
-**Note:** the content of the identifier-attribute is the string that is used to identify the flag within the configuration and when accessing its value after parsing input.
+**Note:** the content of the identifier-attribute is the string that is used to identify the flag within the
+configuration and when accessing its value after parsing input.
 
-Inside that tag you MAY specify as many aliases (for abbreviation or compatibility) as you wish. The identifier as well as all the aliases will be recognized.
+Inside that tag you MAY specify as many aliases (for abbreviation or compatibility) as you wish. The identifier as well
+as all the aliases will be recognized.
 For example:
 
 ```xml
@@ -48,16 +53,20 @@ For example:
 ## Options
 
 Options MUST be configured using the `<option>`-tag. The `identifier` attribute MUST be set.  
-**Note:** the content of the identifier-attribute is the string that is used to identify the option within the configuration and when accessing its value after parsing input.
+**Note:** the content of the identifier-attribute is the string that is used to identify the option within the
+configuration and when accessing its value after parsing input.
 
-Inside that tag you MAY specify as many aliases (for abbreviation or compatibility) as you wish. The identifier as well as all the aliases will be recognized.
+Inside that tag you MAY specify as many aliases (for abbreviation or compatibility) as you wish. The identifier as well
+as all the aliases will be recognized.
 
-One `<default>` tag MAY be given. This will be the value used when the option is not set. If a `<default>` tag is not given and the option is given in parsed input the value of the
-option will be `null`. To enforce an option set `required="true"` on the `<option>` tag.
+One `<default>` tag MAY be given. This will be the value used when the option is not set. If a `<default>` tag is not
+given and the option is given in parsed input the value of the option will be `null`. To enforce an option set
+`required="true"` on the `<option>` tag.
 
-One `<filter>` tag MAY be given. It hints to the validator how to validate input given to that option. See below for filters.
+One `<filter>` tag MAY be given. It hints to the validator how to validate input given to that option. See below for
+filters.
 
-for example:
+For example:
 
 ```xml
 <option identifier="output">
@@ -70,72 +79,79 @@ for example:
 ### Multiple values
 
 In case an option can be specified multiple times (e.g. multiple inputs), the option MAY be marked as a collection by
-setting the `collection` attribute to true.
+setting the `collection` attribute to `true`.
 
 The validator will then pass each single value for that option through the filter and collect the filtered objects.
 
 To access all of the values, use `Validator.ValidatedInput#getOptionValues`
 
-The order of the parsed objects in the returned array reflects the order in which the single values were given in the original input.
+The order of the parsed objects in the returned list reflects the order in which the single values were given in the
+original input.
 
-example:
+Example:
 
 ```xml
 <option identifier="input" collection="true">
+```
+
+`program -input foo.txt -input bar.txt`
+
+```java
+assertEquals("foo.txt", validatedInput.getOptionValues("input").get(0));
+assertEquals("bar.txt", validatedInput.getOptionValues("input").get(1));
 ```
 
 ## Arguments
 
 Arguments MUST be configured using the `<argument>`-tag. Both the `identifier` and the `index` attribute MUST be set. 
 
-You MAY set the `required`-attribute to true. This will cause the parser to throw an error if no input could be mapped to this argument.
+You MAY set the `required`-attribute to `true`. This will cause the parser to throw an error if no input could be mapped
+to this argument.
 
-You MAY set the `variadic`-attribute to true. This will cause that all arguments from the index of this argument on are
-treated as values to this argument. `Input#getOption` will then behave like a multivalue option.
+You MAY set the `variadic`-attribute to `true`. This will cause that all arguments from the index of this argument on are
+treated as values to this argument.
 There MUST NOT be more than one variadic argument in the same validator configuration. If there is a variadic
 argument in the configuration, its index MUST be the greatest among all defined arguments.
 
-The content of the `identifier`-attribute is the string that is used to identify the argument within the configuration and when accessing its value after parsing input.
+The content of the `identifier`-attribute is the string that is used to identify the argument within the configuration
+and when accessing its value after parsing input.
 
-The content of the `index`-attriute MUST be an integer number greater or equal to 0. It defines what argument should be parsed as defined in the `<argument>` tag.
+The content of the `index`-attriute MUST be an integer number greater or equal to 0. `Validator`s will use that index
+to access the argument values from `Input`. 1st argument: index 0, 2nd argument: index 1, ...
 
 You MAY specify a `<default>`-tag. This will be the value used when the argument is not set.
 
-You MAY specify one `<filter>`-tag that will hint to the validator how to validate input given to that argument. See below for filters.
+You MAY specify one `<filter>`-tag that will hint to the validator how to validate input given to that argument.
+See below for filters.
 
 Example:
 
 ```xml
 <argument identifier="format" index="0" />
+<argument identifier="input" index="1" />
 ```
 
-`<executable> -v : someFormat`  
+`program -v : someFormat input.txt`
+
 
 ```xml
 <argument identifier="inputs" index="0" variadic="true" />
 ```
-`<executable> -v : input1.txt input2.txt input3.txt`
+`program -v : input1.txt input2.txt input3.txt`
 
 *Note: the colon between the flag and the argument is optional here. See [Ambiguous Arguments](../gotchas.md)*.
 
 ## Filters
 
-One `<filter>`-tag MAY be specified per option or argument. It tells the validator how to parse the values for these options/arguments, e.g. integers or files. There are seven predefined filters (see below). You can create and use your own filters; more on that later.
+One `<filter>`-tag MAY be specified per option or argument. It tells the validator how to parse the values for these
+options/arguments, e.g. integers or files. There are seven predefined filters (see below). You can create and use your
+own filters; more on that later.
 
 The strings parsed from the input are passed to the filters. They return objects already specific to what their
 validation is, e.g. `java.lang.Long` or `java.io.File`.
 
-Either the type attribute or the class attribute MUST be set on a `<filter>` tag.
+The `type` attribute MUST be set on all `<filter>` tags to identify what filter is used.
 
-##### The `class` attribute
-If the `class` attribute is given, `XMLValidatorConfigurator` will try to load the class with the name given in the `class` attribute. If the loaded class implements `com.tmarsteel.jcli.filter.Filter` these constructors wil tried to be called in the order listed here:
-
-1. (org.w3c.com.Node) The `<filter>` node will be passed to the constructor
-2. ()
-
-If an instance of the loaded class could be created it will be used as the filter. If not, a `MisconfigurationException` will be thrown. 
-
-##### The `type` attribute
 
 ### Predefined filters
 
@@ -162,7 +178,7 @@ Example:
 </filter>
 ```
 
-#### File Filter
+#### File Filter and Path Filter
 
 The file filter returns an instance of `java.io.File`. Whether or not a file will be accepted can be configured. These criteria are applicable:
 
@@ -227,6 +243,8 @@ Specify the different possibilities with <value> tags. The set filter will alway
 
 This filter is case insensitive. Given the input `ThReEFiSH` it will return `THREEFISH`.
 
+##### Path Filter
+The path filter (`type="path"`) wraps a `FileFilter` but returns a `java.nio.Path` instead of a `java.io.File`.
 
 #### Regex Filter
 
@@ -242,9 +260,9 @@ Given the input "15KG" this filter will return the string "15".
 
 ### Pattern Filter (Meta Regex Filter)
 
-This filter parses the input string as a regular expression. This comes in handy e.g. when offering filter functionality.
-This filter accepts no parameters.  
-It returns the parsed regex as a `java.util.regex.Pattern`.
+This filter parses the input string as a regular expression (wraps `Pattern#compile`). This comes in handy e.g. when
+offering filter functionality.
+This filter accepts no parameters. It returns the parsed regex as a `java.util.regex.Pattern`.
 
 Example:
 
@@ -255,27 +273,16 @@ Example:
 ## Rules
 
 Rules are optional. They MUST be configured using a `<rule>` tag.  
-Rules are validated after all input has been parsed. They can reject that input in case they are not met. For example, rules can enforce an option to be given or that two options cannot be set at the same time.
+Rules are validated after all input has been parsed. They can reject that input in case they are not met. For example,
+rules can enforce an option to be given or that two options cannot be set at the same time.
 
-Either the `type`-attribute or the `class` attribute MUST be set on a `<rule>`-tag.
-
-##### The `class` attribute
-If the `class` attribute is given, `XMLValidatorConfigurator` will try to load the class with the name given in the `class` attribute. If the loaded class implements `com.tmarsteel.jcli.rule.Rule` these constructors will tried to be called in the order listed here:
-
-1. (org.w3c.com.Node) The `<filter>` node will be passed to the constructor
-2. (com.tmarsteel.jcli.rule.Rule[]) Nested `<rule>` tags will be parsed and given to the rule.
-2. ()
-
-If an instance of the loaded class could be created it will be used as the rule. If not, a `MisconfigurationException` will be thrown. 
-
-##### The `type` attribute
-
-Values of the `type` attribute map to rule classes. The predefined ones are listed below.
-How the types can be modified or extended is explained in the *Custom rules* section.
+The `type`-attribute MUST be set on all `<rule>` tags to specified the rule to use. You can implement custom rules,
+more on that later.
 
 ### Predefined rules
 
-To refuse all flags and options that are not known by the validator, you will have to add the rules programmatically:
+To refuse all flags and options that are were not defined in the configuration, predefined rules have to be added
+programmatically:
 
 ```java
 Validator inputValidator = new Validator();
@@ -283,12 +290,14 @@ inputValidator.add(Rule.ONLY_KNOWN_OPTIONS);
 inputValidator.add(Rule.ONLY_KNOWN_FLAGS);
 ```
 
-Almost any other combination can be configured via XML. There are six pre-defined types of rules. 
+Almost any other combination can be configured in the XML configuration. There are six pre-defined types of rules.
 
 The error messages produced by the rules included in the library are not user-friendly in
-most cases. For every rule included in the library you can specify an `<error>` tag that will be passed as the error message in case of failure.
+most cases. For every rule included in the library you can specify an `<error>` tag that will be passed as the error
+message in case of failure.
 
-**Note:** rules should be at the end of the XML-file since referring to a not yet parsed option/flag will result in an error.
+**Note:** rules SHOULD be placed at the end of the XML file. Referring to a not yet parsed option/flag in a rule
+may throw an error.
 
 #### Option rule: option-set
 
@@ -353,118 +362,89 @@ These 4 rules connect other rules with the respective logical operator. For exam
 
 ## Custom Filters
 
-First, create a class implementing `com.tmarsteel.jcli.filter.Filter`.
+To get a custom filter to work with `XMLValidatorConfigurator` you have to define a filter type; this can be the name
+of your filter class. The instance of `XMLValidatorConfigurator` then needs to be notified about the filter type and
+how to parse it; this is achieved by invoking `XMLValidatorConfigurator#setFilterType`; you MAY overwrite the predefined
+filters types.
 
-If your filter requires additional configuration, you can add an interface to the XML configuration by
-implementing a `com.tmarsteel.jcli.validation.configuration.xml.FilterParser`; it is perfectly fine to
-implement that using a static method of your filter class.
+### Creating the XML parser
 
-Once that is done, you need to register that parser with the `XMLValidatorConfigurator` you are using
-to allow it to create instances of your filter:
+`XMLValidatorConfigurator#setFilterType` requires an instance of `FilterParser`. Unless you wish to support multiple
+configuration formats the parsing method SHOULD be defined in the filter class. IT can then e referenced using a lambda
+expression (see example below).
+
+### Creating the filter
+A separate class SHOULD be used for every filter. It has to implement the interface `com.tmarsteel.jcli.filter.Filter`.
+
+### Example
 
 ```java
-class MyFilter implements com.tmarsteel.jcli.filter.Filter {
+/**
+ * Filters input by resolving the given string value to a {@link Customer} entity by its ID.
+ */
+class CustomerFilter implements Filter {
+    public static CustomerFilter parseToInstance(XMLValidatorConfigurator, org.w3c.dom.Node configurationNode) {
+        // any custom parsing logic on configurationNode
+        // extract information about the filter here
+        return new CustomerFilter();
+    }
+
     @Override
-    public Object parse(String value) {
-        return value + "_foobar";
+    public Object parse(String value) throws ValidationException {
+        long id;
+        try {
+            id = Long.parseLong(value);
+        } catch (NumberFormatException ex) {
+            throw new ValidationException("Customer-ID ist not numeric");
+        }
+
+        if (id <= 0) {
+            throw new ValidationException("Customer-ID must be greater than 0");
+        }
+
+        return findCustomerById(id);
     }
 }
 
-xmlValidatorConfigurator.setFilterType("myfilter", (node, context) -> new MyFilter());
-```
+// in CLI
+XMLValidatorConfigurator configurator;
 
-With custom parsing logic:
+// if you do not have custom parsing logic, you SHOULD use this:
+configurator.setFilterType("customer", (context, node) -> new CustomerFilter());
 
-```java
-class MyFilter implements com.tmarsteel.jcli.filter.Filter {
-    
-    /**
-     * This method will be called to turn the given Node into a filter.  
-     */
-    public static MyFilter parse(Node filterNode, XMLValidatorConfigurator context) {
-        MyFilter f = new MyFilter(filterNode.getTextContent());
-        f.extraValue = node.getTextContent();
-        return f;
-    }
-    
-    private String extraValue;
-    
-    @Override
-    public Object parse(String value) {
-        return value + "_" + this.extraValue;
-    }
-}
+// if you have little parsing logic, you SHOULD use a static getInstance method:
+configurator.setFilterType("customer", CustomerFilter::parseToInstance);
 
-xmlValidatorConfigurator.setFilterType("myfilter", MyFilter::parse);
-```
+// if you have a lot of parsing logic, you SHOULD create a separate parsing class
+configurator.setFilterType("customer", new CustomerFilterParser());
 
-Then use it in your XML configuration:
-
-```xml
-<filter type="myfilter" />
-<filter type="myfilter">this will be extraValue</filter>
+// quick and dirty approach, it SHOULD NOT be used
+configurator.setFilterType("customer", (context, node) -> str -> findCustomerById(Long.parseLong(str)));
 ```
 
 ## Custom Rules
 
-Custom rules work the same way as custom filters do. The rule class must implement
-`com.tmarsteel.jcli.rule.Rule`. The parser for integration with the XML configuration
- must implement `com.tmarsteel.jcli.validation.configuration.xml.RuleParser`.
+Custom rules work the same as custom filters do, for the greatest part:
 
-The rule must then be added to the `XMLValidatorConfigurator`:
+* Create a class that implements `com.tmarsteel.jcli.rule.Rule`
+* If necessary, define your parsing logic, preferable as a static method of the rule class
+* Link the rule parser to the `XMLValidatorConfigurator` by invoking `#setRuleType`
 
-```
-xmlValidatorConfigurator.setRuleType("myrule", (node, contet) -> new MyRule());
-xmlValidatorConfigurator.setRuleType("myrule", MyRule::parse);
-```
-  
-There is one more feature with custom rules that filters do not have: rules can be combined,
-just like the built in `and` and `or` rules. If you want to create such a rule yourself you
-will have to parse the nested rules which, of course, can be quite tricky to get right. In
-that case you can take advantage of the built-in code the `and`, `or`, `xor` and `not` rules
-use:
-
-The method that helps you is `com.tmarsteel.jcli.validation.configuration.xml.RuleParsingUtil#combinedRuleParser(java.lang.Class)`.
-Your rule class MUST have a `(Rule[])` constructor. The utility code will parse all the rules
-within the `<rule>` tag in question and passes them to this constructor:
+The difference is: Rules can have nested rules (the same way the predefined `and`, `or` and `xor` rules do). Those
+MUST NOT be parsed by the specific rule parser; the parsing of nested rules MUST be delegated back to the
+`XMLValidatorConfigurator`:
 
 ```java
-class MyCombinedRule implements com.tmarsteel.jcli.rule.CombinedRule {
-    public MyCombinedRule(Rule[] nestedRules) {
-        super(nestedRules);
-    }
-    
+class CustomRuleParser implements RuleParser<CustomRule>  {
     @Override
-    public void validate(Validator intent, Validator.ValidatedInput params)
-        throws RuleNotMetException
+    public CustomRule parse(XMLValidatorConfigurator context, Node node, RuleParser<Rule> subParser)
+                throws MisconfigurationException, ParseException
     {
-        // at least two of the rules must be met
-        int valid = 0;
-        for (Rule r:rules)
-        {
-            try {
-                r.validate(intent, params);
-                valid++;
-                if (valid >= 2) {
-                    return;
-                }
-            }
-            catch (RuleNotMetException ex) {}
-        }
-        
-        if (valid < 2) {
-            throw new RuleNotMetException();
-        }
+        // if, during the parsing of node, a <rule> tag is encountered, invoke subParser#parse:
+        Node nestedRuleNode;
+        Rule nestedRule = subParser.parse(context, nestedRuleNode, subParser);
+
+        return new CustomRule(nestedRule);
     }
 }
-
-xmlValidatorConfigurator.setRuleType("mycombinedrule", RuleParsingUtil.combinedRuleParser(MyCombinedRule.class));
-```
-
-```xml
-<rule type="mycombinedrule">
-    <rule>...</rule>
-    <rule>...</rule>
-    <rule>...</rule>
-</rule>
 ```

@@ -95,9 +95,6 @@ convert --verbose -outtype csv -outfile foo.csv : bar.xls
 	Rule-Tag:
 	Parameters:
 	 - type: One of these: and, or, xor, not, option-set, option-xor
-	 - class: A fully qualified classname of a class implmenting com.wisper.cli.rule.Rule
-	Either type or class can be specified. When class is specified, no sub-tags are allowed
-	unless the given class implements com.wisper.cli.rule.CombinedRule
 	
 	The allowed sub-tags depend on the type parameter.
 	For and, or, xor, not and class:
@@ -106,9 +103,14 @@ convert --verbose -outtype csv -outfile foo.csv : bar.xls
 	 - option (wihtout sub-tags, e.g. <option>input</option>
 	-->
 	<rule type="and">
-		<rule class="com.mypackage.cli.ParserRule" />
+		<rule type="com.mypackage.cli.ParserRule" />
 		<rule type="option-set">
 			<option>input</option>
 		</rule>
 	</rule>
+
+	<rule type="and">
+        <rule type="..."></rule>
+        <rule type="..."></rule>
+    </rule>
 </cli>
