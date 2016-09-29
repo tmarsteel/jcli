@@ -17,7 +17,6 @@
  */
 package com.tmarsteel.jcli.rule;
 
-import com.sun.javafx.geom.AreaOp;
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Identifiable;
 import com.tmarsteel.jcli.validation.Validator;

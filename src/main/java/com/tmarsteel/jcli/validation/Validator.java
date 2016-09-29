@@ -19,7 +19,6 @@ package com.tmarsteel.jcli.validation;
 
 import com.tmarsteel.jcli.*;
 import com.tmarsteel.jcli.rule.Rule;
-import javafx.collections.transformation.SortedList;
 
 import java.util.*;
 import java.util.Map.Entry;
