@@ -20,6 +20,7 @@ package com.tmarsteel.jcli.validation.configuration.xml;
 import com.tmarsteel.jcli.Argument;
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Option;
+import com.tmarsteel.jcli.rule.Rule;
 import com.tmarsteel.jcli.validation.Validator;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -150,13 +151,12 @@ public class XMLValidatorConfiguratorTest
     }
 
     @Test
-    public void souldFindArgumentFilter() {
-        // TODO: implement
-    }
-
-    @Test
     public void shouldFindRules() {
-        // TODO: implement
+        // ACT
+        subject.configure(spyValidator);
+
+        // ASSERT
+        verify(spyValidator, times(2)).add(notNull(Rule.class));
     }
 
     private <E> boolean containsMatching(Iterator<E> it, Predicate<? super E> predicate) {

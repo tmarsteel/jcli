@@ -544,8 +544,8 @@ public class XMLValidatorConfigurator implements ValidatorConfigurator
             return Objects.requireNonNull(
                 ruleParser.parse(
                     this,
-                    node,
-                    (context, _node, subParser) -> this.parseRule(node)
+                    ruleNode,
+                    (context, _node, subParser) -> this.parseRule(_node)
                 ),
                 "Rule parser returned null"
             );

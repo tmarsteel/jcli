@@ -21,4 +21,17 @@
 
     <argument identifier="arg1" index="0" required="true" />
     <argument identifier="arg2" index="1" variadic="true" />
+
+    <rule type="option-set">
+        <option>option1</option>
+    </rule>
+
+    <rule type="and">
+        <rule type="option-set">
+            <option>option1</option>
+        </rule>
+        <rule type="option-set">
+            <option>arg1</option>
+        </rule>
+    </rule>
 </cli>
