@@ -39,4 +39,11 @@ public class PathFilter implements Filter {
     {
         return ((File) delegate.parse(value)).toPath();
     }
+
+    /**
+     * Returns the underlying {@link FileFilter} this filter uses to validate inputs.
+     */
+    public FileFilter getDelegate() {
+        return this.delegate;
+    }
 }
