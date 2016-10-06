@@ -156,7 +156,14 @@ public class Option extends Identifiable
     {
         this.allowMultiple = should;
     }
-    
+
+    /**
+     * Returns the filter configured for this option, if any. Otherwise null.
+     */
+    public Filter getFilter() {
+        return this.valueFilter;
+    }
+
     @Override
     public String toString()
     {
