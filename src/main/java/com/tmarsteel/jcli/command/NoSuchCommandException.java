@@ -27,7 +27,11 @@ public class NoSuchCommandException extends CommandDispatchException
     private String invalidName;
 
     public NoSuchCommandException(String name) {
-        super("Command " + name + " is not known");
+        this(name, null);
+    }
+
+    public NoSuchCommandException(String name, Throwable cause) {
+        super("Command " + name + " is not known", cause);
 
         this.invalidName = name;
     }
