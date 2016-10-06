@@ -24,15 +24,17 @@ import com.tmarsteel.jcli.Argument;
 import com.tmarsteel.jcli.Identifiable;
 import com.tmarsteel.jcli.Option;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * A {@link HelptextFormatter} suited for the needs of CLI interfaces.
  */
-public class CLIHelptextFormatter implements HelptextFormatter<String> {
+public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String> {
+
+    /**
+     * The filter descriptors to be used.
+     */
+    private SortedMap<Class<?>, FilterDescriptor<?>> filterDescriptors;
 
     /**
      * Maximum number of characters in the output lines.
