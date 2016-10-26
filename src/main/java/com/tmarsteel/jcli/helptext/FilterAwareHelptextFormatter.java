@@ -16,5 +16,5 @@ public interface FilterAwareHelptextFormatter<R> extends HelptextFormatter<R>
      * filter could be described by more than one {@link FilterDescriptor}.
      * @param <C> The type of flter to describe with the given {@link FilterDescriptor}
      */
-    <C extends Filter> void setFilterDescriptor(Class<C> filterClass, FilterDescriptor<? super C> descriptor);
+    <C extends Filter> void setFilterDescriptor(Class<C> filterClass, FilterDescriptor descriptor);
 }
