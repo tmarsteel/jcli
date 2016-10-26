@@ -21,20 +21,26 @@ package com.tmarsteel.jcli.helptext;
 import static java.util.stream.StreamSupport.*;
 
 import com.tmarsteel.jcli.Argument;
+import com.tmarsteel.jcli.Filtered;
 import com.tmarsteel.jcli.Identifiable;
 import com.tmarsteel.jcli.Option;
+import com.tmarsteel.jcli.filter.Filter;
+import com.tmarsteel.jcli.util.ClassHierarchyComparator;
+import org.omg.PortableInterceptor.ObjectReferenceTemplateSeqHelper;
 
 import java.util.*;
+import java.util.stream.Collector;
 
 /**
  * A {@link HelptextFormatter} suited for the needs of CLI interfaces.
  */
-public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String> {
+public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String>
+{
 
     /**
      * The filter descriptors to be used.
      */
-    private SortedMap<Class<?>, FilterDescriptor<?>> filterDescriptors;
+    private SortedMap<Class<?>, FilterDescriptor> filterDescriptors = new TreeMap<>(new ClassHierarchyComparator());
 
     /**
      * Maximum number of characters in the output lines.
@@ -48,6 +54,7 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
 
     /**
      * Returns the maximum number of characters {@link #format} will put into one output line.
+     *
      * @return The maximum number of characters {@link #format} will put into one output line.
      */
     public int getMaxWidth()
@@ -58,6 +65,7 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
     /**
      * Sets the maximum number of characters {@link #format} should put into one output line. That number should be
      * greater than 50.
+     *
      * @param maxWidth The maximum number of characters {@link #format} should put into one output line
      */
     public void setMaxWidth(int maxWidth)
@@ -67,6 +75,7 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
 
     /**
      * Returns the line separator to use. Is used both when parsing input as well as when outputting.
+     *
      * @return The line separator to use. Is used both when parsing input as well as when outputting.
      */
     public char getLineSeparator()
@@ -76,6 +85,7 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
 
     /**
      * Sets the line separator to use. Is used both when parsing input as well as when outputting.
+     *
      * @param lineSeparator the line separator to use. Is used both when parsing input as well as when outputting.
      */
     public void setLineSeparator(char lineSeparator)
@@ -91,9 +101,11 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
         // USAGE
         out.append("Usage: ");
         boolean isFirst = true;
-        for (String example : t.usageExamples()) {
-            if (t.getExecutableName().length() + 1 + example.length() < maxWidth) {
-                out.append(isFirst? t.getExecutableName() : new String(new char[t.getExecutableName().length() + 7]).replace('\0', ' '));
+        for (String example : t.usageExamples())
+        {
+            if (t.getExecutableName().length() + 1 + example.length() < maxWidth)
+            {
+                out.append(isFirst ? t.getExecutableName() : new String(new char[t.getExecutableName().length() + 7]).replace('\0', ' '));
                 out.append(' ');
                 out.append(example);
                 out.append('\n');
@@ -107,19 +119,22 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
         out.append(lineSeparator);
 
         // OPTIONS and FLAGS
-        if (t.options().size() > 0) {
+        if (t.options().size() > 0)
+        {
             out.append("-- Options --");
             out.append(lineSeparator);
             out.append(toTable(t.options()));
             out.append(lineSeparator);
         }
-        if (t.flags().size() > 0) {
+        if (t.flags().size() > 0)
+        {
             out.append("-- Flags --");
             out.append(lineSeparator);
             out.append(toTable(t.flags()));
             out.append(lineSeparator);
         }
-        if (t.arguments().size() > 0) {
+        if (t.arguments().size() > 0)
+        {
             out.append("-- Arguments --");
             out.append(lineSeparator);
             out.append(toTable_Arguments(t.arguments()));
@@ -136,23 +151,40 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
         return out.toString();
     }
 
+    @Override
+    public <C extends Filter> void setFilterDescriptor(Class<C> filterClass, FilterDescriptor descriptor)
+    {
+        Objects.requireNonNull(filterClass);
+
+        if (descriptor == null) {
+            filterDescriptors.remove(filterClass);
+        } else {
+            filterDescriptors.put(filterClass, descriptor);
+        }
+    }
+
     /**
      * Indents all lines but the first one by {@code nSpaces} ' '  characters.
+     *
      * @param toBeIndented
-     * @param nSpaces The number of spaces to indent by
+     * @param nSpaces      The number of spaces to indent by
      */
-    protected String indentFromSecondLine(String toBeIndented, int nSpaces) {
+    protected String indentFromSecondLine(String toBeIndented, int nSpaces)
+    {
         String[] lines = toBeIndented.split("" + lineSeparator);
 
-        if (lines.length == 0) {
+        if (lines.length == 0)
+        {
             return toBeIndented;
         }
 
         String pad = new String(new char[nSpaces]).replace('\0', ' ');
         StringBuilder out = new StringBuilder(toBeIndented.length() + (lines.length - 1) * nSpaces);
 
-        for (int i = 0;i < lines.length;i++) {
-            if (i != 0) {
+        for (int i = 0; i < lines.length; i++)
+        {
+            if (i != 0)
+            {
                 out.append(pad);
             }
             out.append(lines[i]);
@@ -161,59 +193,94 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
         return out.toString();
     }
 
-    protected String padLeft(String toBePadded, int nSpaces) {
+    protected String padLeft(String toBePadded, int nSpaces)
+    {
         return (new String(new char[nSpaces]).replace('\0', ' ')) + toBePadded;
     }
 
-    protected String toTable(Collection<? extends Identifiable> identifiables) {
-        int leftColWidth = getLongestNameLength(identifiables);
+    protected String toTable(Collection<? extends Identifiable> identifiables)
+    {
+        final int leftColWidth = getLongestNameLength(identifiables);
+        final int rightColWidth = maxWidth - leftColWidth - 1;
         StringBuilder out = new StringBuilder(1000);
 
         identifiables
-        .stream()
-        .sorted((a, b) -> a.getPrimaryIdentifier().compareTo(b.getPrimaryIdentifier()))
-        .forEach(identifiable -> {
-            String[] names = identifiable.names();
-            String description = identifiable.getDescription();
-            if (description == null || description.isEmpty()) {
-                description = "<no description>";
-            }
-            String[] descriptionLines = wrap(description, maxWidth - leftColWidth - 1).split("" + lineSeparator);
-            for (int i = 0;i < Math.max(names.length, descriptionLines.length);i++) {
-                int nPad = leftColWidth + 1;
-                if (i < names.length) {
-                    out.append(names[i]);
-                    out.append(' ');
-                    nPad -= names[i].length();
+            .stream()
+            // sort by primary identifier ascending
+            .sorted((a, b) -> a.getPrimaryIdentifier().compareTo(b.getPrimaryIdentifier()))
+            .forEach(identifiable ->
+            {
+                String[] names = identifiable.names();
+
+                // description
+                StringBuilder description = new StringBuilder(identifiable.getDescription());
+                if (description.length() == 0)
+                {
+                    description.append("<no description>");
                 }
-                if (i < descriptionLines.length) {
-                    out.append(padLeft(descriptionLines[i], nPad));
+
+                // constraints
+                if (identifiable instanceof Filtered) {
+                    List<String> constraints = getConstraints(((Filtered) identifiable).getFilter());
+                    if (!constraints.isEmpty()) {
+                        description.append(lineSeparator);
+                        description.append(lineSeparator);
+                        description.append("Constraints:");
+                        constraints.forEach(constraint -> {
+                            description.append("- ");
+                            // first wrap to maximum width it can have (rightColWidth - 2), then indent
+                            description.append(
+                                indentFromSecondLine(
+                                    wrap(constraint, rightColWidth - 2),
+                                    2
+                                )
+                            );
+                        });
+                    }
+                }
+
+                String[] descriptionLines = wrap(description.toString(), rightColWidth).split("" + lineSeparator);
+
+                for (int i = 0; i < Math.max(names.length, descriptionLines.length); i++)
+                {
+                    int nPad = leftColWidth + 1;
+                    if (i < names.length)
+                    {
+                        out.append(names[i]);
+                        out.append(' ');
+                        nPad -= names[i].length();
+                    }
+                    if (i < descriptionLines.length)
+                    {
+                        out.append(padLeft(descriptionLines[i], nPad));
+                    }
+                    out.append(lineSeparator);
                 }
                 out.append(lineSeparator);
-            }
-            out.append(lineSeparator);
-        });
+            });
 
         return out.toString();
     }
 
-    protected String toTable_Arguments(Collection<? extends Argument> args) {
+    protected String toTable_Arguments(Collection<? extends Argument> args)
+    {
         int leftColWidth = Integer.toString(args.size(), 10).length() + 2;
         StringBuilder out = new StringBuilder(1000);
 
         args.stream()
             .sorted((arg1, arg2) -> arg1.getIdentifier().compareTo(arg2.getIdentifier()))
-            .forEach(arg -> {
-            out.append('#');
-            out.append(arg.getIndex());
-            out.append("  ");
-            out.append(
-                indentFromSecondLine(
-                    wrap(arg.getDescription(), maxWidth - leftColWidth - 1),
-                    leftColWidth + 1
-                )
-            );
-        });
+            .forEach(arg ->
+            {
+                out.append('#');
+                out.append(arg.getIndex());
+                out.append("  ");
+                out.append(
+                    indentFromSecondLine(
+                        wrap(arg.getDescription(), maxWidth - leftColWidth - 1),
+                        leftColWidth + 1
+                    )
+                );
+            });
 
         return out.toString();
     }
@@ -221,21 +288,25 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
     /**
      * Reformats the given string so that it does not contain more than {@link #maxWidth} characters per line, splitting
      * at whitespaces if possible.
+     *
      * @param inputString
      * @return The changed string
      */
-    protected String wrap(String inputString) {
+    protected String wrap(String inputString)
+    {
         return wrap(inputString, maxWidth);
     }
 
     /**
      * Reformats the given string so that it does not contain more than {@code maxWidth} characters per line, splitting
      * at whitespaces if possible.
+     *
      * @param inputString
      * @param maxWidth
      * @return The changed string
      */
-    protected String wrap(String inputString, int maxWidth) {
+    protected String wrap(String inputString, int maxWidth)
+    {
         char[] input = inputString.toCharArray();
 
         StringBuilder finalOut = new StringBuilder(input.length + 15);
@@ -244,43 +315,55 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
         int lastWSSeenAtLinePos = -1; // position of the most recent whitespace in the current line
         char current;
 
-        for (int inputPos = 0;inputPos < input.length;inputPos++) {
+        for (int inputPos = 0; inputPos < input.length; inputPos++)
+        {
             current = input[inputPos];
-            if (current == lineSeparator) {
+            if (current == lineSeparator)
+            {
                 finalOut.append(currentLineBuilder);
                 finalOut.append(lineSeparator);
                 if (currentLineBuilder.length() != 0) currentLineBuilder = new StringBuilder(maxWidth);
                 continue;
-            } else if (Character.isWhitespace(current)) {
+            }
+            else if (Character.isWhitespace(current))
+            {
                 lastWSSeenAtLinePos = currentLineBuilder.length();
-                if (currentLineBuilder.length() == maxWidth) {
+                if (currentLineBuilder.length() == maxWidth)
+                {
                     // luckily there is a space right where the line limit is ... :O
                     finalOut.append(currentLineBuilder);
                     finalOut.append(lineSeparator);
                     currentLineBuilder = new StringBuilder(maxWidth);
                     lastWSSeenAtLinePos = -1;
                     continue;
-                } else {
+                }
+                else
+                {
                     // do not output leading whitespace onto a new line
-                    if (currentLineBuilder.length() != 0) {
+                    if (currentLineBuilder.length() != 0)
+                    {
                         currentLineBuilder.append(current);
                         continue;
                     }
                 }
             }
 
-            if (currentLineBuilder.length() == maxWidth) {
+            if (currentLineBuilder.length() == maxWidth)
+            {
                 // we just hit the line limit mid-word
                 // try to break at the most recent whitespace
 
-                if (lastWSSeenAtLinePos == -1) {
+                if (lastWSSeenAtLinePos == -1)
+                {
                     // there is no whitespace in the line - break mid-word
                     finalOut.append(currentLineBuilder);
                     finalOut.append(lineSeparator);
                     currentLineBuilder = new StringBuilder(maxWidth);
                     currentLineBuilder.append(current);
                     continue;
-                } else {
+                }
+                else
+                {
                     String afterBreak = currentLineBuilder.substring(lastWSSeenAtLinePos + 1);
                     finalOut.append(currentLineBuilder.substring(0, lastWSSeenAtLinePos));
                     finalOut.append(lineSeparator);
@@ -299,11 +382,38 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
         return finalOut.toString().trim();
     }
 
-    protected int getLongestNameLength(Collection<? extends Identifiable> identifiables) {
+    /**
+     * Returns the constraints of the given filter as returned by the appropriate filter descriptor chosen from
+     * {@link #filterDescriptors}.
+     */
+    protected List<String> getConstraints(Filter filter) {
+        if (filter == null) {
+            return Collections.emptyList();
+        }
+
+        for (Map.Entry<Class<?>, FilterDescriptor> entry : filterDescriptors.entrySet())
+        {
+            if (entry.getKey().isAssignableFrom(filter.getClass())) {
+                // first entry that is abstract enough for the filter
+                List<String> constraints = entry.getValue().describe(filter);
+                if (constraints == null) {
+                    constraints = Collections.emptyList();
+                }
+                return constraints;
+            }
+        }
+
+        return Collections.emptyList();
+    }
+
+    protected int getLongestNameLength(Collection<? extends Identifiable> identifiables)
+    {
         int max = 0;
-        for (Identifiable e : identifiables) {
+        for (Identifiable e : identifiables)
+        {
             int localMax = Arrays.stream(e.names()).mapToInt(String::length).max().getAsInt();
-            if (localMax > max) {
+            if (localMax > max)
+            {
                 max = localMax;
             }
         }
