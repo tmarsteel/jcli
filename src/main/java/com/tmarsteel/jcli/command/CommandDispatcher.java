@@ -63,7 +63,12 @@ public class CommandDispatcher<R> implements Command<R> {
             System.arraycopy(args, 1, newArgs, 0, newArgs.length);
         }
 
-        return command.execute(newArgs);
+        try {
+            return command.execute(newArgs);
+        }
+        catch (NoSuchCommandException ex) {
+            throw new NoSuchCommandException(args[0] + " " + ex.getName(), ex);
+        }
     }
 
     public R execute(String[] args) throws ValidationException, Exception {
