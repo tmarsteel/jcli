@@ -24,7 +24,7 @@ import com.tmarsteel.jcli.validation.ValidationException;
  * Represents any parameter passed to the program besides flags and options.
  * @author tmarsteel
  */
-public class Argument
+public class Argument implements Filtered
 {
     /**
      * Value filter

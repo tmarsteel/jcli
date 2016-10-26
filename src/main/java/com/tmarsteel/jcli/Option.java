@@ -24,7 +24,7 @@ import com.tmarsteel.jcli.validation.ValidationException;
  * Represents a Option or Flag, e.g. <code>--log-level 2</code> or <code>-verbose</code>
  * @author tmarsteel
  */
-public class Option extends Identifiable
+public class Option extends Identifiable implements Filtered
 {
     private Filter valueFilter;
     private Object defaultValue;
