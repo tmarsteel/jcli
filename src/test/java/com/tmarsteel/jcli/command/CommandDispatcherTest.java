@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -92,6 +93,23 @@ public class CommandDispatcherTest
             fail("Did not pass exception");
         } catch (Exception ex) {
             assertSame(expected, ex);
+        }
+    }
+
+    @Test
+    public void Issue10_dispatchShouldThrowUnambigousNoSuchCommand() throws Exception {
+        Command mockCommand = mock(Command.class);
+        NoSuchCommandException nestedEx = new NoSuchCommandException("subcommand");
+        doThrow(nestedEx).when(mockCommand).execute(any());
+
+        subject.add("topcommand", mockCommand);
+
+        try {
+            subject.dispatch(new String[]{"topcommand", "subcommand"});
+            fail("NoSuchCommandException was expected but not thrown");
+        }
+        catch (NoSuchCommandException ex) {
+            assertTrue("Invalid exception message, see issue #10", ex.getMessage().indexOf("topcommand subcommand") != -1);
         }
     }
 }
