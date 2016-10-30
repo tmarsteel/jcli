@@ -93,23 +93,6 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
         this.lineSeparator = lineSeparator;
     }
 
-    /**
-     * Makes this instance use the default filter descriptors from {@link FilterDescriptionUtil}. Overrides previously
-     * set filters for the default filter types.
-     */
-    public void useDefaultFilterDescriptors() {
-        setFilterDescriptor(IntegerFilter.class,    FilterDescriptionUtil::describeInteger);
-        setFilterDescriptor(DecimalFilter.class,    FilterDescriptionUtil::describeDecimal);
-        setFilterDescriptor(BigIntegerFilter.class, FilterDescriptionUtil::describeBigInteger);
-        setFilterDescriptor(BigDecimalFilter.class, FilterDescriptionUtil::describeBigDecimal);
-
-        setFilterDescriptor(SetFilter.class,        FilterDescriptionUtil::describeSet);
-        setFilterDescriptor(RegexFilter.class,      FilterDescriptionUtil::describeRegex);
-        setFilterDescriptor(MetaRegexFilter.class,  FilterDescriptionUtil::describeMetaRegex);
-        setFilterDescriptor(FileFilter.class,       FilterDescriptionUtil::describeFile);
-        setFilterDescriptor(PathFilter.class,       FilterDescriptionUtil::describeFile);
-    }
-
     @Override
     public String format(Helptext t)
     {
