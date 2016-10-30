@@ -126,12 +126,3 @@ On DOS systems (`File.separatorChar != '/'`) both flags and options are expected
 slash (`/`); whether something is a flag or an option is derived from context.
 
 When using arguments with a `Validator`, these arguments have to be configured in order to be accessed.
-
-## Roadmap
-
-Version 2.0.0-RC2 contains multiple improvements; the RCs have yet to undergo exhaustive tests before a final version is released (presumably Q1 2017, but no promises!). RCs **will** introduce BC breaks to previous RCs.
-
-### 2.0.0-RC3
-
-* Varargs
-* Integrate the helptext and multicommand features
