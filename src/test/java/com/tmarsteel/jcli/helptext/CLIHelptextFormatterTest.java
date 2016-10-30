@@ -21,10 +21,7 @@ package com.tmarsteel.jcli.helptext;
 import com.tmarsteel.jcli.Argument;
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Option;
-import com.tmarsteel.jcli.filter.BigIntegerFilter;
-import com.tmarsteel.jcli.filter.DecimalFilter;
-import com.tmarsteel.jcli.filter.IntegerFilter;
-import com.tmarsteel.jcli.filter.SetFilter;
+import com.tmarsteel.jcli.filter.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -75,6 +72,12 @@ public class CLIHelptextFormatterTest
         Argument a3 = new Argument("arg3", 2, new SetFilter(true, "aasdfa", "bsss", "f", "h"));
         a3.setDescription("SetFilterTest");
         helptext.arguments().add(a3);
+
+        RegexFilter regexFilter = new RegexFilter("a(.+)");
+        regexFilter.setReturnGroup(1);
+        Argument a4 = new Argument("arg4", 3, regexFilter);
+        a4.setDescription("RegexFilterTest");
+        helptext.arguments().add(a4);
     }
 
     @Test

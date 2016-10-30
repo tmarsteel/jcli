@@ -154,4 +154,28 @@ public abstract class FilterDescriptionUtil
 
         return list;
     }
+
+    /**
+     * Returns a list of constraint explanations for instances of {@link RegexFilter}.
+     * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
+     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link RegexFilter}
+     */
+    public static List<String> describeRegex(Filter oFilter) {
+        if (!(oFilter instanceof RegexFilter))
+        {
+            throw new UnsupportedOperationException("This method supports only objects of type " + RegexFilter.class.getName());
+        }
+
+        RegexFilter filter = (RegexFilter) oFilter;
+
+        ArrayList<String> list = new ArrayList<>(2);
+
+        list.add("must match this regular expression: " + filter.getPattern());
+
+        if (filter.getReturnGroup() != 0) {
+            list.add("group " + filter.getReturnGroup() + " is relevant");
+        }
+
+        return list;
+    }
 }
