@@ -102,6 +102,8 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
         setFilterDescriptor(DecimalFilter.class,    FilterDescriptionUtil::describeDecimal);
         setFilterDescriptor(BigIntegerFilter.class, FilterDescriptionUtil::describeBigInteger);
         setFilterDescriptor(BigDecimalFilter.class, FilterDescriptionUtil::describeBigDecimal);
+
+        setFilterDescriptor(SetFilter.class,        FilterDescriptionUtil::describeSet);
     }
 
     @Override

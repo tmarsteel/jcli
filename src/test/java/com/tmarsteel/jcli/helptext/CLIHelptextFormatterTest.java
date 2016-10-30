@@ -24,6 +24,7 @@ import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.filter.BigIntegerFilter;
 import com.tmarsteel.jcli.filter.DecimalFilter;
 import com.tmarsteel.jcli.filter.IntegerFilter;
+import com.tmarsteel.jcli.filter.SetFilter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -69,6 +70,11 @@ public class CLIHelptextFormatterTest
         a2.setDescription("Some tedious, precise description of the argument including format, default values and requirements...");
         helptext.arguments().add(a1);
         helptext.arguments().add(a2);
+
+        // these arguments are merely here to test filter descriptors
+        Argument a3 = new Argument("arg3", 2, new SetFilter(true, "aasdfa", "bsss", "f", "h"));
+        a3.setDescription("SetFilterTest");
+        helptext.arguments().add(a3);
     }
 
     @Test
@@ -118,6 +124,15 @@ public class CLIHelptextFormatterTest
                 "    Constraints:\n" +
                 "    - must be a number\n" +
                 "    - must be between 0.0 and 3.141592653589793 inclusive\n" +
+                "\n" +
+                "#2  SetFilterTest\n" +
+                "    \n" +
+                "    Constraints:\n" +
+                "    - must be one of the following options (case sensitive):\n" +
+                "    - aasdfa\n" +
+                "    - bsss\n" +
+                "    - f\n" +
+                "    - h\n" +
                 "\n" +
                 "\n" +
                 "\n" +

@@ -10,6 +10,11 @@ import java.util.List;
  */
 public abstract class FilterDescriptionUtil
 {
+    /**
+     * Returns a list of constraint explanations for instances of {@link IntegerFilter}.
+     * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
+     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link IntegerFilter}
+     */
     public static List<String> describeInteger(Filter oFilter)
     {
         if (!(oFilter instanceof IntegerFilter))
@@ -35,6 +40,11 @@ public abstract class FilterDescriptionUtil
         return list;
     }
 
+    /**
+     * Returns a list of constraint explanations for instances of {@link BigIntegerFilter}.
+     * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
+     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link BigIntegerFilter}
+     */
     public static List<String> describeBigInteger(Filter oFilter)
     {
         if (!(oFilter instanceof BigIntegerFilter))
@@ -66,6 +76,11 @@ public abstract class FilterDescriptionUtil
         return list;
     }
 
+    /**
+     * Returns a list of constraint explanations for instances of {@link DecimalFilter}.
+     * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
+     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link DecimalFilter}
+     */
     public static List<String> describeDecimal(Filter oFilter)
     {
         if (!(oFilter instanceof DecimalFilter))
@@ -86,6 +101,11 @@ public abstract class FilterDescriptionUtil
         return list;
     }
 
+    /**
+     * Returns a list of constraint explanations for instances of {@link BigDecimalFilter}.
+     * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
+     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link BigDecimalFilter}
+     */
     public static List<String> describeBigDecimal(Filter oFilter)
     {
         if (!(oFilter instanceof BigDecimalFilter))
@@ -107,6 +127,30 @@ public abstract class FilterDescriptionUtil
         {
             list.add("must be equal to or less than " + filter.getMaxValue().toString());
         }
+
+        return list;
+    }
+
+    /**
+     * Returns a list of constraint explanations for instances of {@link SetFilter}.
+     * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
+     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link SetFilter}
+     */
+    public static List<String> describeSet(Filter oFilter) {
+        if (!(oFilter instanceof SetFilter))
+        {
+            throw new UnsupportedOperationException("This method supports only objects of type " + SetFilter.class.getName());
+        }
+
+        SetFilter filter = (SetFilter) oFilter;
+
+        ArrayList<String> list = new ArrayList<>(1 + filter.options().size());
+
+        list.add(
+            "must be one of the following options (case " +
+                (filter.isCaseSensitive()? "" : "in") + "sensitive):"
+        );
+        list.addAll(filter.options());
 
         return list;
     }
