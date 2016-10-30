@@ -8,14 +8,14 @@ import java.util.List;
 /**
  * Contains default {@link FilterDescriptor} methods for the default filters.
  */
-public abstract class FilterDescriptionUtil
+abstract class FilterDescriptionUtil
 {
     /**
      * Returns a list of constraint explanations for instances of {@link IntegerFilter}.
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
      * @throws UnsupportedOperationException If the given filter is not an instance of {@link IntegerFilter}
      */
-    public static List<String> describeInteger(Filter oFilter)
+    static List<String> describeInteger(Filter oFilter)
     {
         if (!(oFilter instanceof IntegerFilter))
         {
@@ -45,7 +45,7 @@ public abstract class FilterDescriptionUtil
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
      * @throws UnsupportedOperationException If the given filter is not an instance of {@link BigIntegerFilter}
      */
-    public static List<String> describeBigInteger(Filter oFilter)
+    static List<String> describeBigInteger(Filter oFilter)
     {
         if (!(oFilter instanceof BigIntegerFilter))
         {
@@ -81,7 +81,7 @@ public abstract class FilterDescriptionUtil
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
      * @throws UnsupportedOperationException If the given filter is not an instance of {@link DecimalFilter}
      */
-    public static List<String> describeDecimal(Filter oFilter)
+    static List<String> describeDecimal(Filter oFilter)
     {
         if (!(oFilter instanceof DecimalFilter))
         {
@@ -106,7 +106,7 @@ public abstract class FilterDescriptionUtil
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
      * @throws UnsupportedOperationException If the given filter is not an instance of {@link BigDecimalFilter}
      */
-    public static List<String> describeBigDecimal(Filter oFilter)
+    static List<String> describeBigDecimal(Filter oFilter)
     {
         if (!(oFilter instanceof BigDecimalFilter))
         {
@@ -136,7 +136,7 @@ public abstract class FilterDescriptionUtil
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
      * @throws UnsupportedOperationException If the given filter is not an instance of {@link SetFilter}
      */
-    public static List<String> describeSet(Filter oFilter)
+    static List<String> describeSet(Filter oFilter)
     {
         if (!(oFilter instanceof SetFilter))
         {
@@ -161,7 +161,7 @@ public abstract class FilterDescriptionUtil
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
      * @throws UnsupportedOperationException If the given filter is not an instance of {@link RegexFilter}
      */
-    public static List<String> describeRegex(Filter oFilter) {
+    static List<String> describeRegex(Filter oFilter) {
         if (!(oFilter instanceof RegexFilter))
         {
             throw new UnsupportedOperationException("This method supports only objects of type " + RegexFilter.class.getName());
@@ -185,7 +185,7 @@ public abstract class FilterDescriptionUtil
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
      * @throws UnsupportedOperationException If the given filter is not an instance of {@link MetaRegexFilter}
      */
-    public static List<String> describeMetaRegex(Filter oFilter) {
+    static List<String> describeMetaRegex(Filter oFilter) {
         if (!(oFilter instanceof MetaRegexFilter))
         {
             throw new UnsupportedOperationException("This method supports only objects of type " + MetaRegexFilter.class.getName());
@@ -201,7 +201,7 @@ public abstract class FilterDescriptionUtil
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
      * @throws UnsupportedOperationException If the given filter is not an instance of either {@link FileFilter} or {@link PathFilter}.
      */
-    public static List<String> describeFile(Filter oFilter) {
+    static List<String> describeFile(Filter oFilter) {
         if (!(oFilter instanceof FileFilter) && !(oFilter instanceof PathFilter))
         {
             throw new UnsupportedOperationException("This method supports only objects of type " +
