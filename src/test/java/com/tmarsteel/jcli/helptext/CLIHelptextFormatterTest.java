@@ -21,6 +21,9 @@ package com.tmarsteel.jcli.helptext;
 import com.tmarsteel.jcli.Argument;
 import com.tmarsteel.jcli.Flag;
 import com.tmarsteel.jcli.Option;
+import com.tmarsteel.jcli.filter.BigIntegerFilter;
+import com.tmarsteel.jcli.filter.DecimalFilter;
+import com.tmarsteel.jcli.filter.IntegerFilter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -38,14 +41,15 @@ public class CLIHelptextFormatterTest
     }
 
     @Before
-    public void setUpHelptext() {
+    public void setUpHelptext()
+    {
         helptext = new Helptext();
         helptext.usageExamples().add("--flag -option value argument");
-        helptext.setExecutableName("smapleProgram");
+        helptext.setExecutableName("sampleProgram");
         helptext.setProgramDescription("This is a description of the program. It is intended to exceed the 80 character line mimit in order to test the text wrapping functionality.");
         helptext.setNotes("Some more notes on the program. This, too, should exceed the line length to test wrapping.");
 
-        Option o1 = new Option("option1", "o1", "o");
+        Option o1 = new Option(new BigIntegerFilter(), null, "option1", "o1", "o");
         o1.setDescription("Some tedious, precise description of the option including format, default values and requirements...");
         Option o2 = new Option("option2", "o2");
         o2.setDescription("Some tedious, precise description of the option including format, default values and requirements...");
@@ -59,43 +63,67 @@ public class CLIHelptextFormatterTest
         helptext.flags().add(f1);
         helptext.flags().add(f2);
 
-        Argument a1 = new Argument("arg1", 0);
+        Argument a1 = new Argument("arg1", 0, new IntegerFilter(16));
         a1.setDescription("Some tedious, precise description of the argument including format, default values and requirements...");
-        Argument a2 = new Argument("arg2", 1);
+        Argument a2 = new Argument("arg2", 1, new DecimalFilter(0.0, Math.PI));
         a2.setDescription("Some tedious, precise description of the argument including format, default values and requirements...");
+        helptext.arguments().add(a1);
+        helptext.arguments().add(a2);
     }
 
     @Test
-    public void testA() {
+    public void testA()
+    {
+        subject.useDefaultFilterDescriptors();
         String text = subject.format(helptext);
 
-        assertEquals(text,
-            "Usage: smapleProgram [-flags] [--options values] : arguments...\n" +
-            "                     --flag -option value argument\n" +
-            "This is a description of the program. It is intended to exceed the 80 character\n" +
-            "line mimit in order to test the text wrapping functionality.\n" +
-            "\n" +
-            "-- Options --\n" +
-            "option1  Some tedious, precise description of the option including format,\n" +
-            "o1       default values and requirements...\n" +
-            "o \n" +
-            "\n" +
-            "option2  Some tedious, precise description of the option including format,\n" +
-            "o2       default values and requirements...\n" +
-            "\n" +
-            "\n" +
-            "-- Flags --\n" +
-            "flag1  Some tedious, precise description of the flag including format, default\n" +
-            "f1     values and requirements...\n" +
-            "f \n" +
-            "\n" +
-            "flag2  Some tedious, precise description of the flag including format, default\n" +
-            "f2     values and requirements...\n" +
-            "\n" +
-            "\n" +
-            "\n" +
-            "Some more notes on the program. This, too, should exceed the line length to test\n" +
-            "wrapping.\n"
+        assertEquals(
+            "Usage: sampleProgram [-flags] [--options values] : arguments...\n" +
+                "                     --flag -option value argument\n" +
+                "This is a description of the program. It is intended to exceed the 80 character\n" +
+                "line mimit in order to test the text wrapping functionality.\n" +
+                "\n" +
+                "-- Options --\n" +
+                "option1  Some tedious, precise description of the option including format,\n" +
+                "o1       default values and requirements...\n" +
+                "o        \n" +
+                "         Constraints:\n" +
+                "         - must be an integer number\n" +
+                "\n" +
+                "option2  Some tedious, precise description of the option including format,\n" +
+                "o2       default values and requirements...\n" +
+                "\n" +
+                "\n" +
+                "-- Flags --\n" +
+                "flag1  Some tedious, precise description of the flag including format, default\n" +
+                "f1     values and requirements...\n" +
+                "f \n" +
+                "\n" +
+                "flag2  Some tedious, precise description of the flag including format, default\n" +
+                "f2     values and requirements...\n" +
+                "\n" +
+                "\n" +
+                "-- Arguments --\n" +
+                "#0  Some tedious, precise description of the argument including format, default\n" +
+                "    values and requirements...\n" +
+                "    \n" +
+                "    Constraints:\n" +
+                "    - must be an integer number\n" +
+                "    - must be specified in base 16\n" +
+                "    - must be between -8000000000000000 and 7fffffffffffffff inclusive\n" +
+                "\n" +
+                "#1  Some tedious, precise description of the argument including format, default\n" +
+                "    values and requirements...\n" +
+                "    \n" +
+                "    Constraints:\n" +
+                "    - must be a number\n" +
+                "    - must be between 0.0 and 3.141592653589793 inclusive\n" +
+                "\n" +
+                "\n" +
+                "\n" +
+                "Some more notes on the program. This, too, should exceed the line length to test\n" +
+                "wrapping.\n",
+            text
         );
     }
 }

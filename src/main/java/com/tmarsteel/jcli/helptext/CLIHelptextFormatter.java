@@ -24,7 +24,7 @@ import com.tmarsteel.jcli.Argument;
 import com.tmarsteel.jcli.Filtered;
 import com.tmarsteel.jcli.Identifiable;
 import com.tmarsteel.jcli.Option;
-import com.tmarsteel.jcli.filter.Filter;
+import com.tmarsteel.jcli.filter.*;
 import com.tmarsteel.jcli.util.ClassHierarchyComparator;
 import org.omg.PortableInterceptor.ObjectReferenceTemplateSeqHelper;
 
@@ -91,6 +91,17 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
     public void setLineSeparator(char lineSeparator)
     {
         this.lineSeparator = lineSeparator;
+    }
+
+    /**
+     * Makes this instance use the default filter descriptors from {@link FilterDescriptionUtil}. Overrides previously
+     * set filters for the default filter types.
+     */
+    public void useDefaultFilterDescriptors() {
+        setFilterDescriptor(IntegerFilter.class,    FilterDescriptionUtil::describeInteger);
+        setFilterDescriptor(DecimalFilter.class,    FilterDescriptionUtil::describeDecimal);
+        setFilterDescriptor(BigIntegerFilter.class, FilterDescriptionUtil::describeBigInteger);
+        setFilterDescriptor(BigDecimalFilter.class, FilterDescriptionUtil::describeBigDecimal);
     }
 
     @Override
@@ -188,6 +199,7 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
                 out.append(pad);
             }
             out.append(lines[i]);
+            out.append(lineSeparator);
         }
 
         return out.toString();
@@ -226,6 +238,7 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
                         description.append(lineSeparator);
                         description.append(lineSeparator);
                         description.append("Constraints:");
+                        description.append(lineSeparator);
                         constraints.forEach(constraint -> {
                             description.append("- ");
                             // first wrap to maximum width it can have (rightColWidth - 2), then indent
@@ -243,12 +256,12 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
 
                 for (int i = 0; i < Math.max(names.length, descriptionLines.length); i++)
                 {
-                    int nPad = leftColWidth + 1;
+                    int nPad = leftColWidth + 2;
                     if (i < names.length)
                     {
                         out.append(names[i]);
                         out.append(' ');
-                        nPad -= names[i].length();
+                        nPad -= names[i].length() + 1;
                     }
                     if (i < descriptionLines.length)
                     {
@@ -265,21 +278,40 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
     protected String toTable_Arguments(Collection<? extends Argument> args)
     {
         int leftColWidth = Integer.toString(args.size(), 10).length() + 2;
+        int rightColWidth = maxWidth - leftColWidth - 1;
         StringBuilder out = new StringBuilder(1000);
 
         args.stream()
             .sorted((arg1, arg2) -> arg1.getIdentifier().compareTo(arg2.getIdentifier()))
             .forEach(arg ->
             {
+                StringBuilder description = new StringBuilder(wrap(arg.getDescription(), rightColWidth));
+
+                if (arg.getFilter() != null) {
+                    List<String> constraints = getConstraints(arg.getFilter());
+                    if (!constraints.isEmpty()) {
+                        description.append(lineSeparator);
+                        description.append(lineSeparator);
+                        description.append("Constraints:");
+                        description.append(lineSeparator);
+                        constraints.forEach(constraint -> {
+                            description.append("- ");
+                            // first wrap to maximum width it can have (rightColWidth - 2), then indent
+                            description.append(
+                                indentFromSecondLine(
+                                    wrap(constraint, rightColWidth - 2),
+                                    2
+                                )
+                            );
+                        });
+                    }
+                }
+
                 out.append('#');
                 out.append(arg.getIndex());
                 out.append("  ");
-                out.append(
-                    indentFromSecondLine(
-                        wrap(arg.getDescription(), maxWidth - leftColWidth - 1),
-                        leftColWidth + 1
-                    )
-                );
+                out.append(indentFromSecondLine(description.toString(),  leftColWidth + 1));
+                out.append(lineSeparator);
             });
 
         return out.toString();
