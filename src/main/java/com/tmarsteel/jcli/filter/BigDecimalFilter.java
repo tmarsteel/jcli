@@ -60,21 +60,33 @@ public class BigDecimalFilter implements Filter
         }
     }
 
+    /**
+     * Returns the lower boundary or null if none is set.
+     */
     public BigDecimal getMinValue()
     {
         return minValue;
     }
 
+    /**
+     * Sets the lower boundary. Set {@code null} to remove the lower boundary.
+     */
     public void setMinValue(BigDecimal minValue)
     {
         this.minValue = minValue;
     }
 
+    /**
+     * Returns the upper boundary or null if none is set.
+     */
     public BigDecimal getMaxValue()
     {
         return maxValue;
     }
 
+    /**
+     * Sets the upper boundary. Set {@code null} to remove the upper boundary.
+     */
     public void setMaxValue(BigDecimal maxValue)
     {
         this.maxValue = maxValue;

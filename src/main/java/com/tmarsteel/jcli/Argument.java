@@ -24,7 +24,7 @@ import com.tmarsteel.jcli.validation.ValidationException;
  * Represents any parameter passed to the program besides flags and options.
  * @author tmarsteel
  */
-public class Argument
+public class Argument implements Filtered
 {
     /**
      * Value filter
@@ -181,31 +181,56 @@ public class Argument
         return valueFilter == null? input : valueFilter.parse(input);
     }
 
+    /**
+     * Returns a human-readable description of this argument.
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * Sets a human-readable description of this argument.
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * Returns whether this arugment must be specified in inputs.
+     */
     public boolean isRequired()
     {
         return required;
     }
 
+    /**
+     * Sets whether this argument must be specified in inputs.
+     */
     public void setRequired(boolean required)
     {
         this.required = required;
     }
 
+    /**
+     * Returns whether inputs can specify multiple values for this argument
+     */
     public boolean isVariadic()
     {
         return variadic;
     }
 
+    /**
+     * Sets whether inputs can specify multiple values for this argument.
+     */
     public void setVariadic(boolean variadic)
     {
         this.variadic = variadic;
+    }
+
+    /**
+     * Returns the filter configured for this argument, if any. Otherwise null.
+     */
+    public Filter getFilter() {
+        return this.valueFilter;
     }
 }

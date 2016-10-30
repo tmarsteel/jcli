@@ -83,21 +83,33 @@ public class BigIntegerFilter implements Filter
         this.radix = radix;
     }
 
+    /**
+     * Returns the lower boundary or null if none is set.
+     */
     public BigInteger getMinValue()
     {
         return minValue;
     }
 
+    /**
+     * Sets the lower boundary. Set {@code null} to remove the lower boundary.
+     */
     public void setMinValue(BigInteger minValue)
     {
         this.minValue = minValue;
     }
 
+    /**
+     * Returns the upper boundary or null if none is set.
+     */
     public BigInteger getMaxValue()
     {
         return maxValue;
     }
 
+    /**
+     * Sets the upper boundary. Set {@code null} to remove the upper boundary.
+     */
     public void setMaxValue(BigInteger maxValue)
     {
         this.maxValue = maxValue;
