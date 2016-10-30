@@ -13,7 +13,7 @@ public abstract class FilterDescriptionUtil
     /**
      * Returns a list of constraint explanations for instances of {@link IntegerFilter}.
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
-     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link IntegerFilter}
+     * @throws UnsupportedOperationException If the given filter is not an instance of {@link IntegerFilter}
      */
     public static List<String> describeInteger(Filter oFilter)
     {
@@ -43,7 +43,7 @@ public abstract class FilterDescriptionUtil
     /**
      * Returns a list of constraint explanations for instances of {@link BigIntegerFilter}.
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
-     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link BigIntegerFilter}
+     * @throws UnsupportedOperationException If the given filter is not an instance of {@link BigIntegerFilter}
      */
     public static List<String> describeBigInteger(Filter oFilter)
     {
@@ -79,7 +79,7 @@ public abstract class FilterDescriptionUtil
     /**
      * Returns a list of constraint explanations for instances of {@link DecimalFilter}.
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
-     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link DecimalFilter}
+     * @throws UnsupportedOperationException If the given filter is not an instance of {@link DecimalFilter}
      */
     public static List<String> describeDecimal(Filter oFilter)
     {
@@ -104,7 +104,7 @@ public abstract class FilterDescriptionUtil
     /**
      * Returns a list of constraint explanations for instances of {@link BigDecimalFilter}.
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
-     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link BigDecimalFilter}
+     * @throws UnsupportedOperationException If the given filter is not an instance of {@link BigDecimalFilter}
      */
     public static List<String> describeBigDecimal(Filter oFilter)
     {
@@ -134,7 +134,7 @@ public abstract class FilterDescriptionUtil
     /**
      * Returns a list of constraint explanations for instances of {@link SetFilter}.
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
-     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link SetFilter}
+     * @throws UnsupportedOperationException If the given filter is not an instance of {@link SetFilter}
      */
     public static List<String> describeSet(Filter oFilter)
     {
@@ -159,7 +159,7 @@ public abstract class FilterDescriptionUtil
     /**
      * Returns a list of constraint explanations for instances of {@link RegexFilter}.
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
-     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link RegexFilter}
+     * @throws UnsupportedOperationException If the given filter is not an instance of {@link RegexFilter}
      */
     public static List<String> describeRegex(Filter oFilter) {
         if (!(oFilter instanceof RegexFilter))
@@ -183,7 +183,7 @@ public abstract class FilterDescriptionUtil
     /**
      * Returns a list of constraint explanations for instances of {@link MetaRegexFilter}.
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
-     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link MetaRegexFilter}
+     * @throws UnsupportedOperationException If the given filter is not an instance of {@link MetaRegexFilter}
      */
     public static List<String> describeMetaRegex(Filter oFilter) {
         if (!(oFilter instanceof MetaRegexFilter))
@@ -193,6 +193,62 @@ public abstract class FilterDescriptionUtil
 
         ArrayList<String> list = new ArrayList<>(1);
         list.add("must be a valid regular expression");
+        return list;
+    }
+
+    /**
+     * Returns a list of constraint explanations for instances of {@link FileFilter} and {@link PathFilter}.
+     * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
+     * @throws UnsupportedOperationException If the given filter is not an instance of either {@link FileFilter} or {@link PathFilter}.
+     */
+    public static List<String> describeFile(Filter oFilter) {
+        if (!(oFilter instanceof FileFilter) && !(oFilter instanceof PathFilter))
+        {
+            throw new UnsupportedOperationException("This method supports only objects of type " +
+                FileFilter.class.getName() + " or " + PathFilter.class.getName());
+        }
+
+        FileFilter filter = oFilter instanceof FileFilter? (FileFilter) oFilter : ((PathFilter) oFilter).getDelegate();
+
+        ArrayList<String> list = new ArrayList<>(6);
+
+        String fileType = ""; // is also used for other constraints
+        switch (filter.getFileType()) {
+            case IRRELEVANT: fileType += "file or directory"; break;
+            case FILE:       fileType += "file"; break;
+            case DIRECTORY:  fileType += "directory"; break;
+        }
+
+        // type
+        list.add("must point to a " + fileType);
+
+        // existence
+        switch (filter.getExistenceState()) {
+            case MUST_EXIST: list.add("the " + fileType + " must exist"); break;
+            case MUST_NOT_EXIST: list.add("the " + fileType + " must not exist"); break;
+        }
+
+        // permissions
+        if (filter.getPermissions() != FileFilter.PERMISSION.IRRELEVANT) {
+            if (filter.getPermissions().readR) {
+                list.add("the " + fileType + " must be readable");
+            }
+            if (filter.getPermissions().writeR) {
+                list.add("the " + fileType + " must be writable");
+            }
+            if (filter.getPermissions().execR) {
+                switch (filter.getFileType()) {
+                    case IRRELEVANT: list.add("the " + fileType + " must be executable / listable"); break;
+                    case FILE:       list.add("the " + fileType + " must be executable"); break;
+                    case DIRECTORY:  list.add("the " + fileType + " must be listable"); break;
+                }
+            }
+        }
+
+        if (filter.getExtension() != null) {
+            list.add("the " + fileType + " name must end with " + filter.getExtension());
+        }
+
         return list;
     }
 }

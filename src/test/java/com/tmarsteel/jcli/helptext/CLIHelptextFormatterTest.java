@@ -82,6 +82,18 @@ public class CLIHelptextFormatterTest
         Argument a5 = new Argument("arg5", 4, new MetaRegexFilter());
         a5.setDescription("MetaRegexFilterTest");
         helptext.arguments().add(a5);
+
+        FileFilter fileFilter = new FileFilter();
+        fileFilter.setExistenceState(FileFilter.EXISTENCE.MUST_EXIST);
+        fileFilter.setPermissions(FileFilter.PERMISSION.READ_WRITE_EXECUTE);
+        fileFilter.setExtension(".sh");
+        Argument a6 = new Argument("arg6", 5, fileFilter);
+        a6.setDescription("FileFilterTest");
+        helptext.arguments().add(a6);
+
+        Argument a7 = new Argument("arg7", 6, new PathFilter(fileFilter));
+        a7.setDescription("PathFilterTest");
+        helptext.arguments().add(a7);
     }
 
     @Test
@@ -151,6 +163,26 @@ public class CLIHelptextFormatterTest
                 "    \n" +
                 "    Constraints:\n" +
                 "    - must be a valid regular expression\n" +
+                "\n" +
+                "#5  FileFilterTest\n" +
+                "    \n" +
+                "    Constraints:\n" +
+                "    - must point to a file or directory\n" +
+                "    - the file or directory must exist\n" +
+                "    - the file or directory must be readable\n" +
+                "    - the file or directory must be writable\n" +
+                "    - the file or directory must be executable / listable\n" +
+                "    - the file or directory name must end with .sh\n" +
+                "\n" +
+                "#6  PathFilterTest\n" +
+                "    \n" +
+                "    Constraints:\n" +
+                "    - must point to a file or directory\n" +
+                "    - the file or directory must exist\n" +
+                "    - the file or directory must be readable\n" +
+                "    - the file or directory must be writable\n" +
+                "    - the file or directory must be executable / listable\n" +
+                "    - the file or directory name must end with .sh\n" +
                 "\n" +
                 "\n" +
                 "\n" +
