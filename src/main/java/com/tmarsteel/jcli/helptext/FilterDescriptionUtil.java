@@ -136,7 +136,8 @@ public abstract class FilterDescriptionUtil
      * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
      * @throws UnsupportedOperationException If the given filter is not an instanceof {@link SetFilter}
      */
-    public static List<String> describeSet(Filter oFilter) {
+    public static List<String> describeSet(Filter oFilter)
+    {
         if (!(oFilter instanceof SetFilter))
         {
             throw new UnsupportedOperationException("This method supports only objects of type " + SetFilter.class.getName());
@@ -176,6 +177,22 @@ public abstract class FilterDescriptionUtil
             list.add("group " + filter.getReturnGroup() + " is relevant");
         }
 
+        return list;
+    }
+
+    /**
+     * Returns a list of constraint explanations for instances of {@link MetaRegexFilter}.
+     * See {@link FilterDescriptor#describe(Filter)} for the detailed contract of this method.
+     * @throws UnsupportedOperationException If the given filter is not an instanceof {@link MetaRegexFilter}
+     */
+    public static List<String> describeMetaRegex(Filter oFilter) {
+        if (!(oFilter instanceof MetaRegexFilter))
+        {
+            throw new UnsupportedOperationException("This method supports only objects of type " + MetaRegexFilter.class.getName());
+        }
+
+        ArrayList<String> list = new ArrayList<>(1);
+        list.add("must be a valid regular expression");
         return list;
     }
 }

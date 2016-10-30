@@ -105,6 +105,7 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
 
         setFilterDescriptor(SetFilter.class,        FilterDescriptionUtil::describeSet);
         setFilterDescriptor(RegexFilter.class,      FilterDescriptionUtil::describeRegex);
+        setFilterDescriptor(MetaRegexFilter.class,  FilterDescriptionUtil::describeMetaRegex);
     }
 
     @Override

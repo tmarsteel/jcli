@@ -78,6 +78,10 @@ public class CLIHelptextFormatterTest
         Argument a4 = new Argument("arg4", 3, regexFilter);
         a4.setDescription("RegexFilterTest");
         helptext.arguments().add(a4);
+
+        Argument a5 = new Argument("arg5", 4, new MetaRegexFilter());
+        a5.setDescription("MetaRegexFilterTest");
+        helptext.arguments().add(a5);
     }
 
     @Test
@@ -136,6 +140,17 @@ public class CLIHelptextFormatterTest
                 "    - bsss\n" +
                 "    - f\n" +
                 "    - h\n" +
+                "\n" +
+                "#3  RegexFilterTest\n" +
+                "    \n" +
+                "    Constraints:\n" +
+                "    - must match this regular expression: a(.+)\n" +
+                "    - group 1 is relevant\n" +
+                "\n" +
+                "#4  MetaRegexFilterTest\n" +
+                "    \n" +
+                "    Constraints:\n" +
+                "    - must be a valid regular expression\n" +
                 "\n" +
                 "\n" +
                 "\n" +
