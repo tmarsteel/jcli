@@ -13,6 +13,7 @@ public interface MultilineTextStrategy
      * @param inputString
      * @param maxWidth
      * @return The changed string
+     * TODO: define whether a trailing linefeed is returned; adapt the formatters to it if necessary.
      */
     public String wrap(String inputString, int maxWidth, char lineSeparator);
 }
