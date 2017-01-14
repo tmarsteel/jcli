@@ -82,4 +82,13 @@ public final class ListFormatter
 
         return out.toString().trim();
     }
+
+    /**
+     * Returns a {@link Renderable} that renders the given items with the configuration of this {@link ListFormatter}
+     * @param items The items to format
+     * @return A {@link Renderable} that delegates to {@link #format(Iterable, int, char)}
+     */
+    public Renderable renderableOf(final Iterable<String> items) {
+        return (maxWidth, lineSeparator) -> format(items, maxWidth, lineSeparator);
+    }
 }
