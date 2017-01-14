@@ -8,7 +8,7 @@ public class Indentation
     private final char indentationChar;
     private final int indentationAmount;
 
-    public Indentation(short indentationAmount) {
+    public Indentation(int indentationAmount) {
         this(' ', indentationAmount);
     }
 
