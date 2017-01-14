@@ -208,7 +208,7 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
         identifiables
             .stream()
             // sort by primary identifier ascending
-            .sorted((a, b) -> a.getPrimaryIdentifier().compareTo(b.getPrimaryIdentifier()))
+            .sorted(Comparator.comparing(Identifiable::getPrimaryIdentifier))
             .forEach(identifiable ->
             {
                 String[] names = identifiable.names();
