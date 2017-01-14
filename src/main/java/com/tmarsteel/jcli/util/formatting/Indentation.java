@@ -6,13 +6,13 @@ package com.tmarsteel.jcli.util.formatting;
 public class Indentation
 {
     private final char indentationChar;
-    private final short indentationAmount;
+    private final int indentationAmount;
 
     public Indentation(short indentationAmount) {
         this(' ', indentationAmount);
     }
 
-    public Indentation(char indentationChar, short indentationAmount) {
+    public Indentation(char indentationChar, int indentationAmount) {
         this.indentationChar = indentationChar;
         this.indentationAmount = indentationAmount;
     }
@@ -22,7 +22,7 @@ public class Indentation
         return indentationChar;
     }
 
-    public short getIndentationAmount()
+    public int getIndentationAmount()
     {
         return indentationAmount;
     }
