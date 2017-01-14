@@ -32,17 +32,17 @@ public final class ListFormatter
     }
 
     public ListFormatter(String bulletPoint) {
-        this(WordsplitMultilineStrategy.getInstance(), bulletPoint);
+        this(bulletPoint, WordsplitMultilineStrategy.getInstance());
     }
 
-    public ListFormatter(MultilineTextStrategy multilineTextStrategy) {
-        this(multilineTextStrategy, "-");
-    }
-
-    public ListFormatter(MultilineTextStrategy multilineTextStrategy, String bulletPoint) {
+    public ListFormatter(String bulletPoint, MultilineTextStrategy multilineTextStrategy) {
         this.multilineTextStrategy = Objects.requireNonNull(multilineTextStrategy);
         this.bulletPoint = bulletPoint;
         this.multilineIndentation = new Indentation(' ', bulletPoint.length() + 1);
+    }
+
+    public ListFormatter(MultilineTextStrategy multilineTextStrategy) {
+        this("-", multilineTextStrategy);
     }
 
     public void setMultilineTextStrategy(MultilineTextStrategy multilineTextStrategy) {
@@ -53,6 +53,13 @@ public final class ListFormatter
         this.bulletPoint = bulletPoint;
     }
 
+    /**
+     * Formats the given items as a list.
+     * @param items The items to format
+     * @param maxWidth The maximum width per line (including bulletpoint and spacer between bulletpoint and item text)
+     * @param lineSeparator The line separator between the lines
+     * @return The formatted liste, without trailing newline
+     */
     public String format(Iterable<String> items, int maxWidth, char lineSeparator) {
         StringBuilder out = new StringBuilder();
         for (String item : items) {
@@ -73,6 +80,6 @@ public final class ListFormatter
             }
         }
 
-        return out.toString();
+        return out.toString().trim();
     }
 }

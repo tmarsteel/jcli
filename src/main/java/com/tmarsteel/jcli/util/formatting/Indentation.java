@@ -63,8 +63,14 @@ public class Indentation
             {
                 out.append(pad);
             }
+            else if (i != 0)
+            {
+                out.append(pad);
+            }
+
             out.append(lines[i]);
-            out.append(lineSeparator);
+
+            if (i != lines.length - 1) out.append(lineSeparator);
         }
 
         return out.toString();

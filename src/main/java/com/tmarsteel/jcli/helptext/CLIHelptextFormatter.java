@@ -20,12 +20,16 @@ package com.tmarsteel.jcli.helptext;
 
 import static java.util.stream.StreamSupport.*;
 
+import com.sun.org.apache.xpath.internal.operations.Mult;
 import com.tmarsteel.jcli.Argument;
 import com.tmarsteel.jcli.Filtered;
 import com.tmarsteel.jcli.Identifiable;
 import com.tmarsteel.jcli.Option;
 import com.tmarsteel.jcli.filter.*;
 import com.tmarsteel.jcli.util.ClassHierarchyComparator;
+import com.tmarsteel.jcli.util.formatting.Indentation;
+import com.tmarsteel.jcli.util.formatting.multiline.MultilineTextStrategy;
+import com.tmarsteel.jcli.util.formatting.multiline.WordsplitMultilineStrategy;
 import org.omg.PortableInterceptor.ObjectReferenceTemplateSeqHelper;
 
 import java.util.*;
@@ -51,6 +55,8 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
      * The line separator to use
      */
     private char lineSeparator = '\n';
+
+    private MultilineTextStrategy multilineTextStrategy = WordsplitMultilineStrategy.getInstance();
 
     /**
      * Returns the maximum number of characters {@link #format} will put into one output line.
@@ -171,27 +177,7 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
      */
     protected String indentFromSecondLine(String toBeIndented, int nSpaces)
     {
-        String[] lines = toBeIndented.split("" + lineSeparator);
-
-        if (lines.length == 0)
-        {
-            return toBeIndented;
-        }
-
-        String pad = new String(new char[nSpaces]).replace('\0', ' ');
-        StringBuilder out = new StringBuilder(toBeIndented.length() + (lines.length - 1) * nSpaces);
-
-        for (int i = 0; i < lines.length; i++)
-        {
-            if (i != 0)
-            {
-                out.append(pad);
-            }
-            out.append(lines[i]);
-            out.append(lineSeparator);
-        }
-
-        return out.toString();
+       return (new Indentation(nSpaces)).indent(toBeIndented, Indentation.Strategy.INDENT_SECOND_TO_LAST, lineSeparator);
     }
 
     protected String padLeft(String toBePadded, int nSpaces)
@@ -271,7 +257,7 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
         StringBuilder out = new StringBuilder(1000);
 
         args.stream()
-            .sorted((arg1, arg2) -> arg1.getIdentifier().compareTo(arg2.getIdentifier()))
+            .sorted(Comparator.comparing(Argument::getIdentifier))
             .forEach(arg ->
             {
                 StringBuilder description = new StringBuilder(wrap(arg.getDescription(), rightColWidth));
@@ -306,101 +292,13 @@ public class CLIHelptextFormatter implements FilterAwareHelptextFormatter<String
         return out.toString();
     }
 
-    /**
-     * Reformats the given string so that it does not contain more than {@link #maxWidth} characters per line, splitting
-     * at whitespaces if possible.
-     *
-     * @param inputString
-     * @return The changed string
-     */
     protected String wrap(String inputString)
     {
         return wrap(inputString, maxWidth);
     }
 
-    /**
-     * Reformats the given string so that it does not contain more than {@code maxWidth} characters per line, splitting
-     * at whitespaces if possible.
-     *
-     * @param inputString
-     * @param maxWidth
-     * @return The changed string
-     */
-    protected String wrap(String inputString, int maxWidth)
-    {
-        char[] input = inputString.toCharArray();
-
-        StringBuilder finalOut = new StringBuilder(input.length + 15);
-
-        StringBuilder currentLineBuilder = new StringBuilder(maxWidth);
-        int lastWSSeenAtLinePos = -1; // position of the most recent whitespace in the current line
-        char current;
-
-        for (int inputPos = 0; inputPos < input.length; inputPos++)
-        {
-            current = input[inputPos];
-            if (current == lineSeparator)
-            {
-                finalOut.append(currentLineBuilder);
-                finalOut.append(lineSeparator);
-                if (currentLineBuilder.length() != 0) currentLineBuilder = new StringBuilder(maxWidth);
-                continue;
-            }
-            else if (Character.isWhitespace(current))
-            {
-                lastWSSeenAtLinePos = currentLineBuilder.length();
-                if (currentLineBuilder.length() == maxWidth)
-                {
-                    // luckily there is a space right where the line limit is ... :O
-                    finalOut.append(currentLineBuilder);
-                    finalOut.append(lineSeparator);
-                    currentLineBuilder = new StringBuilder(maxWidth);
-                    lastWSSeenAtLinePos = -1;
-                    continue;
-                }
-                else
-                {
-                    // do not output leading whitespace onto a new line
-                    if (currentLineBuilder.length() != 0)
-                    {
-                        currentLineBuilder.append(current);
-                        continue;
-                    }
-                }
-            }
-
-            if (currentLineBuilder.length() == maxWidth)
-            {
-                // we just hit the line limit mid-word
-                // try to break at the most recent whitespace
-
-                if (lastWSSeenAtLinePos == -1)
-                {
-                    // there is no whitespace in the line - break mid-word
-                    finalOut.append(currentLineBuilder);
-                    finalOut.append(lineSeparator);
-                    currentLineBuilder = new StringBuilder(maxWidth);
-                    currentLineBuilder.append(current);
-                    continue;
-                }
-                else
-                {
-                    String afterBreak = currentLineBuilder.substring(lastWSSeenAtLinePos + 1);
-                    finalOut.append(currentLineBuilder.substring(0, lastWSSeenAtLinePos));
-                    finalOut.append(lineSeparator);
-                    currentLineBuilder = new StringBuilder(maxWidth);
-                    currentLineBuilder.append(afterBreak);
-                    currentLineBuilder.append(current);
-                    lastWSSeenAtLinePos = -1;
-                    continue;
-                }
-            }
-
-            currentLineBuilder.append(current);
-        }
-
-        finalOut.append(currentLineBuilder);
-        return finalOut.toString().trim();
+    protected String wrap(String inputString, int maxWidth) {
+        return this.multilineTextStrategy.wrap(inputString, maxWidth, lineSeparator);
     }
 
     /**

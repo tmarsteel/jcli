@@ -7,13 +7,11 @@ package com.tmarsteel.jcli.util.formatting.multiline;
 public interface MultilineTextStrategy
 {
     /**
-     * Reformats the given string so that it does not contain more than {@code maxWidth} characters per line, splitting
-     * at whitespaces if possible.
+     * Reformats the given string so that it does not contain more than {@code maxWidth} characters per line.
      *
-     * @param inputString
-     * @param maxWidth
-     * @return The changed string
-     * TODO: define whether a trailing linefeed is returned; adapt the formatters to it if necessary.
+     * @param inputString The string to wrap
+     * @param maxWidth The maximum number of characters per line
+     * @return The wrapped string. Does not have a trailing newline.
      */
-    public String wrap(String inputString, int maxWidth, char lineSeparator);
+    String wrap(String inputString, int maxWidth, char lineSeparator);
 }
