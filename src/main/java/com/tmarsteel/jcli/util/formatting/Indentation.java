@@ -45,7 +45,7 @@ public class Indentation
      * @param lineSeparator The line separator to use.
      * @return The indented string.
      */
-    public String perform(String toBeIndented, Strategy indentationStrategy, char lineSeparator) {
+    public String indent(String toBeIndented, Strategy indentationStrategy, char lineSeparator) {
         if (indentationStrategy == Strategy.NO_INDENTATION) return toBeIndented;
         String[] lines = toBeIndented.split("" + lineSeparator);
 
