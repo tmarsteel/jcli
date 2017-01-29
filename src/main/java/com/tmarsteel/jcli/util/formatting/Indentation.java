@@ -59,13 +59,8 @@ public class Indentation
 
         for (int i = 0; i < lines.length; i++)
         {
-            if (i == 0 && indentationStrategy != Strategy.INDENT_SECOND_TO_LAST)
-            {
-                out.append(pad);
-            }
-            else if (i != 0)
-            {
-                out.append(pad);
+            if (indentationStrategy.shouldIndent(i, lines.length)) {
+                out.append(lines[i]);
             }
 
             out.append(lines[i]);
@@ -85,5 +80,21 @@ public class Indentation
 
         /** Denotes that all lines except the first line should be indented */
         INDENT_SECOND_TO_LAST;
+
+        /**
+         * Given the total number of lines in a string and the index of one particular line, returns whether that line
+         * should be indented.
+         * @param lineIndex The index of the line to determine indentation for.
+         * @param totalLines Total number of lines in the text
+         * @return Whether the line with index {@code lineIndex} in a string with {@code totalLines} should be indented.
+         */
+        public boolean shouldIndent(int lineIndex, int totalLines) {
+            switch (this) {
+                case NO_INDENTATION:        return false;
+                case INDENT_ALL:            return true;
+                case INDENT_SECOND_TO_LAST: return lineIndex > 0;
+                default: throw new AssertionError("Whoops... what went wrong here? Enum switch default case.");
+            }
+        }
     }
 }
