@@ -58,6 +58,11 @@ public class TextTable implements Renderable
         return this;
     }
 
+    /** @return Whether this {@link TextTable} renders borders. */
+    public boolean hasBorders() {
+
+    }
+
     /**
      * Adds a row with the given column values to the table.
      * @return {@code this}
@@ -89,15 +94,61 @@ public class TextTable implements Renderable
 
     @Override
     public String render(int maxWidth, char lineSeparator) {
+        int[] columnWidths = determineColumnWidths(maxWidth);
 
+        StringBuilder outputBuilder = new StringBuilder(rows.size() * columnWidths.length * 60);
+
+        if (headerRow != null) {
+            outputBuilder.append(render(headerRow, columnWidths));
+            outputBuilder.append(lineSeparator);
+
+            // generate the separator row
+            List<String> separatorRow = new ArrayList<>(columnWidths.length);
+            for (int i = 0;i < columnWidths.length;i++) {
+                separatorRow.add(
+                    new String(new char[columnWidths[i]]).replace('\0', '-'));
+            }
+
+            outputBuilder.append(render(separatorRow, columnWidths));
+            outputBuilder.append(lineSeparator);
+        }
+
+        for (List<Renderable> row : rows) {
+            outputBuilder.append(render(row, columnWidths));
+            outputBuilder.append(lineSeparator);
+        }
+
+        return outputBuilder.toString();
+    }
+
+    /**
+     * Renders the given row using the given column widths.
+     * @param row The row to render
+     * @param columnWidths The column definition
+     * @return The row, without trailing linefeed
+     */
+    private String render(List<Renderable> row, int[] columnWidths) {
+        // TODO
+    }
+
+    /**
+     * Renders the given row, assuming that none of the strings in the row exceed the respective length in
+     * {@code columnWidths}.
+     */
+    private String render(List<String> row, int[] columnWidths) {
+        // TODO
+    }
+
+    /** @return A stream of all the header entries and the rows */
+    private Stream<List<Renderable>> streamOfAll() {
+        return Stream.concat(
+            Stream.of(headerRow),
+            rows.stream()
+        );
     }
 
     private int calculateNumberOfColumns() {
-        return
-        Stream.concat(
-            Stream.of(headerRow),
-            rows.stream()
-        )
+        return streamOfAll()
             .mapToInt(List::size)
             .max().orElse(0);
     }
@@ -120,7 +171,7 @@ public class TextTable implements Renderable
         int nDynamicColumns = nColumns - nFixedColumns;
 
         // determine whether tableMaxWidth is actually enough
-        int horizontalBorderSpace = hasBorders? nColumns + 1 : 0;
+        int horizontalBorderSpace = hasBorders? nColumns + 1 : nColumns - 1; // borders: |c|c|, no borders: c c
         int minimumDynamicColumnSpace = nDynamicColumns; // at least 1 space per dynamic column
 
         if (fixedColumnsSize + horizontalBorderSpace + minimumDynamicColumnSpace > tableMaxWidth ) {
@@ -131,7 +182,8 @@ public class TextTable implements Renderable
 
         if (nDynamicColumns > 0) {
             int dynamicColumnTotalSpace = tableMaxWidth - fixedColumnsSize;
-            int flooredSpacePerDynamicColumn = minimumDynamicColumnSpace / nDynamicColumns;
+            int flooredSpacePerDynamicColumn = minimumDynamicColumnSpace / nDynamicColumns;))
+
             if (flooredSpacePerDynamicColumn * nDynamicColumns == dynamicColumnTotalSpace) {
                 // the space available for the dynamic columns can be evenly divided => nice!
                 for (int i = 0;i < nColumns;i++) {
