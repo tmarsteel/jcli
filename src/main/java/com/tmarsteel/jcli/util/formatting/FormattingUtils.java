@@ -38,19 +38,6 @@ public final class FormattingUtils
         return (new String(new char[nSpaces]).replace('\0', ' ')) + toBePadded;
     }
 
-    /**
-     * Returns a {@link Renderable} that right-aligns the given string when rendering. Does not support wrapping the
-     * text because that is a responsibility of {@link com.tmarsteel.jcli.util.formatting.multiline.MultilineTextStrategy}.
-     */
-    public static Renderable padLeftRenderable(String content) {
-        return (maxWidth, lineSeparator) -> {
-            if (content.length() > maxWidth) {
-                throw new OutOfRenderingSpaceException("Wrapping + right align not supported yet.");
-            }
-            return padLeft(content, maxWidth);
-        };
-    }
-
     public static <T> String join(T[] items, String glue) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0;i < items.length;i++) {
