@@ -59,8 +59,8 @@ The name says it all. In goes a `List` of `String`s and out comes a `Renderable`
 TextTable can be used to build text-based tables. To build one it only takes the raw table data as a `List<List<Renderable>>`:
 
     TextTable table = new TextTable();
-    table.addRow(renderableRow1Column1, renderableRow1Column2, renderableRow1Column3);
-         .addRow(renderableRow2Column1, renderableRow2Column2, renderableRow2Column3);
+    table.addRow(renderableRow1Column1, renderableRow1Column2, renderableRow1Column3)
+         .addRow(renderableRow2Column1, renderableRow2Column2, renderableRow2Column3)
          .addRow(renderableRow3Column1, renderableRow3Column2, renderableRow3Column3);
 
 The table itself is a `Renderable` and can be reused or rendered to fit a certain width. The look is either that one
@@ -80,8 +80,8 @@ for headings.
 `TextTable` has shortcut methods if you want to use simple text only. The use `WordsplitMultilineStrategy` to build the
 `Renderable`s:
 
-     table.setHeadings("Column 1", "Column 2", "Column 3");
-          .addRow("Cell", "Cell", "Cell");
+     table.setHeadings("Column 1", "Column 2", "Column 3")
+          .addRow("Cell", "Cell", "Cell")
           .addRow("Cell", "Cell", "Cell");
 
 ### Column widths
