@@ -10,8 +10,5 @@ public interface ColumnWidthCalculator
      * @param nColumns    Total number of columns in the table
      * @return Width of the column. 0 + negative numbers indicate dynamic width (split across all dynamic columns).
      */
-    default public int getColumnWidth(int columnIndex, int nColumns)
-    {
-        return -1;
-    }
+    public int getColumnWidth(int columnIndex, int nColumns);
 }
