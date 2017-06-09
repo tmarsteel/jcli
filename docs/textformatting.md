@@ -1,7 +1,8 @@
 # Text formatting tools
 
 This library includes basic text formatting tools to aid in building rich CLI applications. This page describes
-the usage and concepts.
+the usage and concepts. This page outlines only the most important parts. Have a look into the package
+`com.tmarsteel.jcli.util.formatting` and you'll find some more interesting things with good Javadocs, of course.
 
 ## `Renderable`
 The text formatting works by the same principle as many UI frameworks do. It is split into components that
