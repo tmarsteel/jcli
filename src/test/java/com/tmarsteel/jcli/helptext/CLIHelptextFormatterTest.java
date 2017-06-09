@@ -36,6 +36,7 @@ public class CLIHelptextFormatterTest
     public void setUpSubject()
     {
         subject = new CLIHelptextFormatter();
+        subject.setMaxWidth(80);
     }
 
     @Before
@@ -109,81 +110,80 @@ public class CLIHelptextFormatterTest
                 "line mimit in order to test the text wrapping functionality.\n" +
                 "\n" +
                 "-- Options --\n" +
-                "option1  Some tedious, precise description of the option including format,\n" +
-                "o1       default values and requirements...\n" +
-                "o        \n" +
-                "         Constraints:\n" +
-                "         - must be an integer number\n" +
+                "option1  Some tedious, precise description of the option including format,      \n" +
+                "o1       default values and requirements...                                     \n" +
+                "o                                                                               \n" +
+                "         Constraints:                                                           \n" +
+                "         - must be an integer number                                            \n" +
                 "\n" +
-                "option2  Some tedious, precise description of the option including format,\n" +
-                "o2       default values and requirements...\n" +
+                "option2  Some tedious, precise description of the option including format,      \n" +
+                "o2       default values and requirements...                                     \n" +
                 "\n" +
                 "\n" +
                 "-- Flags --\n" +
-                "flag1  Some tedious, precise description of the flag including format, default\n" +
-                "f1     values and requirements...\n" +
-                "f \n" +
+                "flag1  Some tedious, precise description of the flag including format, default  \n" +
+                "f1     values and requirements...                                               \n" +
+                "f                                                                               \n" +
                 "\n" +
-                "flag2  Some tedious, precise description of the flag including format, default\n" +
-                "f2     values and requirements...\n" +
+                "flag2  Some tedious, precise description of the flag including format, default  \n" +
+                "f2     values and requirements...                                               \n" +
                 "\n" +
                 "\n" +
                 "-- Arguments --\n" +
-                "#0  Some tedious, precise description of the argument including format, default\n" +
-                "    values and requirements...\n" +
-                "    \n" +
-                "    Constraints:\n" +
-                "    - must be an integer number\n" +
-                "    - must be specified in base 16\n" +
-                "    - must be between -8000000000000000 and 7fffffffffffffff inclusive\n" +
+                "#0  Some tedious, precise description of the argument including format, default \n" +
+                "    values and requirements...                                                  \n" +
+                "                                                                                \n" +
+                "    Constraints:                                                                \n" +
+                "    - must be an integer number                                                 \n" +
+                "    - must be specified in base 16                                              \n" +
+                "    - must be between -8000000000000000 and 7fffffffffffffff inclusive          \n" +
                 "\n" +
-                "#1  Some tedious, precise description of the argument including format, default\n" +
-                "    values and requirements...\n" +
-                "    \n" +
-                "    Constraints:\n" +
-                "    - must be a number\n" +
-                "    - must be between 0.0 and 3.141592653589793 inclusive\n" +
+                "#1  Some tedious, precise description of the argument including format, default \n" +
+                "    values and requirements...                                                  \n" +
+                "                                                                                \n" +
+                "    Constraints:                                                                \n" +
+                "    - must be a number                                                          \n" +
+                "    - must be between 0.0 and 3.141592653589793 inclusive                       \n" +
                 "\n" +
-                "#2  SetFilterTest\n" +
-                "    \n" +
-                "    Constraints:\n" +
-                "    - must be one of the following options (case sensitive):\n" +
-                "    - aasdfa\n" +
-                "    - bsss\n" +
-                "    - f\n" +
-                "    - h\n" +
+                "#2  SetFilterTest                                                               \n" +
+                "                                                                                \n" +
+                "    Constraints:                                                                \n" +
+                "    - must be one of the following options (case sensitive):                    \n" +
+                "    - aasdfa                                                                    \n" +
+                "    - bsss                                                                      \n" +
+                "    - f                                                                         \n" +
+                "    - h                                                                         \n" +
                 "\n" +
-                "#3  RegexFilterTest\n" +
-                "    \n" +
-                "    Constraints:\n" +
-                "    - must match this regular expression: a(.+)\n" +
-                "    - group 1 is relevant\n" +
+                "#3  RegexFilterTest                                                             \n" +
+                "                                                                                \n" +
+                "    Constraints:                                                                \n" +
+                "    - must match this regular expression: a(.+)                                 \n" +
+                "    - group 1 is relevant                                                       \n" +
                 "\n" +
-                "#4  MetaRegexFilterTest\n" +
-                "    \n" +
-                "    Constraints:\n" +
-                "    - must be a valid regular expression\n" +
+                "#4  MetaRegexFilterTest                                                         \n" +
+                "                                                                                \n" +
+                "    Constraints:                                                                \n" +
+                "    - must be a valid regular expression                                        \n" +
                 "\n" +
-                "#5  FileFilterTest\n" +
-                "    \n" +
-                "    Constraints:\n" +
-                "    - must point to a file or directory\n" +
-                "    - the file or directory must exist\n" +
-                "    - the file or directory must be readable\n" +
-                "    - the file or directory must be writable\n" +
-                "    - the file or directory must be executable / listable\n" +
-                "    - the file or directory name must end with .sh\n" +
+                "#5  FileFilterTest                                                              \n" +
+                "                                                                                \n" +
+                "    Constraints:                                                                \n" +
+                "    - must point to a file or directory                                         \n" +
+                "    - the file or directory must exist                                          \n" +
+                "    - the file or directory must be readable                                    \n" +
+                "    - the file or directory must be writable                                    \n" +
+                "    - the file or directory must be executable / listable                       \n" +
+                "    - the file or directory name must end with .sh                              \n" +
                 "\n" +
-                "#6  PathFilterTest\n" +
-                "    \n" +
-                "    Constraints:\n" +
-                "    - must point to a file or directory\n" +
-                "    - the file or directory must exist\n" +
-                "    - the file or directory must be readable\n" +
-                "    - the file or directory must be writable\n" +
-                "    - the file or directory must be executable / listable\n" +
-                "    - the file or directory name must end with .sh\n" +
-                "\n" +
+                "#6  PathFilterTest                                                              \n" +
+                "                                                                                \n" +
+                "    Constraints:                                                                \n" +
+                "    - must point to a file or directory                                         \n" +
+                "    - the file or directory must exist                                          \n" +
+                "    - the file or directory must be readable                                    \n" +
+                "    - the file or directory must be writable                                    \n" +
+                "    - the file or directory must be executable / listable                       \n" +
+                "    - the file or directory name must end with .sh                              \n" +
                 "\n" +
                 "\n" +
                 "Some more notes on the program. This, too, should exceed the line length to test\n" +
