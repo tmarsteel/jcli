@@ -26,4 +26,16 @@ public final class FormattingUtils
 
         return new String(target);
     }
+
+    public static <T> String join(T[] items, String glue) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0;i < items.length;i++) {
+            stringBuilder.append(items[i]);
+            if (i < items.length - 1) {
+                stringBuilder.append(glue);
+            }
+        }
+
+        return stringBuilder.toString();
+    }
 }
