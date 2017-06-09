@@ -23,9 +23,24 @@ public class TextTable implements Renderable
     /** The rows of the table. */
     private final List<List<Renderable>> rows = new ArrayList<>();
 
+    /** Whether borders should be rendered */
+    private boolean hasBorders = true;
+
     private ColumnWidthCalculator columnWidthCalculator = (index, nColumns) -> -1;
 
     private MultilineTextStrategy multilineTextStrategy = WordsplitMultilineStrategy.getInstance();
+
+    /** @return Whether borders are rendered */
+    public boolean hasBorders()
+    {
+        return hasBorders;
+    }
+
+    /** Sets whether borders should be rendered */
+    public void setHasBorders(boolean hasBorders)
+    {
+        this.hasBorders = hasBorders;
+    }
 
     /**
      * @return {@code this}
@@ -93,8 +108,11 @@ public class TextTable implements Renderable
 
         StringBuilder outputBuilder = new StringBuilder(rows.size() * columnWidths.length * 60);
 
-        outputBuilder.append(rowSeparator);
-        outputBuilder.append(lineSeparator);
+        if (hasBorders)
+        {
+            outputBuilder.append(rowSeparator);
+            outputBuilder.append(lineSeparator);
+        }
 
         if (headerRow != null) {
             outputBuilder.append(render(headerRow, columnWidths, lineSeparator));
@@ -113,6 +131,12 @@ public class TextTable implements Renderable
         // cut the trailing lineSeparator
         outputBuilder.deleteCharAt(outputBuilder.length() - 1);
 
+        // if no borders were rendered, there is one more empty line at the bottom (the empty line separator)
+        // remove that, too
+        if (!hasBorders) {
+            outputBuilder.deleteCharAt(outputBuilder.length() - 1);
+        }
+
         return outputBuilder.toString();
     }
 
@@ -121,6 +145,8 @@ public class TextTable implements Renderable
      * @return The separator, e.g. for input [2, 4, 2] returns "+--+----+--+"
      */
     private String getRowSeparator(int[] columnWidths) {
+        // no borders -> no line separators
+        if (!hasBorders) return "";
         // generate the separator row
         StringBuilder rowSeparatorBuilder = new StringBuilder();
         rowSeparatorBuilder.append('+');
@@ -182,9 +208,14 @@ public class TextTable implements Renderable
         // wen can now iterate over the lines and, line by line, build the columns
         StringBuilder outputBuilder = new StringBuilder();
 
+        // define the border string depending on hasBorders
+        final String borderTextLineStart = hasBorders? "| " : "";
+        final String borderTextBetweenCellLines = hasBorders? " | ": "  ";
+        final String borderTextLineEnd = hasBorders? " |" : "";
+
         // for each line, regardless of line boundaries within the cells
         for (int innerCellLineIndex = 0;innerCellLineIndex < maxNumberOfInnerCellLines;innerCellLineIndex++) {
-            outputBuilder.append("| ");
+            outputBuilder.append(borderTextLineStart);
             // render the current line in each cell
             for (int columnIndex = 0;columnIndex< columnWidths.length;columnIndex++)
             {
@@ -194,10 +225,10 @@ public class TextTable implements Renderable
                 outputBuilder.append(padRight(cellLine, columnWidths[columnIndex]));
 
                 if (columnIndex < columnWidths.length - 1) {
-                    outputBuilder.append(" | ");
+                    outputBuilder.append(borderTextBetweenCellLines);
                 }
                 else {
-                    outputBuilder.append(" |");
+                    outputBuilder.append(borderTextLineEnd);
                 }
             }
 
@@ -246,7 +277,13 @@ public class TextTable implements Renderable
         int nDynamicColumns = nColumns - nFixedColumns;
 
         // determine whether tableMaxWidth is actually enough
-        int horizontalBorderAndPaddingSpace = 1 + nColumns * 3; // | cell text | cell text |
+        final int horizontalBorderAndPaddingSpace;
+        if (hasBorders) {
+            horizontalBorderAndPaddingSpace = 1 + nColumns * 3; // | cell text | cell text |
+        }
+        else {
+            horizontalBorderAndPaddingSpace = (nColumns - 1) * 2; // cellText  cellText
+        }
         int availableHorizontalTextSpace = tableMaxWidth - horizontalBorderAndPaddingSpace;
         int minimumDynamicColumnSpace = nDynamicColumns; // at least 1 space per dynamic column
 

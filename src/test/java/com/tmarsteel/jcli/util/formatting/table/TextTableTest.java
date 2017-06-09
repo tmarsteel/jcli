@@ -84,6 +84,29 @@ public class TextTableTest
     }
 
     @Test
+    public void testTableRendering_borderless_allColumnsDynamic_evenSpaceDivision() {
+        textTable.setHeadings("Spalte 1", "Spalte 2", "Spalte 3", "Spalte 4");
+        textTable.addRow("Foo", "Bar", "Bla", "Blub");
+        textTable.addRow("I exceed the assigned cell width and will have to break", "Foooooobar", "trololo", "Lorem ipsum dolor");
+        textTable.setHasBorders(false);
+
+        doReturn("Lorem ipsum\ndolor")
+            .when(multilineStrategyMock).wrap("Lorem ipsum dolor", 14, '\n');
+
+        assertEquals(
+            "Spalte 1         Spalte 2         Spalte 3         Spalte 4       \n" +
+                    "\n" +
+                    "Foo              Bar              Bla              Blub           \n" +
+                    "\n" +
+                    "I exceed the     Foooooobar       trololo          Lorem ipsum    \n" +
+                    "assigned cell                                      dolor          \n" +
+                    "width and will                                                    \n" +
+                    "have to break                                                     ",
+            textTable.render(66, '\n')
+        );
+    }
+
+    @Test
     public void testTableRendering_oneDynamicColumn() {
         textTable.setHeadings("Spalte 1", "Spalte 2", "Spalte 3", "Spalte 4");
         textTable.addRow("Foo", "Bar", "Bla", "Blub");
