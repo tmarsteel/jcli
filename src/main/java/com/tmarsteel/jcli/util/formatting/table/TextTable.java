@@ -6,6 +6,7 @@ import com.tmarsteel.jcli.util.formatting.multiline.MultilineTextStrategy;
 import com.tmarsteel.jcli.util.formatting.multiline.WordsplitMultilineStrategy;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -82,6 +83,16 @@ public class TextTable implements Renderable
             row.add(multilineTextStrategy.renderableOf(cellValues[i]));
         }
         rows.add(row);
+
+        return this;
+    }
+
+    /**
+     * Adds a row with the given colun values to the table.
+     * @return {@code this}
+     */
+    public TextTable addRow(Renderable... cellValues) {
+        rows.add(Arrays.asList(cellValues));
 
         return this;
     }
