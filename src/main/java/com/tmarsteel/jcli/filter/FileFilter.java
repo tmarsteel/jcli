@@ -70,9 +70,20 @@ public class FileFilter implements java.io.FileFilter, Filter
         READ_WRITE_EXECUTE  (true,  true,  true ),
         IRRELEVANT          (false, false, false);
 
-        protected boolean readR;
-        protected boolean writeR;
-        protected boolean execR;
+        /**
+         * Whether read permission is required
+         */
+        public final boolean readR;
+
+        /**
+         * Whether write permission is required
+         */
+        public final boolean writeR;
+
+        /**
+         * Whether execute/list permission is required
+         */
+        public final boolean execR;
 
         PERMISSION(boolean readR, boolean writeR, boolean execR)
         {
@@ -224,11 +235,17 @@ public class FileFilter implements java.io.FileFilter, Filter
         }
     }
 
+    /**
+     * Returns the name extension / suffix this filter requires or null if none is set.
+     */
     public String getExtension()
     {
         return extension;
     }
 
+    /**
+     * Sets the name extension / suffix to require. Set to null to remove the constraint.
+     */
     public void setExtension(String extension)
     {
         // cut leading .
