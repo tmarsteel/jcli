@@ -60,7 +60,7 @@ public class Indentation
         for (int i = 0; i < lines.length; i++)
         {
             if (indentationStrategy.shouldIndent(i, lines.length)) {
-                out.append(lines[i]);
+                out.append(pad);
             }
 
             out.append(lines[i]);
