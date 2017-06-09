@@ -1,7 +1,9 @@
-# jCLI
+# jCLI 
 A Java library for parsing and validating CLI arguments (and Strings formatted alike).
 
 [Project on GitHub](http://github.com/tmarsteel/jcli)
+
+![build state](https://api.travis-ci.org/tmarsteel/jcli.svg?branch=develop)
 
 ## Installation
 
