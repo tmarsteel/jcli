@@ -1,6 +1,5 @@
 package com.tmarsteel.jcli.util.formatting.table;
 
-import com.tmarsteel.jcli.util.formatting.Indentation;
 import com.tmarsteel.jcli.util.formatting.OutOfRenderingSpaceException;
 import com.tmarsteel.jcli.util.formatting.Renderable;
 import com.tmarsteel.jcli.util.formatting.multiline.MultilineTextStrategy;
@@ -11,10 +10,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
+import static com.tmarsteel.jcli.util.formatting.FormattingUtils.padRight;
 
 /**
- * Formats a text-based table in markdown format.
+ * Formats a text-based table very similar to those printed by sql server CLIs.
  */
 public class TextTable implements Renderable
 {
@@ -24,10 +23,7 @@ public class TextTable implements Renderable
     /** The rows of the table. */
     private final List<List<Renderable>> rows = new ArrayList<>();
 
-    /** Whether to output borders */
-    private boolean hasBorders = true;
-
-    private ColumnWidthCalculator columnWidthCalculator = new ColumnWidthCalculator() {};
+    private ColumnWidthCalculator columnWidthCalculator = (index, nColumns) -> -1;
 
     private MultilineTextStrategy multilineTextStrategy = WordsplitMultilineStrategy.getInstance();
 
@@ -46,7 +42,7 @@ public class TextTable implements Renderable
     public TextTable setHeadings(String... headers) {
         ArrayList<Renderable> newHeaderRow = new ArrayList<>(headers.length);
         for (int i = 0;i < headers.length;i++) {
-            newHeaderRow.set(i, multilineTextStrategy.renderableOf(headers[i]));
+            newHeaderRow.add(multilineTextStrategy.renderableOf(headers[i]));
         }
         this.headerRow = newHeaderRow;
 
@@ -61,9 +57,6 @@ public class TextTable implements Renderable
         return this;
     }
 
-    /** @return Whether this {@link TextTable} renders borders. */
-    public boolean hasBorders() { return hasBorders; }
-
     /**
      * Adds a row with the given column values to the table.
      * @return {@code this}
@@ -71,7 +64,7 @@ public class TextTable implements Renderable
     public TextTable addRow(String... cellValues) {
         ArrayList<Renderable> row = new ArrayList<>(cellValues.length);
         for (int i = 0;i < cellValues.length;i++) {
-            row.set(i, multilineTextStrategy.renderableOf(cellValues[i]));
+            row.add(multilineTextStrategy.renderableOf(cellValues[i]));
         }
         rows.add(row);
 
@@ -96,30 +89,48 @@ public class TextTable implements Renderable
     @Override
     public String render(int maxWidth, char lineSeparator) {
         int[] columnWidths = determineColumnWidths(maxWidth);
+        String rowSeparator = getRowSeparator(columnWidths);
 
         StringBuilder outputBuilder = new StringBuilder(rows.size() * columnWidths.length * 60);
+
+        outputBuilder.append(rowSeparator);
+        outputBuilder.append(lineSeparator);
 
         if (headerRow != null) {
             outputBuilder.append(render(headerRow, columnWidths, lineSeparator));
             outputBuilder.append(lineSeparator);
-
-            // generate the separator row
-            List<String> separatorRow = new ArrayList<>(columnWidths.length);
-            for (int i = 0;i < columnWidths.length;i++) {
-                separatorRow.add(
-                    new String(new char[columnWidths[i]]).replace('\0', '-'));
-            }
-
-            outputBuilder.append(renderStringRow(separatorRow, columnWidths, lineSeparator));
+            outputBuilder.append(rowSeparator);
             outputBuilder.append(lineSeparator);
         }
 
         for (List<Renderable> row : rows) {
             outputBuilder.append(render(row, columnWidths, lineSeparator));
             outputBuilder.append(lineSeparator);
+            outputBuilder.append(rowSeparator);
+            outputBuilder.append(lineSeparator);
         }
 
+        // cut the trailing lineSeparator
+        outputBuilder.deleteCharAt(outputBuilder.length() - 1);
+
         return outputBuilder.toString();
+    }
+
+    /**
+     * Builds and returns a row separator for the given column definition.
+     * @return The separator, e.g. for input [2, 4, 2] returns "+--+----+--+"
+     */
+    private String getRowSeparator(int[] columnWidths) {
+        // generate the separator row
+        StringBuilder rowSeparatorBuilder = new StringBuilder();
+        rowSeparatorBuilder.append('+');
+        for (int i = 0;i < columnWidths.length;i++) {
+            // as many - as the column is wide + 2 for the cell padding
+            rowSeparatorBuilder.append(new String(new char[columnWidths[i] + 2]).replace('\0', '-'));
+            rowSeparatorBuilder.append('+');
+        }
+
+        return rowSeparatorBuilder.toString();
     }
 
     /**
@@ -143,6 +154,7 @@ public class TextTable implements Renderable
     /**
      * Renders the given row, assuming that none of the strings in the row exceed the respective length in
      * {@code columnWidths}.
+     * @param rowStrings The strings of the row, in the order of the cells.
      */
     private String renderStringRow(List<String> rowStrings, int[] columnWidths, char lineSeparator) {
         if (rowStrings.size() != columnWidths.length) throw new IllegalArgumentException("Difference in number of cells and column widths");
@@ -155,24 +167,55 @@ public class TextTable implements Renderable
 
          This means that the cells have to be split by line, first
           */
-        List<String[]> row = new ArrayList<>(rowStrings.size());
-        for (int i = 0;i< columnWidths.length;i++) {
-            row.add(
-                multilineTextStrategy.wrap(
-                    rowStrings.get(i),
-                    columnWidths[i],
-                    lineSeparator
-                )
-                .split("" + lineSeparator)
-            );
+        List<String[]> rows = new ArrayList<>(rowStrings.size());
+        int maxNumberOfInnerCellLines = 0;
+        for (int columnIndex = 0;columnIndex< columnWidths.length;columnIndex++) {
+            String[] cellLines = rowStrings.get(columnIndex).split("" + lineSeparator);
+
+            if (cellLines.length > maxNumberOfInnerCellLines) {
+                maxNumberOfInnerCellLines = cellLines.length;
+            }
+
+            rows.add(cellLines);
         }
 
         // wen can now iterate over the lines and, line by line, build the columns
-        // TODO
+        StringBuilder outputBuilder = new StringBuilder();
+
+        // for each line, regardless of line boundaries within the cells
+        for (int innerCellLineIndex = 0;innerCellLineIndex < maxNumberOfInnerCellLines;innerCellLineIndex++) {
+            outputBuilder.append("| ");
+            // render the current line in each cell
+            for (int columnIndex = 0;columnIndex< columnWidths.length;columnIndex++)
+            {
+                String[] cellLines = rows.get(columnIndex);
+                String cellLine = innerCellLineIndex >= cellLines.length? "" : cellLines[innerCellLineIndex];
+
+                outputBuilder.append(padRight(cellLine, columnWidths[columnIndex]));
+
+                if (columnIndex < columnWidths.length - 1) {
+                    outputBuilder.append(" | ");
+                }
+                else {
+                    outputBuilder.append(" |");
+                }
+            }
+
+            // for each row but the last add a newline
+            if (innerCellLineIndex < maxNumberOfInnerCellLines - 1) {
+                outputBuilder.append(lineSeparator);
+            }
+        }
+
+        return outputBuilder.toString();
     }
 
     /** @return A stream of all the header entries and the rows */
     private Stream<List<Renderable>> streamOfAll() {
+        if (headerRow == null) {
+            return rows.stream();
+        }
+
         return Stream.concat(
             Stream.of(headerRow),
             rows.stream()
@@ -190,12 +233,12 @@ public class TextTable implements Renderable
         if (nColumns <= 0) return new int[0];
 
         int[] columnTargets = new int[nColumns];
-        int fixedColumnsSize = 0;
+        int fixedColumnsPureTextSpace = 0;
         int nFixedColumns = 0;
         for (int i = 0;i < nColumns;i++) {
             columnTargets[i] = this.columnWidthCalculator.getColumnWidth(i, nColumns);
             if (columnTargets[i] > 0) {
-                fixedColumnsSize += columnTargets[i];
+                fixedColumnsPureTextSpace += columnTargets[i];
                 nFixedColumns++;
             }
         }
@@ -203,18 +246,19 @@ public class TextTable implements Renderable
         int nDynamicColumns = nColumns - nFixedColumns;
 
         // determine whether tableMaxWidth is actually enough
-        int horizontalBorderSpace = hasBorders? nColumns + 1 : nColumns - 1; // borders: |c|c|, no borders: c c
+        int horizontalBorderAndPaddingSpace = 1 + nColumns * 3; // | cell text | cell text |
+        int availableHorizontalTextSpace = tableMaxWidth - horizontalBorderAndPaddingSpace;
         int minimumDynamicColumnSpace = nDynamicColumns; // at least 1 space per dynamic column
 
-        if (fixedColumnsSize + horizontalBorderSpace + minimumDynamicColumnSpace > tableMaxWidth ) {
+        if (fixedColumnsPureTextSpace + minimumDynamicColumnSpace > availableHorizontalTextSpace) {
             throw new OutOfRenderingSpaceException("maxWidth (= " + tableMaxWidth + ") is too small for this table to be rendered: " +
-                "fixedColumns (= " + fixedColumnsSize + ") + borders (= " + horizontalBorderSpace + ") + dynamicColumns (= " + minimumDynamicColumnSpace + ") " +
+                "fixedColumns (= " + fixedColumnsPureTextSpace + ") + borders and padding (= " + horizontalBorderAndPaddingSpace + ") + dynamicColumns (= " + minimumDynamicColumnSpace + ") " +
                 " > maxWidth (= " + tableMaxWidth + ")");
         }
 
         if (nDynamicColumns > 0) {
-            int dynamicColumnTotalSpace = tableMaxWidth - fixedColumnsSize;
-            int flooredSpacePerDynamicColumn = minimumDynamicColumnSpace / nDynamicColumns;
+            int dynamicColumnTotalSpace = availableHorizontalTextSpace - fixedColumnsPureTextSpace;
+            int flooredSpacePerDynamicColumn = dynamicColumnTotalSpace / nDynamicColumns;
 
             if (flooredSpacePerDynamicColumn * nDynamicColumns == dynamicColumnTotalSpace) {
                 // the space available for the dynamic columns can be evenly divided => nice!
@@ -231,12 +275,15 @@ public class TextTable implements Renderable
                 // the space has to be divided up
                 int remainingSpace = dynamicColumnTotalSpace - (flooredSpacePerDynamicColumn * nDynamicColumns);
                 int[] dynamicColumnWidths = new int[nDynamicColumns]; // widths of the dynamic columns in columnTargets
-                for (int i = 0;i < dynamicColumnWidths.length && remainingSpace > 0;i++) {
+                for (int i = 0;i < dynamicColumnWidths.length;i++) {
                     if (dynamicColumnWidths[i] == 0) {
-                        dynamicColumnWidths[i] = dynamicColumnTotalSpace;
+                        dynamicColumnWidths[i] = flooredSpacePerDynamicColumn;
                     }
-                    dynamicColumnWidths[i]++;
-                    remainingSpace--;
+                    if (remainingSpace > 0)
+                    {
+                        dynamicColumnWidths[i]++;
+                        remainingSpace--;
+                    }
                 }
 
                 // put the values from dynamicColumnWidths into their respective places in columnTargets and return that
