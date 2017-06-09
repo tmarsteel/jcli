@@ -31,7 +31,7 @@ Alternatively, you can check out this repo and build jCLI yourself using Ant. JU
   * [Programmatical Configuration](docs/validation/programmatical.md) documentation of programmatical configuration
 * [Helptext](docs/helptext.md): How to generate a help text based on validation constraints
 * [Sub-Commands](docs/multicommand.md): How to use the multi-command support
-* [Text formatting tool](docs/textformatting.md)
+* [Text formatting tools](docs/textformatting.md): Create text based tables and lists
 * [Gotchas](docs/gotchas.md): Avoid pitfalls by reading this page
 
 ## Quick Start
