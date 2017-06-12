@@ -12,7 +12,7 @@ public class CamelCaseGetterMethodToHeadingConverterTest
 
     @Before
     public void setUp() {
-        subject = new CamelCaseGetterMethodToHeadingConverter();
+        subject = CamelCaseGetterMethodToHeadingConverter.getInstance();
     }
 
     @Test
