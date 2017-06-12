@@ -136,6 +136,7 @@ public class TextTable implements Renderable
             outputBuilder.append(lineSeparator);
         }
 
+        List<Renderable> headerRow = getHeaderRow();
         if (headerRow != null) {
             outputBuilder.append(render(headerRow, columnWidths, lineSeparator));
             outputBuilder.append(lineSeparator);
@@ -263,21 +264,30 @@ public class TextTable implements Renderable
         return outputBuilder.toString();
     }
 
+    /**
+     * @return The header row, applying the {@link #multilineTextStrategy} to {@link #headerRowAsStrings} if needed;
+     *         returns {@code null} if no header row is set.
+     */
+    private List<Renderable> getHeaderRow() {
+        if (headerRow != null) {
+            return headerRow;
+        }
+        else if (headerRowAsStrings != null) {
+            return headerRowAsStrings.stream().map(multilineTextStrategy::renderableOf).collect(Collectors.toList());
+        }
+        else {
+            return null;
+        }
+    }
+
     /** @return A stream of all the header entries and the rows */
     private Stream<List<Renderable>> streamOfAll() {
         if (headerRow == null && headerRowAsStrings == null) {
             return rows.stream();
         }
 
-        Stream<List<Renderable>> headerStream;
-        if (headerRow != null) {
-            headerStream = Stream.of(headerRow);
-        } else {
-            headerStream = Stream.of(headerRowAsStrings.stream().map(multilineTextStrategy::renderableOf).collect(Collectors.toList()));
-        }
-
         return Stream.concat(
-            headerStream,
+            Stream.of(getHeaderRow()),
             rows.stream()
         );
     }
