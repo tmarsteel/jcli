@@ -10,6 +10,20 @@ public class CamelCaseGetterMethodToHeadingConverter implements GetterMethodToHe
 {
     private static final Pattern captitalWordPattern = Pattern.compile("([A-Z|0-9][a-z]*)");
 
+    private static CamelCaseGetterMethodToHeadingConverter singleton;
+
+    public static CamelCaseGetterMethodToHeadingConverter getInstance() {
+        // this is not thread safe... but having multiple instances of this thing doesn't really hurt, does it?
+
+        if (singleton == null) {
+            singleton = new CamelCaseGetterMethodToHeadingConverter();
+        }
+
+        return singleton;
+    }
+
+    private CamelCaseGetterMethodToHeadingConverter() {}
+
     @Override
     public String toHeading(Method method)
     {
