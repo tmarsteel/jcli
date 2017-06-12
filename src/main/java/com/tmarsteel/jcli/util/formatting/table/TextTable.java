@@ -82,7 +82,8 @@ public class TextTable implements Renderable
     public TextTable addRow(String... cellValues) {
         ArrayList<Renderable> row = new ArrayList<>(cellValues.length);
         for (int i = 0;i < cellValues.length;i++) {
-            row.add(multilineTextStrategy.renderableOf(cellValues[i]));
+            final String cellValue = cellValues[i];
+            row.add((maxWidth, lineSeparator) -> multilineTextStrategy.wrap(cellValue, maxWidth, lineSeparator));
         }
         rows.add(row);
 
