@@ -48,6 +48,14 @@ public class TextTable implements Renderable
     }
 
     /**
+     * @return The {@link MultilineTextStrategy} used by this instance.
+     */
+    public MultilineTextStrategy getMultilineTextStrategy()
+    {
+        return multilineTextStrategy;
+    }
+
+    /**
      * @return {@code this}
      */
     public TextTable setMultilineTextStrategy(MultilineTextStrategy multilineTextStrategy) {
