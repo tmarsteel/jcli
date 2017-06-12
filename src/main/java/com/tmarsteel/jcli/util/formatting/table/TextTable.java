@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.tmarsteel.jcli.util.formatting.FormattingUtils.padRight;
@@ -18,8 +19,11 @@ import static com.tmarsteel.jcli.util.formatting.FormattingUtils.padRight;
  */
 public class TextTable implements Renderable
 {
-    /** The headings. If null, no heading should be output. */
+    /** The headings. If both {@link #headerRow} and {@link #headerRowAsStrings} are null, no heading should be output. */
     private List<Renderable> headerRow;
+
+    /** Header row as strings. If both {@link #headerRow} and {@link #headerRowAsStrings} are null, no heading should be output. */
+    private List<String> headerRowAsStrings;
 
     /** The rows of the table. */
     private final List<List<Renderable>> rows = new ArrayList<>();
@@ -56,11 +60,8 @@ public class TextTable implements Renderable
      * @return {@code this}
      */
     public TextTable setHeadings(String... headers) {
-        ArrayList<Renderable> newHeaderRow = new ArrayList<>(headers.length);
-        for (int i = 0;i < headers.length;i++) {
-            newHeaderRow.add(multilineTextStrategy.renderableOf(headers[i]));
-        }
-        this.headerRow = newHeaderRow;
+        this.headerRow = null;
+        this.headerRowAsStrings = Arrays.asList(headers);
 
         return this;
     }
@@ -70,6 +71,7 @@ public class TextTable implements Renderable
      */
     public TextTable setHeadings(List<Renderable> headerRow) {
         this.headerRow = headerRow;
+        this.headerRowAsStrings = null;
         return this;
     }
 
@@ -254,12 +256,19 @@ public class TextTable implements Renderable
 
     /** @return A stream of all the header entries and the rows */
     private Stream<List<Renderable>> streamOfAll() {
-        if (headerRow == null) {
+        if (headerRow == null && headerRowAsStrings == null) {
             return rows.stream();
         }
 
+        Stream<List<Renderable>> headerStream;
+        if (headerRow != null) {
+            headerStream = Stream.of(headerRow);
+        } else {
+            headerStream = Stream.of(headerRowAsStrings.stream().map(multilineTextStrategy::renderableOf).collect(Collectors.toList()));
+        }
+
         return Stream.concat(
-            Stream.of(headerRow),
+            headerStream,
             rows.stream()
         );
     }
