@@ -7,6 +7,14 @@ import com.tmarsteel.jcli.util.formatting.table.TextTable;
 
 public class TextTableBuilder<SelfType extends TextTableBuilder>
 {
+    public static <T> ObjectTextTableBuilder<T> byGettersOf(Class<T> typeClass, GetterMethodToHeadingConverter nameConverter) {
+        return new GetterBasedTextTableBuilder<>(typeClass, nameConverter);
+    }
+
+    public static <T> ObjectTextTableBuilder<T> byGettersOf(Class<T> typeClass) {
+        return byGettersOf(typeClass, CamelCaseGetterMethodToHeadingConverter.getInstance());
+    }
+
     protected MultilineTextStrategy multilineTextStrategy;
     protected ColumnWidthCalculator columnWidthCalculator;
     protected boolean showHeadings = true;
