@@ -7,9 +7,17 @@ A Java library for parsing and validating CLI arguments (and Strings formatted a
 
 ## Installation
 
-Go to the [releases page](http://github.com/tmarsteel/jcli/releases) and download `tmarsteel-jcli-X.X.X.jar` from the latest release. Support for dependency managers is about to come!
+To install from Maven Central use group ID `com.github.tmarsteel` and
+artifact ID `jcli`:
 
-Alternatively, you can check out this repo and build jCLI yourself using Ant. JUnit 4.10+ is required if you want to run unit-tests. See `build.xml` for more information.
+    <!-- in the <dependencies> in your pom.xml -->
+    <dependency>
+      <groupId>com.github.tmarsteel</groupId>
+      <artifactId>jcli</artifactId>
+      <version>2.3.0</version>
+    </dependency>
+
+Go to the [releases page](http://github.com/tmarsteel/jcli/releases) and download `tmarsteel-jcli-X.X.X.jar` from the latest release.
 
 ## Features
 
