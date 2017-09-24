@@ -44,7 +44,7 @@ Go to the [releases page](http://github.com/tmarsteel/jcli/releases) and downloa
 
 ## Quick Start
 
-jCLI can be configured either via XML documents or programmtaically (modifying the parsed XML configuration is possible, but not convenient).  
+jCLI can be configured either via XML documents or programmatically (modifying the parsed XML configuration is possible, but not convenient).
 
 The library distinguishes three types of input: flags, options and arguments. They are supposed to be arranged in this order: `<executable> [flags and options] : arguments...`
 
