@@ -1,5 +1,6 @@
 package com.tmarsteel.jcli.util.formatting.table;
 
+import com.tmarsteel.jcli.util.formatting.Renderable;
 import com.tmarsteel.jcli.util.formatting.table.builder.ColumnHeading;
 import com.tmarsteel.jcli.util.formatting.table.builder.TextTableBuilder;
 import org.junit.Test;
@@ -18,17 +19,17 @@ public class GetterBasedTextTableBuilderTest
                 new TestPojo("Foo3", "bar 3", 3)
             ));
 
-        String tableAsString = table.render(30, '\n');
+        String tableAsString = table.render(55, '\n');
         assertEquals(
-            "+---------+---------+--------+\n" +
-                "| Baaar   | Foo     | Number |\n" +
-                "+---------+---------+--------+\n" +
-                "| bar 1   | Foo1    | 1      |\n" +
-                "+---------+---------+--------+\n" +
-                "| bar 2   | Foo2    | 2      |\n" +
-                "+---------+---------+--------+\n" +
-                "| bar 3   | Foo3    | 3      |\n" +
-                "+---------+---------+--------+",
+            "+-------------+-------------+------------+------------+\n" +
+                "| Baaar       | Foo         | Number     | Renderable |\n" +
+                "+-------------+-------------+------------+------------+\n" +
+                "| bar 1       | Foo1        | 1          | 10 10      |\n" +
+                "+-------------+-------------+------------+------------+\n" +
+                "| bar 2       | Foo2        | 2          | 10 10      |\n" +
+                "+-------------+-------------+------------+------------+\n" +
+                "| bar 3       | Foo3        | 3          | 10 10      |\n" +
+                "+-------------+-------------+------------+------------+",
             tableAsString
         );
     }
@@ -63,5 +64,7 @@ public class GetterBasedTextTableBuilderTest
         {
             return number;
         }
+
+        public Object getRenderable() { return (Renderable) (maxWidth, lineSeparator) -> maxWidth + " " + (short) lineSeparator; }
     }
 }

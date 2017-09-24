@@ -82,7 +82,17 @@ class GetterBasedTextTableBuilder<ObjectType>
                     .map(getter -> (Renderable) (maxWidth, lineSeparator) -> {
                         try
                         {
-                            return table.getMultilineTextStrategy().wrap(getter.invoke(item).toString(), maxWidth, lineSeparator);
+                            Object cellContent = getter.invoke(item);
+                            String cellContentAsString;
+                            if (cellContent instanceof Renderable) {
+                                cellContentAsString = ((Renderable) cellContent).render(maxWidth, lineSeparator);
+                            }
+                            else
+                            {
+                                cellContentAsString = table.getMultilineTextStrategy().wrap(cellContent.toString(), maxWidth, lineSeparator);
+                            }
+
+                            return cellContentAsString;
                         }
                         catch (IllegalAccessException | InvocationTargetException ex) {
                             throw new RuntimeException(ex);
