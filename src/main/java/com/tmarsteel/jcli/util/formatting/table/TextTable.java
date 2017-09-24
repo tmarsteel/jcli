@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.tmarsteel.jcli.util.formatting.FormattingUtils.padRight;
@@ -18,8 +19,11 @@ import static com.tmarsteel.jcli.util.formatting.FormattingUtils.padRight;
  */
 public class TextTable implements Renderable
 {
-    /** The headings. If null, no heading should be output. */
+    /** The headings. If both {@link #headerRow} and {@link #headerRowAsStrings} are null, no heading should be output. */
     private List<Renderable> headerRow;
+
+    /** Header row as strings. If both {@link #headerRow} and {@link #headerRowAsStrings} are null, no heading should be output. */
+    private List<String> headerRowAsStrings;
 
     /** The rows of the table. */
     private final List<List<Renderable>> rows = new ArrayList<>();
@@ -44,6 +48,14 @@ public class TextTable implements Renderable
     }
 
     /**
+     * @return The {@link MultilineTextStrategy} used by this instance.
+     */
+    public MultilineTextStrategy getMultilineTextStrategy()
+    {
+        return multilineTextStrategy;
+    }
+
+    /**
      * @return {@code this}
      */
     public TextTable setMultilineTextStrategy(MultilineTextStrategy multilineTextStrategy) {
@@ -56,11 +68,8 @@ public class TextTable implements Renderable
      * @return {@code this}
      */
     public TextTable setHeadings(String... headers) {
-        ArrayList<Renderable> newHeaderRow = new ArrayList<>(headers.length);
-        for (int i = 0;i < headers.length;i++) {
-            newHeaderRow.add(multilineTextStrategy.renderableOf(headers[i]));
-        }
-        this.headerRow = newHeaderRow;
+        this.headerRow = null;
+        this.headerRowAsStrings = Arrays.asList(headers);
 
         return this;
     }
@@ -70,6 +79,7 @@ public class TextTable implements Renderable
      */
     public TextTable setHeadings(List<Renderable> headerRow) {
         this.headerRow = headerRow;
+        this.headerRowAsStrings = null;
         return this;
     }
 
@@ -80,7 +90,8 @@ public class TextTable implements Renderable
     public TextTable addRow(String... cellValues) {
         ArrayList<Renderable> row = new ArrayList<>(cellValues.length);
         for (int i = 0;i < cellValues.length;i++) {
-            row.add(multilineTextStrategy.renderableOf(cellValues[i]));
+            final String cellValue = cellValues[i];
+            row.add((maxWidth, lineSeparator) -> multilineTextStrategy.wrap(cellValue, maxWidth, lineSeparator));
         }
         rows.add(row);
 
@@ -125,6 +136,7 @@ public class TextTable implements Renderable
             outputBuilder.append(lineSeparator);
         }
 
+        List<Renderable> headerRow = getHeaderRow();
         if (headerRow != null) {
             outputBuilder.append(render(headerRow, columnWidths, lineSeparator));
             outputBuilder.append(lineSeparator);
@@ -252,14 +264,30 @@ public class TextTable implements Renderable
         return outputBuilder.toString();
     }
 
+    /**
+     * @return The header row, applying the {@link #multilineTextStrategy} to {@link #headerRowAsStrings} if needed;
+     *         returns {@code null} if no header row is set.
+     */
+    private List<Renderable> getHeaderRow() {
+        if (headerRow != null) {
+            return headerRow;
+        }
+        else if (headerRowAsStrings != null) {
+            return headerRowAsStrings.stream().map(multilineTextStrategy::renderableOf).collect(Collectors.toList());
+        }
+        else {
+            return null;
+        }
+    }
+
     /** @return A stream of all the header entries and the rows */
     private Stream<List<Renderable>> streamOfAll() {
-        if (headerRow == null) {
+        if (headerRow == null && headerRowAsStrings == null) {
             return rows.stream();
         }
 
         return Stream.concat(
-            Stream.of(headerRow),
+            Stream.of(getHeaderRow()),
             rows.stream()
         );
     }

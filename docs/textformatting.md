@@ -56,7 +56,7 @@ The name says it all. In goes a `List` of `String`s and out comes a `Renderable`
     - Lorem ipsum
       dolor
 
-## `TextTable`
+## TextTable
 TextTable can be used to build text-based tables. To build one it only takes the raw table data as a `List<List<Renderable>>`:
 
     TextTable table = new TextTable();
@@ -84,6 +84,61 @@ for headings.
      table.setHeadings("Column 1", "Column 2", "Column 3")
           .addRow("Cell", "Cell", "Cell")
           .addRow("Cell", "Cell", "Cell");
+
+### Dynamic Table Headings
+
+Since 2.4.0 TextTables can be built entirely from a class definition.
+Simply use `TextTableBuilder#byGettersOf(Class)`:
+
+    Collection<MyClass> myObjects = ...; // some collection of e.g. entities
+    TextTable = TextTableBuilder.byGettersOf(MyClass.class).build(myObjects);
+
+That will build a table that based on the public getters of the given class.
+All methods that
+
+* start with `get` followed by an uppercase letter or a digit
+* are public
+* do not declare exceptions
+* do not declare parameters
+* do not return void
+
+will form a column in the table, e.g.:
+
+    class MyClass {
+        public String getFoo() { /* ... */ }
+        public String getBar() { /* ... */ }
+        public Object getFoobarThing() { /* ... */ }
+    }
+
+will result in such a table heading:
+
+    +-----+-----+--------------+
+    | Foo | Bar | Foobar Thing |
+    +-----+-----+--------------+
+
+You can annotate the getters with `@ColumnHeading` to set the heading
+manually:
+
+    class MyClass {
+        public String getFoo() { /* ... */ }
+        public String getBar() { /* ... */ }
+
+        @ColumnHeading("Foobar")
+        public Object getFoobarThing() { /* ... */ }
+    }
+
+    +-----+-----+--------+
+    | Foo | Bar | Foobar |
+    +-----+-----+--------+
+
+---
+
+`CamelCaseGetterMethodToHeadingConverter` is used to obtain column headings
+from the methods. You can override this behaviour by implementing
+`GetterMethodToHeadingConverter` and passing an instance of your implementation
+to `TextTableFormatter#byGettersOf`:
+
+    TextTable = TextTableBuilder.byGettersOf(MyClass.class, myHeadingConverter).build(myObjects);
 
 ### Column widths
 `TextTable` distinguishes between columns with fixed width and dynamic columns. When rendering, it calculates the space
