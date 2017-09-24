@@ -1,5 +1,6 @@
 package com.tmarsteel.jcli.util.formatting.table;
 
+import com.tmarsteel.jcli.util.formatting.table.builder.ColumnHeading;
 import com.tmarsteel.jcli.util.formatting.table.builder.TextTableBuilder;
 import org.junit.Test;
 
@@ -20,7 +21,7 @@ public class GetterBasedTextTableBuilderTest
         String tableAsString = table.render(30, '\n');
         assertEquals(
             "+---------+---------+--------+\n" +
-                "| Bar     | Foo     | Number |\n" +
+                "| Baaar   | Foo     | Number |\n" +
                 "+---------+---------+--------+\n" +
                 "| bar 1   | Foo1    | 1      |\n" +
                 "+---------+---------+--------+\n" +
@@ -52,6 +53,7 @@ public class GetterBasedTextTableBuilderTest
             return foo;
         }
 
+        @ColumnHeading("Baaar")
         public String getBar()
         {
             return bar;

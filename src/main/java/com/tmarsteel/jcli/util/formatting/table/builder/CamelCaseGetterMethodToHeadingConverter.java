@@ -27,6 +27,11 @@ public class CamelCaseGetterMethodToHeadingConverter implements GetterMethodToHe
     @Override
     public String toHeading(Method method)
     {
+        ColumnHeading headingAnnotation = method.getAnnotation(ColumnHeading.class);
+        if (headingAnnotation != null && !headingAnnotation.value().isEmpty()) {
+            return headingAnnotation.value();
+        }
+
         rejectUnsupported(method);
 
         String camelCasePropertyName = method.getName().substring(3);
